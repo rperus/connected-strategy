@@ -171,7 +171,7 @@ router.get('/', async (_req: Request, res: Response) => {
         healthGrade: sacToGrade(sac),
         worksheetsTotal: totalWorksheets,
         worksheetsFilled,
-        worksheetsCompletion: Math.round((worksheetsFilled / totalWorksheets) * 100),
+        worksheetsCompletion: Math.min(100, Math.round((worksheetsFilled / totalWorksheets) * 100)),
         findingsByServerity,
         totalFindings: allFindings.length,
         totalProposals,

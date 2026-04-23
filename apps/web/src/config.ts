@@ -43,6 +43,7 @@ export const api = {
   pipelineFindings: `${API_BASE_URL}/api/pipeline/findings`,
   pipelinePrompts: `${API_BASE_URL}/api/pipeline/prompts`,
   pipelineLastRun: `${API_BASE_URL}/api/pipeline/last-run`,
+  pipelineHistory: `${API_BASE_URL}/api/pipeline/history`,
 
   // Health dashboard
   healthDashboard: `${API_BASE_URL}/api/health-dashboard`,

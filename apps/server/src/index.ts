@@ -47,9 +47,15 @@ app.use(express.json({ limit: '5mb' }));
 // ─── Initialize SQLite on startup ───────────────────────────────
 getDb();
 
+// Run maintenance to clean orphan records
+import { cleanOrphanWorksheetAnswers, cleanDuplicateProjects } from './db/maintenance.js';
+cleanOrphanWorksheetAnswers();
+cleanDuplicateProjects();
+
 // ─── Health check ───────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({
+    ok: true,
     status: 'ok',
     service: 'connected_strategy_api',
     persistence: 'sqlite',
