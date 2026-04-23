@@ -14,7 +14,7 @@ interface ProjectHealth {
   worksheetsTotal: number;
   worksheetsFilled: number;
   worksheetsCompletion: number;
-  findingsByServerity: { high: number; medium: number; low: number };
+  findingsBySeverity: { high: number; medium: number; low: number };
   totalFindings: number;
   totalProposals: number;
   weakestMetrics: Array<{ name: string; score: number }>;
@@ -197,9 +197,9 @@ export function HealthDashboardPage() {
           <div style={{ fontSize: 11, color: 'var(--cs-text-muted)', marginTop: 4 }}>Hallazgos</div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 8 }}>
             {(() => {
-              const high = projects.reduce((s, p) => s + p.findingsByServerity.high, 0);
-              const med = projects.reduce((s, p) => s + p.findingsByServerity.medium, 0);
-              const low = projects.reduce((s, p) => s + p.findingsByServerity.low, 0);
+              const high = projects.reduce((s, p) => s + p.findingsBySeverity.high, 0);
+              const med = projects.reduce((s, p) => s + p.findingsBySeverity.medium, 0);
+              const low = projects.reduce((s, p) => s + p.findingsBySeverity.low, 0);
               return (
                 <>
                   <span style={{ fontSize: 10, color: '#ef4444', fontWeight: 700 }}>{high} 🔴</span>
@@ -286,19 +286,19 @@ export function HealthDashboardPage() {
                   Hallazgos ({p.totalFindings})
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  {p.findingsByServerity.high > 0 && (
+                  {p.findingsBySeverity.high > 0 && (
                     <span style={{ padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700, background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
-                      {p.findingsByServerity.high} críticos
+                      {p.findingsBySeverity.high} críticos
                     </span>
                   )}
-                  {p.findingsByServerity.medium > 0 && (
+                  {p.findingsBySeverity.medium > 0 && (
                     <span style={{ padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700, background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }}>
-                      {p.findingsByServerity.medium} medios
+                      {p.findingsBySeverity.medium} medios
                     </span>
                   )}
-                  {p.findingsByServerity.low > 0 && (
+                  {p.findingsBySeverity.low > 0 && (
                     <span style={{ padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
-                      {p.findingsByServerity.low} bajos
+                      {p.findingsBySeverity.low} bajos
                     </span>
                   )}
                   {p.totalFindings === 0 && (

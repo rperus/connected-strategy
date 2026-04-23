@@ -123,7 +123,7 @@ router.post('/jobs', (req: Request, res: Response) => {
 
   const job = createJob(projectId, agentId, input ?? {});
   // Persist to SQLite
-  try { insertJob(job); } catch { /* DB may not be ready in test env */ }
+  try { insertJob(job); } catch (e) { console.warn('[CS-Analysis] DB insert failed:', e); }
   res.status(201).json({ ok: true, data: job });
 });
 
@@ -153,7 +153,7 @@ router.post('/jobs/:id/run', async (req: Request, res: Response) => {
   const agent = getRegisteredAgent(job.agentId);
   if (!agent) {
     const failed = markFailed(job.id, `Agent ${job.agentId} not found in registry`);
-    if (failed) try { updateJob(failed); } catch { /* ignore */ }
+    if (failed) try { updateJob(failed); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     res.status(500).json({ ok: false, error: 'Agent not found', data: failed });
     return;
   }
@@ -170,11 +170,11 @@ router.post('/jobs/:id/run', async (req: Request, res: Response) => {
   try {
     const result = await agent.run(job.input, context);
     const updated = markDone(job.id, result);
-    if (updated) try { updateJob(updated); } catch { /* ignore */ }
+    if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     res.json({ ok: true, data: updated });
   } catch (err) {
     const updated = markFailed(job.id, String(err));
-    if (updated) try { updateJob(updated); } catch { /* ignore */ }
+    if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     res.status(500).json({ ok: false, error: String(err), data: updated });
   }
 });
@@ -218,7 +218,7 @@ router.post('/run-all', async (req: Request, res: Response) => {
     const job = createJob(projectId, agentId, input);
     jobIds.push(job.id);
     // Persist queued state
-    try { insertJob(job); } catch { /* ignore */ }
+    try { insertJob(job); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
 
     markRunning(job.id);
 
@@ -232,13 +232,13 @@ router.post('/run-all', async (req: Request, res: Response) => {
     try {
       const result = await agent.run(input, context);
       const updated = markDone(job.id, result);
-      if (updated) try { updateJob(updated); } catch { /* ignore */ }
+      if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
       if (result.success && result.data) {
         reports.push(result.data as import('@cs/agents').AnalystReport);
       }
     } catch (err) {
       const updated = markFailed(job.id, String(err));
-      if (updated) try { updateJob(updated); } catch { /* ignore */ }
+      if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     }
   }
 
@@ -247,7 +247,7 @@ router.post('/run-all', async (req: Request, res: Response) => {
   const composerJob = createJob(projectId, 'proposal-composer', composerInput as unknown as Record<string, unknown>);
   jobIds.push(composerJob.id);
   // Persist composer job
-  try { insertJob(composerJob); } catch { /* ignore */ }
+  try { insertJob(composerJob); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
 
   markRunning(composerJob.id);
 
@@ -261,7 +261,7 @@ router.post('/run-all', async (req: Request, res: Response) => {
   try {
     const composerResult = await composer.run(composerInput as unknown as Record<string, unknown>, composerContext);
     const updatedComposer = markDone(composerJob.id, composerResult);
-    if (updatedComposer) try { updateJob(updatedComposer); } catch { /* ignore */ }
+    if (updatedComposer) try { updateJob(updatedComposer); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
 
     res.json({
       ok: true,
@@ -274,7 +274,7 @@ router.post('/run-all', async (req: Request, res: Response) => {
     });
   } catch (err) {
     const updatedComposer = markFailed(composerJob.id, String(err));
-    if (updatedComposer) try { updateJob(updatedComposer); } catch { /* ignore */ }
+    if (updatedComposer) try { updateJob(updatedComposer); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     res.status(500).json({ ok: false, error: String(err), jobIds });
   }
 });
@@ -289,7 +289,8 @@ router.post('/run-all-projects', async (req: Request, res: Response) => {
   let projects: import('@cs/domain').Project[];
   try {
     projects = listProjects();
-  } catch {
+  } catch (e) {
+    console.warn('[CS-Analysis] Failed to list projects:', e);
     res.status(500).json({ ok: false, error: 'Failed to list projects from DB' });
     return;
   }
@@ -326,7 +327,7 @@ router.post('/run-all-projects', async (req: Request, res: Response) => {
       const input: Record<string, unknown> = { projectId: project.id, answers: {}, projectPath: project.path };
       const job = createJob(project.id, agentId, input);
       jobIds.push(job.id);
-      try { insertJob(job); } catch { /* ignore */ }
+      try { insertJob(job); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
 
       markRunning(job.id);
       const agent = getRegisteredAgent(agentId)!;
@@ -335,13 +336,13 @@ router.post('/run-all-projects', async (req: Request, res: Response) => {
       try {
         const result = await agent.run(input, context);
         const updated = markDone(job.id, result);
-        if (updated) try { updateJob(updated); } catch { /* ignore */ }
+        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
         if (result.success && result.data) {
           reports.push(result.data as import('@cs/agents').AnalystReport);
         }
       } catch (err) {
         const updated = markFailed(job.id, String(err));
-        if (updated) try { updateJob(updated); } catch { /* ignore */ }
+        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
         errors.push(String(err));
       }
     }
@@ -351,7 +352,7 @@ router.post('/run-all-projects', async (req: Request, res: Response) => {
     const composerInput = { projectId: project.id, reports };
     const composerJob = createJob(project.id, 'proposal-composer', composerInput as unknown as Record<string, unknown>);
     jobIds.push(composerJob.id);
-    try { insertJob(composerJob); } catch { /* ignore */ }
+    try { insertJob(composerJob); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
     markRunning(composerJob.id);
 
     const composer = getRegisteredAgent('proposal-composer')!;
@@ -360,12 +361,12 @@ router.post('/run-all-projects', async (req: Request, res: Response) => {
     try {
       const composerResult = await composer.run(composerInput as unknown as Record<string, unknown>, composerCtx);
       const updatedComposer = markDone(composerJob.id, composerResult);
-      if (updatedComposer) try { updateJob(updatedComposer); } catch { /* ignore */ }
+      if (updatedComposer) try { updateJob(updatedComposer); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
       const proposals = composerResult.data;
       proposalCount = Array.isArray(proposals) ? proposals.length : 0;
     } catch (err) {
       const updatedComposer = markFailed(composerJob.id, String(err));
-      if (updatedComposer) try { updateJob(updatedComposer); } catch { /* ignore */ }
+      if (updatedComposer) try { updateJob(updatedComposer); } catch (e) { console.warn('[CS-Analysis] DB write failed:', e); }
       errors.push(String(err));
     }
 

@@ -34,8 +34,8 @@ try {
   } else {
     console.log('[CS-API] Gemini LLM: deterministic mode (set GEMINI_API_KEY in .env to enable)');
   }
-} catch {
-  // .env is optional
+} catch (e) {
+  console.info('[CS-API] No .env file found (optional):', String(e).split('\n')[0]);
 }
 
 

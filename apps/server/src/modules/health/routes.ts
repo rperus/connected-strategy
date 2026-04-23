@@ -48,7 +48,7 @@ interface ProjectHealth {
   worksheetsTotal: number;
   worksheetsFilled: number;
   worksheetsCompletion: number; // 0-100%
-  findingsByServerity: { high: number; medium: number; low: number };
+  findingsBySeverity: { high: number; medium: number; low: number };
   totalFindings: number;
   totalProposals: number;
   weakestMetrics: Array<{ name: string; score: number }>;
@@ -115,7 +115,7 @@ router.get('/', async (_req: Request, res: Response) => {
           updatedAt: new Date().toISOString(),
         };
         metrics = computeStrategicMetrics(project.id, syntheticAnswer, defaultScoringWeights(project.id));
-      } catch { /* ignore */ }
+      } catch (e) { console.warn('[CS-Health] Agent run failed:', e); }
 
       // Count worksheet completion
       const filledWorksheetIds = new Set(answers.map(a => a.worksheetId));
@@ -145,11 +145,11 @@ router.get('/', async (_req: Request, res: Response) => {
             allFindings.push(...(report.findings ?? []));
             totalProposals += report.recommendedProposals?.length ?? 0;
           }
-        } catch { /* ignore */ }
+        } catch (e) { console.warn('[CS-Health] Agent run failed:', e); }
       }
 
       // Count by severity
-      const findingsByServerity = {
+      const findingsBySeverity = {
         high: allFindings.filter(f => f.severity === 'high').length,
         medium: allFindings.filter(f => f.severity === 'medium').length,
         low: allFindings.filter(f => f.severity === 'low').length,
@@ -172,7 +172,7 @@ router.get('/', async (_req: Request, res: Response) => {
         worksheetsTotal: totalWorksheets,
         worksheetsFilled,
         worksheetsCompletion: Math.min(100, Math.round((worksheetsFilled / totalWorksheets) * 100)),
-        findingsByServerity,
+        findingsBySeverity,
         totalFindings: allFindings.length,
         totalProposals,
         weakestMetrics: sorted.slice(0, 3).map(s => ({ name: s.name, score: Math.round(s.score) })),

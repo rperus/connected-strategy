@@ -192,7 +192,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
 
         const job = createJob(project.id, agentId, input);
         jobIds.push(job.id);
-        try { insertJob(job); } catch { /* ignore */ }
+        try { insertJob(job); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
 
         markRunning(job.id);
         const agent = getRegisteredAgent(agentId)!;
@@ -201,7 +201,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
         try {
           const result = await agent.run(input, ctx);
           const updated = markDone(job.id, result);
-          if (updated) try { updateJob(updated); } catch { /* ignore */ }
+          if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
           if (result.success && result.data) {
             const report = result.data as AnalystReport;
             reports.push(report);
@@ -212,7 +212,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
           }
         } catch (err) {
           const updated = markFailed(job.id, String(err));
-          if (updated) try { updateJob(updated); } catch { /* ignore */ }
+          if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
         }
       }
 
@@ -221,7 +221,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
       const composerInput = { projectId: project.id, reports };
       const composerJob = createJob(project.id, 'proposal-composer', composerInput as unknown as Record<string, unknown>);
       jobIds.push(composerJob.id);
-      try { insertJob(composerJob); } catch { /* ignore */ }
+      try { insertJob(composerJob); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
       markRunning(composerJob.id);
 
       const composer = getRegisteredAgent('proposal-composer')!;
@@ -230,7 +230,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
       try {
         const composerResult = await composer.run(composerInput as unknown as Record<string, unknown>, composerCtx);
         const updated = markDone(composerJob.id, composerResult);
-        if (updated) try { updateJob(updated); } catch { /* ignore */ }
+        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
         // composerResult.data is ImprovementProposal[] directly (not wrapped in { proposals })
         const proposals = composerResult.data;
         proposalCount = Array.isArray(proposals) ? proposals.length : 0;
@@ -240,7 +240,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
         }
       } catch (err) {
         const updated = markFailed(composerJob.id, String(err));
-        if (updated) try { updateJob(updated); } catch { /* ignore */ }
+        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
       }
 
       // Compute real metrics
@@ -256,7 +256,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
           updatedAt: new Date().toISOString(),
         };
         metrics = computeStrategicMetrics(project.id, syntheticAnswer, defaultScoringWeights(project.id));
-      } catch { /* ignore */ }
+      } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
 
       const totalFindings = reports.reduce((sum, r) => sum + (r.findings?.length ?? 0), 0);
       analysisResults.push({
@@ -315,7 +315,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
           byProject: analysisResults.map(a => ({ id: a.projectId, f: a.findings, p: a.proposals })),
         }),
       });
-    } catch { /* ignore DB errors */ }
+    } catch (e) { console.warn('[CS-Pipeline] DB history write failed:', e); }
 
     res.json({
       ok: true,
@@ -394,7 +394,7 @@ function buildScoringKeys(projectPath: string, stack: string[]): Record<string, 
       return c;
     };
     fileCount = countFiles(projectPath);
-  } catch { /* ignore */ }
+  } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
 
   // Scale factor based on project size
   const sizeFactor = Math.min(fileCount / 500, 1); // 0-1 scale, 500 files = mature
