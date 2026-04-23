@@ -29,7 +29,8 @@ export interface LLMProvider {
  */
 export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvider {
   const apiKey = process.env.GEMINI_API_KEY ?? '';
-  const available = apiKey.length > 0;
+  const forceOffline = process.env._CS_FORCE_OFFLINE === '1';
+  const available = apiKey.length > 0 && !forceOffline;
 
   if (!available) {
     console.warn('[LLM] GEMINI_API_KEY not set — LLM enrichment disabled. Agents will run in deterministic-only mode.');
@@ -89,10 +90,13 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
  * Import this in agents that want LLM enrichment.
  */
 let _singleton: LLMProvider | null = null;
+let _singletonOfflineState: string | undefined = undefined;
 
 export function getGeminiProvider(): LLMProvider {
-  if (!_singleton) {
+  const currentOffline = process.env._CS_FORCE_OFFLINE;
+  if (!_singleton || _singletonOfflineState !== currentOffline) {
     _singleton = createGeminiProvider();
+    _singletonOfflineState = currentOffline;
   }
   return _singleton;
 }

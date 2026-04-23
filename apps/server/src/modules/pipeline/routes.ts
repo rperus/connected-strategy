@@ -48,12 +48,21 @@ export function getCachedResults() { return cachedResults; }
  * POST /api/pipeline/run-full
  *
  * Full pipeline: scan → auto-fill → analyze → prompts.
- * Body (optional): { scanPath?: string }
+ * Body (optional): { scanPath?: string, useGemini?: boolean }
  * Default scanPath: C:\dev
+ * Default useGemini: true (uses Gemini API if key is available)
+ * Set useGemini: false for zero-cost deterministic-only mode
  */
 router.post('/run-full', async (req: Request, res: Response) => {
   const startTime = Date.now();
-  const scanPath = (req.body as { scanPath?: string }).scanPath ?? 'C:\\dev';
+  const body = req.body as { scanPath?: string; useGemini?: boolean };
+  const scanPath = body.scanPath ?? 'C:\\dev';
+  const useGemini = body.useGemini !== false; // default true
+
+  // If useGemini is false, temporarily disable the LLM provider
+  if (!useGemini) {
+    process.env._CS_FORCE_OFFLINE = '1';
+  }
 
   const log: string[] = [];
   const push = (msg: string) => { log.push(`[${((Date.now() - startTime) / 1000).toFixed(1)}s] ${msg}`); };
@@ -311,6 +320,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
     res.json({
       ok: true,
       data: {
+        mode: useGemini ? 'gemini' : 'offline',
         elapsed: `${elapsed}s`,
         projectsScanned: scanData.projects.length,
         projectsAnalyzed: projects.length,
@@ -324,6 +334,9 @@ router.post('/run-full', async (req: Request, res: Response) => {
   } catch (err) {
     push(`FATAL: ${String(err)}`);
     res.status(500).json({ ok: false, error: String(err), log });
+  } finally {
+    // Always clean up the offline flag
+    delete process.env._CS_FORCE_OFFLINE;
   }
 });
 

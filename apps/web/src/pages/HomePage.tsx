@@ -57,6 +57,7 @@ export function HomePage() {
   // Full pipeline state
   const [pipelineRunning, setPipelineRunning] = useState(false);
   const [pipelineResult, setPipelineResult] = useState<{
+    mode: string;
     elapsed: string;
     projectsScanned: number;
     promptPackets: Array<{ projectName: string; promptForAntigravity: string }>;
@@ -150,7 +151,7 @@ export function HomePage() {
     }
   }
 
-  async function handlePipelineFull() {
+  async function handlePipelineFull(useGemini = true) {
     setPipelineRunning(true);
     setPipelineResult(null);
     setPipelineError(null);
@@ -158,9 +159,9 @@ export function HomePage() {
       const r = await fetch(api.pipelineRunFull, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanPath: 'C:\\dev' }),
+        body: JSON.stringify({ scanPath: 'C:\\dev', useGemini }),
       });
-      const body = await r.json() as { ok: boolean; data?: { elapsed: string; projectsScanned: number; promptPackets: Array<{ projectName: string; promptForAntigravity: string }>; log: string[] }; error?: string };
+      const body = await r.json() as { ok: boolean; data?: { mode: string; elapsed: string; projectsScanned: number; promptPackets: Array<{ projectName: string; promptForAntigravity: string }>; log: string[] }; error?: string };
       if (!r.ok || !body.ok) {
         setPipelineError(body.error ?? `HTTP ${r.status}`);
       } else if (body.data) {
@@ -210,11 +211,20 @@ export function HomePage() {
         </button>
         <button
           className="btn btn-primary"
-          onClick={handlePipelineFull}
+          onClick={() => handlePipelineFull(false)}
           disabled={pipelineRunning || analyzing}
           style={{ background: 'linear-gradient(135deg, #10b981, #059669)', borderColor: '#059669' }}
         >
-          {pipelineRunning ? '⟳ Pipeline…' : '🚀 Pipeline Completo'}
+          {pipelineRunning ? '⟳ Pipeline…' : '🚀 Pipeline (sin costo)'}
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => handlePipelineFull(true)}
+          disabled={pipelineRunning || analyzing}
+          style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', borderColor: '#6d28d9' }}
+          title="Usa tu Gemini API key para enriquecer narrativas con IA"
+        >
+          {pipelineRunning ? '⟳ Pipeline…' : '✦ Pipeline + Gemini'}
         </button>
       </div>
 
@@ -246,6 +256,9 @@ export function HomePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, color: '#10b981' }}>
             <span style={{ fontSize: 18 }}>✓</span>
             <strong>Pipeline completado en {pipelineResult.elapsed}</strong>
+            <span className={`badge ${pipelineResult.mode === 'gemini' ? 'badge-violet' : 'badge-success'}`} style={{ fontSize: 10 }}>
+              {pipelineResult.mode === 'gemini' ? '✦ Gemini' : '🚀 Sin costo'}
+            </span>
             <span style={{ fontSize: 12, color: 'var(--cs-text-muted)' }}>
               {pipelineResult.projectsScanned} proyectos · {pipelineResult.promptPackets.length} prompts generados
             </span>
