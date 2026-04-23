@@ -1,0 +1,137 @@
+{
+  "project": "Connected_Strategy",
+  "workspace_root": "C:\\dev\\Connected_Strategy",
+  "last_updated": "2026-04-22",
+  "current_phase": "Wave 2 Batch 1 in progress — SET-02 DONE, SET-05 and SET-07 pending",
+  "next_action": "Cerebro marks SET-02 done. After SET-05 and SET-07 complete Batch 1, dispatch Batch 2 (SET-03, SET-04, SET-06).",
+  "sets": [
+    {
+      "id": "SET-00",
+      "name": "Program Director and State Keeper",
+      "status": "ready",
+      "depends_on": [],
+      "write_scope": [
+        "docs/",
+        "state/",
+        "coordination artifacts only"
+      ],
+      "deliverable": "Coordination active, task board owned, sequencing enforced."
+    },
+    {
+      "id": "SET-01",
+      "name": "Workspace Bootstrap",
+      "status": "waiting",
+      "depends_on": [
+        "SET-00"
+      ],
+      "write_scope": [
+        "repo root",
+        "workspace config",
+        "initial app/package skeleton"
+      ],
+      "deliverable": "Monorepo shell ready for parallel work."
+    },
+    {
+      "id": "SET-02",
+      "name": "Knowledge and Domain Engine",
+      "status": "done",
+      "completed_at": "2026-04-22T21:55:00-06:00",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "packages/domain",
+        "packages/knowledge",
+        "data/"
+      ],
+      "deliverable": "Domain schemas, worksheet engine, scoring contracts, knowledge ingestion.",
+      "verification": "typecheck PASS, 22+6 unit tests PASS"
+    },
+    {
+      "id": "SET-03",
+      "name": "Analysis Orchestrator and Agents",
+      "status": "waiting",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "packages/agents",
+        "apps/server/src/modules/analysis",
+        "apps/server/src/modules/projects"
+      ],
+      "deliverable": "Analysis job engine, agent contracts and analysis endpoints."
+    },
+    {
+      "id": "SET-04",
+      "name": "UI Workbench and Worksheet Editor",
+      "status": "waiting",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "apps/web"
+      ],
+      "deliverable": "Workbench UI, worksheet editor, dashboards and launcher shell."
+    },
+    {
+      "id": "SET-05",
+      "name": "Runtime Collision Launcher",
+      "status": "waiting",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "packages/runtime",
+        "apps/server/src/modules/runtime"
+      ],
+      "deliverable": "Project discovery, launch profiles and collision-safe runtime sessions."
+    },
+    {
+      "id": "SET-06",
+      "name": "Reporting and Prompt Packets",
+      "status": "waiting",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "packages/reporting",
+        "packages/prompt-packets",
+        "apps/server/src/modules/reports"
+      ],
+      "deliverable": "Printable reports, PDF export and Codex/Antigravity prompt packet generation."
+    },
+    {
+      "id": "SET-07",
+      "name": "Desktop Shell, Icons and Shortcuts",
+      "status": "waiting",
+      "depends_on": [
+        "SET-01"
+      ],
+      "write_scope": [
+        "apps/desktop",
+        "assets/icons",
+        "installer scripts"
+      ],
+      "deliverable": "Electron shell, desktop shortcut, tray/taskbar-ready packaging."
+    },
+    {
+      "id": "SET-08",
+      "name": "Integration, QA and Release Local",
+      "status": "waiting",
+      "depends_on": [
+        "SET-02",
+        "SET-03",
+        "SET-04",
+        "SET-05",
+        "SET-06",
+        "SET-07"
+      ],
+      "write_scope": [
+        "integration wiring",
+        "final tests",
+        "release docs"
+      ],
+      "deliverable": "Integrated local product validated end to end."
+    }
+  ]
+}

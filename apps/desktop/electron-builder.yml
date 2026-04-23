@@ -1,0 +1,49 @@
+appId: "com.connectedstrategy.desktop"
+productName: "Connected Strategy"
+copyright: "Copyright © 2026 Connected Strategy"
+
+directories:
+  output: dist
+  buildResources: "../../assets"
+
+files:
+  - src/**
+  - package.json
+  - "!node_modules/**"
+
+extraFiles:
+  - from: "../../ops/runtime/active_ports.json"
+    to: "resources/ops/runtime/active_ports.json"
+  - from: "../../config/port_registry.yaml"
+    to: "resources/config/port_registry.yaml"
+  - from: "../../assets/icons"
+    to: "resources/assets/icons"
+
+win:
+  icon: "../../assets/icons/icon.ico"
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  # Request user-level install so no UAC prompt needed
+  requestedExecutionLevel: asInvoker
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "Connected Strategy"
+  installerIcon: "../../assets/icons/icon.ico"
+  uninstallerIcon: "../../assets/icons/icon.ico"
+  installerHeaderIcon: "../../assets/icons/icon.ico"
+  license: "../../LICENSE"
+
+portable:
+  artifactName: "ConnectedStrategy-${version}-portable.exe"
+
+publish: null

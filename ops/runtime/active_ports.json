@@ -1,0 +1,59 @@
+{
+  "last_updated": "2026-04-22T22:22:21Z",
+  "source": "set-08-integration-qa",
+  "services": {
+    "connected_strategy_web": {
+      "preferred_port": 4310,
+      "active_port": 4310,
+      "status": "running",
+      "url": "http://127.0.0.1:4310"
+    },
+    "connected_strategy_api": {
+      "preferred_port": 4311,
+      "active_port": 4311,
+      "status": "running",
+      "url": "http://127.0.0.1:4311",
+      "health_url": "http://127.0.0.1:4311/api/health"
+    },
+    "connected_strategy_desktop_devtools": {
+      "preferred_port": 4312,
+      "active_port": 4312,
+      "status": "not_running"
+    }
+  },
+  "projects": {
+    "antigravity-tenders-platform": {
+      "path": "C:\\dev\\antigravity-tenders-platform",
+      "stack": ["python", "docker", "docker-compose"],
+      "maturity": "developing"
+    },
+    "balam-demo-v2": {
+      "path": "C:\\dev\\balam-demo-v2",
+      "stack": ["node", "typescript", "vite", "pnpm-monorepo", "react"],
+      "maturity": "developing"
+    },
+    "connected_strategy": {
+      "path": "C:\\dev\\Connected_Strategy",
+      "stack": ["node", "typescript", "pnpm-monorepo"],
+      "maturity": "developing"
+    },
+    "hitl-projects": {
+      "path": "C:\\dev\\hitl-projects",
+      "maturity": "developing"
+    },
+    "rodrigo-os": {
+      "path": "C:\\dev\\rodrigo-os",
+      "maturity": "developing"
+    },
+    "rodrigo-os-health": {
+      "path": "C:\\dev\\rodrigo-os-health",
+      "stack": ["python"],
+      "maturity": "developing"
+    },
+    "youtube-cashcow": {
+      "path": "C:\\dev\\youtube-cashcow",
+      "stack": ["node"],
+      "maturity": "developing"
+    }
+  }
+}

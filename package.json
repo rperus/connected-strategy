@@ -1,0 +1,27 @@
+{
+  "name": "connected-strategy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Connected Strategy — Local-first strategic control tower for multi-project analysis, launcher, prompt packets, and continuous improvement.",
+  "scripts": {
+    "dev": "pnpm --filter @cs/web dev & pnpm --filter @cs/server dev",
+    "dev:web": "pnpm --filter @cs/web dev",
+    "dev:server": "pnpm --filter @cs/server dev",
+    "dev:desktop": "pnpm --filter @cs/desktop dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @cs/web build",
+    "build:server": "pnpm --filter @cs/server build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
+  }
+}

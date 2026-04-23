@@ -1,0 +1,24 @@
+{
+  "name": "@cs/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Connected Strategy — Electron desktop shell for Windows",
+  "main": "src/main.js",
+  "scripts": {
+    "dev":           "electron .",
+    "dev:reload":    "nodemon --exec electron . --watch src",
+    "build":         "electron-builder --config electron-builder.yml",
+    "build:win":     "electron-builder --win --config electron-builder.yml",
+    "build:portable":"electron-builder --win portable --config electron-builder.yml",
+    "icons":         "node ../../scripts/generate-icons.js",
+    "shortcut":      "powershell -ExecutionPolicy Bypass -File ../../scripts/create-desktop-shortcut.ps1",
+    "test":          "echo \"no tests yet\" && exit 0",
+    "clean":         "rimraf dist"
+  },
+  "devDependencies": {
+    "electron":         "^30.0.0",
+    "electron-builder": "^24.0.0",
+    "nodemon":          "^3.0.0",
+    "rimraf":           "^5.0.0"
+  }
+}

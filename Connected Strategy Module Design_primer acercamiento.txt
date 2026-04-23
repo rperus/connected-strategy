@@ -1,0 +1,651 @@
+Connected Strategy Module Design
+Goal
+Disenar un modulo Connected Strategy / Control Tower para Balam OS que convierta los marcos de Connected Strategy, Competitive Advantage, 4Rs, Sense/Transmit/Analyze/React/Repeat y los worksheets en un sistema vivo de observacion, diagnostico, propuesta, aprobacion y aprendizaje.
+
+El modulo debe servir primero a Balam OS, pero quedar pensado desde el inicio para poder analizar otras plataformas del mismo dueno sin rehacer la arquitectura.
+
+Why this should exist
+Hoy Balam ya tiene una base fuerte en:
+
+captura
+normalizacion
+evidencia
+market intel
+reverse matching
+dashboards multi-rol
+telemetria e identidad V6
+Pero todavia no tiene una capa que una:
+
+estrategia
+operacion
+observabilidad
+aprobacion humana
+mejora continua
+en un solo sistema gobernado.
+
+La oportunidad no es crear "otro dashboard". La oportunidad es crear una capa que piense y trabaje con la misma logica de los worksheets:
+
+journey
+pain points
+information flows
+why-how ladder
+response design
+learning from repeated interactions
+connected strategy matrix
+deconstruction by subfunction
+technology enablement
+Architecture decision
+La decision correcta es:
+
+Balam-first
+multi-platform-ready
+suggest-first
+approval-gated for sensitive actions
+Esto significa:
+
+La primera version vive dentro de este repo y aprovecha frontend, backend, auth, telemetria y modelos ya existentes.
+El dominio se modela con contratos reutilizables para que luego pueda observar otras plataformas.
+La primera version no nace como plataforma separada multi-tenant completa.
+El sistema puede sugerir, preparar, abrir issues o PRs, pero no debe auto-ejecutar cambios sensibles.
+What this module is
+El modulo es un sistema de trabajo con 3 capas visibles:
+
+Strategy View
+Para el dueno de la plataforma.
+Debe mostrar worksheets vivos, ventaja competitiva, friccion, costo, riesgo, oportunidades y progreso.
+
+Agent Operating System
+Para que agentes especializados observen, diagnostiquen, propongan y preparen acciones.
+
+Governance Layer
+Para approval humana, trazabilidad, historial, validacion de impacto y rollback.
+
+What this module is not
+No debe ser:
+
+una plataforma separada desde el dia uno
+un motor de auto-mejora sin control
+un simple wall of charts
+una excusa para meter ML complejo demasiado pronto
+un sistema que toque produccion, auth, billing, secretos o DB sin aprobacion humana
+Core product thesis
+La tesis del modulo es:
+
+El mejor sistema de mejora continua para una plataforma no empieza por automatizar cambios, sino por estructurar bien la observacion, el juicio y la aprobacion.
+
+Por eso la secuencia correcta es:
+
+Sense -> Transmit -> Analyze -> React -> Repeat
+
+y dentro de la experiencia conectada:
+
+Recognize -> Request -> Respond -> Repeat
+
+Eso se traduce a software asi:
+
+Sense: captar logs, eventos, costos, errores, uso, journeys, tests, deploys, feedback
+Transmit: normalizar y mover esas senales a un modelo comun
+Analyze: agentes y reglas convierten senales en diagnosticos
+React: generar propuestas, issues, PRs, tareas, cambios seguros o requests de aprobacion
+Repeat: medir resultado, recalibrar prioridad, aprender que tipo de mejoras funcionan
+Competitive advantage logic
+El modulo debe razonar siempre con dos lentes:
+
+WTP / valor percibido
+cost / friccion / costo de cumplimiento
+Cada mejora sugerida debe explicar explicitamente una de estas opciones:
+
+sube valor percibido
+baja costo
+hace ambas
+hace trade-off controlado y justificado
+Las metricas estrategicas del modulo no deben limitarse a errores tecnicos. Deben incluir:
+
+adoption por feature
+funnel completion
+time to value
+user effort
+manual ops burden
+support burden
+AI cost per workflow
+time to diagnose
+time to approve
+time to implement
+post-change impact
+Design principles
+Worksheets as system primitives
+Los worksheets no son anexos visuales; son objetos del dominio.
+
+Humans own policy
+Los agentes ayudan, pero no redefinen politica de riesgo ni reglas de aprobacion.
+
+Suggest-first, execute-later
+Primero sugerir y preparar. Ejecutar solo si es seguro o aprobado.
+
+Evidence before action
+Ninguna propuesta sin evidencia ligada a senales reales.
+
+One canonical proposal format
+Todo desemboca en ImprovementProposal.
+
+Balam-first isolation
+La primera implementacion no debe romper la plataforma viva ni abrir un segundo sistema paralelo mal acoplado.
+
+Portable abstractions
+Las entidades del modulo deben poder servir luego a otras plataformas.
+
+Target users
+Platform owner
+Quiere ver:
+
+donde hay friccion
+donde hay pasos de mas
+que se puede automatizar
+que conviene simplificar
+como la plataforma mejora su ventaja competitiva
+que aprobar o rechazar
+Product / operations lead
+Quiere ver:
+
+journeys
+alerts
+regressions
+adoption
+costo
+recomendaciones accionables
+Agent operators
+Necesitan:
+
+contexto estructurado
+permisos claros
+herramientas observables
+guardrails
+contratos de salida
+Scope of the first sub-project
+Este spec no cubre "toda la plataforma de agentes para todo futuro producto" como una sola entrega.
+
+La primera entrega debe enfocarse en:
+
+modelar el dominio de Connected Strategy dentro de Balam
+crear worksheets vivos para Balam
+crear el sistema de propuestas y aprobaciones
+conectar agentes especializados a esas plantillas
+dejar lista la abstraccion para soportar otras plataformas despues
+La expansion multi-plataforma se disena desde ahora, pero no se implementa completa en el MVP.
+
+Translation of worksheets into product modules
+Worksheets 1-6
+Estos worksheets sirven para modelar la experiencia actual y detectar friccion.
+
+Customer journey map
+El sistema debe representar journeys concretos, por ejemplo:
+
+explorar oportunidades
+analizar mercado
+revisar tender dossier
+hacer match con producto
+guardar actor
+mover pipeline
+WTP drivers and pain points
+Cada journey debe almacenar:
+
+valor esperado por el usuario
+pain points
+pasos innecesarios
+esfuerzo manual
+puntos de abandono
+Information flows
+El sistema debe mapear:
+
+trigger
+fuente
+frecuencia
+riqueza
+inference quality
+user effort
+improvement ideas
+Why-how ladder
+El modulo debe capturar el porque profundo del journey y no solo la accion superficial.
+
+Responses to pain points
+Cada pain point debe mapearse a una respuesta conectada:
+
+respond-to-desire
+curated offering
+coach behavior
+automatic execution
+Learning from repeated experiences
+El sistema debe registrar:
+
+personalizacion
+mejoras del producto
+optimizacion operativa
+nuevas necesidades detectadas
+Worksheets 7-11
+Estos worksheets sirven para pasar de observacion a arquitectura y tecnologia.
+
+Connected Strategy Matrix - current state
+Debe mostrar que tipo de experiencia conectada existe hoy en cada capacidad clave.
+
+Connected Strategy Matrix - new ideas
+Debe mostrar ideas nuevas y su clasificacion.
+
+Deconstructing the strategy
+Debe mapear cada flujo en:
+
+sense
+transmit
+analyze
+react
+recognize
+request
+respond
+repeat
+connection architecture
+revenue model
+Technological solutions
+Debe mostrar que tecnologia habilita cada subfuncion.
+
+New technologies and future enablement
+Debe capturar capacidad futura, no solo stack actual.
+
+Translation of competitive advantage into product logic
+El modulo debe incluir un Competitive Advantage Workspace con:
+
+internal fit
+external fit
+dynamic fit
+activity system
+WTP vs cost map
+key strategic choices
+what to stop doing
+No basta con detectar problemas. El sistema debe mostrar si una mejora:
+
+refuerza el activity system
+elimina pasos que no agregan valor
+reduce convergencia con competidores
+protege una posicion diferenciada
+Proposed bounded components
+1. Strategy Kernel
+Responsable de:
+
+entidades canonicas del modulo
+logica de worksheets
+scoring de impacto
+risk engine
+proposal engine contracts
+2. Signal Ingestion Layer
+Responsable de:
+
+logs backend
+frontend errors
+user events
+AI cost events
+agent traces
+test results
+deploy state
+integration state
+3. Worksheet Engine
+Responsable de:
+
+crear worksheets vivos
+autocompletar campos con evidencia
+versionar cambios
+distinguir entre observado, inferido y confirmado
+4. Multi-Agent Analysis Layer
+Responsable de:
+
+monitoring
+product journey analysis
+QA
+code review
+security policy checks
+improvement synthesis
+approval packaging
+5. Governance Layer
+Responsable de:
+
+matrix de riesgo
+approval humana
+audit trail
+rollback metadata
+decision logging
+6. Control Tower UI
+Responsable de:
+
+overview
+services
+agents
+alerts
+worksheets
+improvements
+approvals
+history
+evaluation
+Recommended agent roster
+SupervisorAgent
+orquesta flujo
+activa agentes relevantes
+consolida hallazgos
+evita loops sin sentido
+escala a aprobacion humana
+MonitoringAgent
+mira estado tecnico
+detecta anomalas
+propone causas probables
+ProductJourneyAgent
+revisa journeys y funnels
+detecta pasos de mas
+conecta pain points con worksheets 1-6
+QAAgent
+corre tests
+sugiere faltantes
+valida antes y despues
+CodeReviewAgent
+detecta deuda
+duplicacion
+archivos gigantes
+oportunidades de simplificacion
+SecurityPolicyAgent
+clasifica riesgo
+bloquea lo sensible
+evita que el sistema exceda permisos
+ImprovementAgent
+convierte diagnosticos en propuestas accionables
+genera artefactos listos para issue o PR
+ApprovalAgent
+resume cambio
+muestra evidencia
+muestra riesgo
+muestra rollback
+espera decision humana
+Proposal contract
+Toda propuesta debe salir en el contrato ImprovementProposal:
+
+id
+title
+detected_at
+source_agents
+problem_summary
+evidence
+probable_root_cause
+recommended_change
+change_type
+affected_components
+risk_level
+expected_impact
+confidence_score
+validation_plan
+rollback_plan
+requires_human_approval
+generated_artifacts
+status
+Risk policy
+Low risk
+Auto permitido:
+
+issue
+docs
+checklist
+tests
+PR en rama segura
+sugerencia de copy
+Medium risk
+Approval requerida:
+
+cambio de prompt productivo
+feature flag relevante
+cambio de config real
+merge de rama importante
+automatizacion que cambie experiencia del usuario
+High risk
+Bloqueado sin aprobacion humana explicita:
+
+produccion
+DB migration
+auth
+billing
+secrets
+permisos
+borrado
+datos sensibles
+compliance
+Suggested UX shape
+La UI debe tener estas vistas:
+
+Overview
+Strategy Worksheets
+Competitive Advantage
+Signals and Service Health
+Agents
+Alerts
+Improvements
+Approvals
+History
+Evaluations
+La experiencia mas importante para el dueno es una pagina donde pueda:
+
+leer worksheets ya llenados
+editar criterios estrategicos
+ver oportunidades de simplificacion
+aprobar o rechazar mejoras
+ver si una mejora realmente ayudo
+Suggested data model
+El MVP debe introducir un dominio nuevo con entidades parecidas a estas:
+
+platforms
+platform_components
+strategy_journeys
+journey_steps
+journey_pain_points
+journey_information_flows
+worksheet_snapshots
+worksheet_fields
+strategy_signals
+strategy_alerts
+agent_runs
+improvement_proposals
+approvals
+evaluations
+activity_system_nodes
+activity_system_edges
+competitive_advantage_assessments
+Para futura expansion multi-plataforma, toda entidad nueva debe colgar de platform_id.
+
+Balam-first implementation shape
+La primera implementacion debe vivir dentro del repo actual con una separacion clara:
+
+backend: nuevos routers y servicios de strategy
+frontend: workspace nuevo de Control Tower
+db: tablas nuevas del dominio
+docs: research packet, spec, plan, operator notes
+La implementacion no debe rehacer Balam como monorepo nuevo ni abrir una app separada en esta etapa.
+
+Research program
+El proyecto necesita un plan de investigacion que no sea abstracto. Debe producir artefactos utiles.
+
+Research Track 1: Strategy audit of current Balam
+Objetivo:
+
+entender el journey real de Balam
+ubicar friccion
+ubicar pasos redundantes
+ubicar oportunidades de conexion
+Entregables:
+
+mapa de journeys actuales
+matriz de pain points
+mapa de info flows
+primera version de worksheets 1-6 llenados
+Research Track 2: Competitive advantage baseline
+Objetivo:
+
+definir como Balam crea valor hoy
+donde esta el costo
+que partes son diferenciacion real
+donde hay convergencia o complejidad innecesaria
+Entregables:
+
+activity system map
+internal fit snapshot
+external fit snapshot
+dynamic fit snapshot
+WTP vs cost baseline
+Research Track 3: Signal inventory and instrumentation gaps
+Objetivo:
+
+mapear que senales ya existen
+mapear que no se esta midiendo
+decidir la minima instrumentacion util
+Entregables:
+
+inventario de eventos y logs
+vacios de telemetria
+propuesta de esquema canonico de senales
+Research Track 4: Agent operating model
+Objetivo:
+
+decidir que agentes existen
+que herramientas usan
+que permisos tienen
+como se auditan
+Entregables:
+
+roster final de agentes
+contratos de entrada y salida
+matrix de permisos
+policy de loop prevention
+Research Track 5: Approval and governance model
+Objetivo:
+
+definir que se autoejecuta
+que se aprueba
+que se bloquea
+Entregables:
+
+policy matrix
+estados de propuesta
+formato de approval
+formato de rollback
+Research Track 6: UI and decision workspace
+Objetivo:
+
+transformar worksheets en UI accionable
+evitar una interfaz decorativa
+Entregables:
+
+arquitectura de pantallas
+jerarquia de vistas
+prioridad de widgets
+lenguaje visual para evidencia, riesgo y estado
+Research Track 7: Multi-platform generalization
+Objetivo:
+
+decidir como el sistema podria analizar futuras plataformas sin redisenarlo
+Entregables:
+
+modelo platform_id
+matriz de conectores
+decision de que se abstrae y que se queda especifico de Balam
+Execution phases
+Phase 0
+Design and research packet only.
+
+Salida esperada:
+
+spec
+research packet
+implementation plan
+Phase 1
+Strategy Kernel + worksheet domain + read-only UI.
+
+Salida esperada:
+
+worksheets vivos para Balam
+strategy overview
+proposals manuales
+Phase 2
+Signal ingestion + MonitoringAgent + ImprovementAgent + proposal engine.
+
+Salida esperada:
+
+alertas
+propuestas estructuradas
+evidencia ligada
+Phase 3
+Approval workflow + QAAgent + CodeReviewAgent + GitHub integration.
+
+Salida esperada:
+
+approval panel
+PR/issue generation
+validation logging
+Phase 4
+ProductJourneyAgent + Competitive Advantage workspace + evaluation loop.
+
+Salida esperada:
+
+deteccion de pasos redundantes
+improvement ranking
+post-change evaluation
+Phase 5
+Portable platform support.
+
+Salida esperada:
+
+registro de plataformas
+adaptadores por plataforma
+reuse del mismo kernel
+Suggested success criteria
+El modulo sera util si cumple esto:
+
+El dueno puede entender la plataforma con worksheets vivos, no solo con tablas tecnicas.
+Los agentes proponen mejoras mejores que una lista de bugs dispersa.
+Las mejoras quedan ligadas a WTP, costo, friccion o ventaja competitiva.
+Todo cambio sensible queda approval-gated.
+El sistema aprende ranking y prioridad sin autodestruir su propia gobernanza.
+El dominio queda reusable para otras plataformas.
+Non-goals for the MVP
+No incluye en MVP:
+
+multi-tenancy completa
+billing del modulo
+despliegue productivo autonomo
+auto-merge a main
+auto-deploy a prod
+cambios de policy hechos por agentes
+ML complejo para priorizacion desde el dia uno
+Primary risks
+Scope explosion
+Querer construir una plataforma general antes de validar la capa en Balam.
+
+Dashboard theater
+Crear pantallas bonitas sin impacto operativo real.
+
+Agent overreach
+Dar demasiada autonomia antes de tener guardrails y trazabilidad.
+
+Telemetry overload
+Medir demasiado y no convertirlo en decisiones.
+
+Monolith contamination
+Meter el modulo como otro bloque gigante sin boundaries claras.
+
+Recommended next document
+El siguiente artefacto debe ser un implementation plan separado que parta este diseno en tareas pequenas, testeables y con write sets claros.
+
+Ese plan debe enfocarse primero en:
+
+Strategy Kernel
+Worksheet Engine
+Control Tower read-only UI
+proposal and approval backbone
+Final decision summary
+La respuesta de diseno queda fijada asi:
+
+construir dentro de Balam
+modelar como sistema portable para otras plataformas
+usar worksheets como objetos del dominio
+hacer suggest-first con approval-gating
+conectar estrategia y operacion en un solo workspace
+avanzar por fases, no como megaproyecto unico

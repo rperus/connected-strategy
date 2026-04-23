@@ -1,0 +1,36 @@
+version: 1
+last_updated: "2026-04-22"
+
+policy:
+  fixed_ports_preferred: true
+  fallback_allowed: true
+  live_override_file: "ops/runtime/active_ports.json"
+  launcher_reads_live_first: true
+
+core_services:
+  connected_strategy_web:
+    preferred_port: 4310
+    protocol: "http"
+    host: "127.0.0.1"
+  connected_strategy_api:
+    preferred_port: 4311
+    protocol: "http"
+    host: "127.0.0.1"
+  connected_strategy_desktop_devtools:
+    preferred_port: 4312
+    protocol: "http"
+    host: "127.0.0.1"
+
+project_defaults:
+  vite_web:
+    preferred_port: 5173
+  nextjs_web:
+    preferred_port: 3000
+  node_api:
+    preferred_port: 3001
+  python_api:
+    preferred_port: 8000
+
+notes:
+  - "Add discovered project-specific fixed ports here once runtime discovery stabilizes them."
+  - "Do not treat this file as live truth when a service had to fall back to another port."

@@ -1,0 +1,30 @@
+project_name: "Connected Strategy"
+project_slug: "connected_strategy"
+project_root: "C:\\dev\\Connected_Strategy"
+project_type: "local-first strategic control tower"
+status: "scaffold-complete"
+version: "0.2.0"
+last_updated: "2026-04-22"
+
+tech_stack:
+  frontend: "Vite + React + TypeScript"
+  backend: "Node + TypeScript"
+  database: "SQLite"
+  deploy: "Local desktop + local web runtime"
+
+entrypoints:
+  app: "antigravity/prompts/17_FIRST_PROMPT_CONNECTED_STRATEGY.md"
+  tests: "to be created during SET-01 and later waves"
+  coordinator: "antigravity/prompts/16_AGENT_MANAGER_CEREBRO_OPERATING_SYSTEM.md"
+
+state_pack:
+  current_state: "CURRENT_STATE.md"
+  current_task: "CURRENT_TASK.md"
+  changelog: "CHANGELOG_PROJECT.md"
+  manifest: "PROJECT_MANIFEST.yaml"
+
+runtime_policy:
+  preferred_fixed_ports: true
+  canonical_port_registry: "config/port_registry.yaml"
+  live_port_overrides: "ops/runtime/active_ports.json"
+  launcher_must_read_live_overrides_first: true
