@@ -6,8 +6,8 @@
 
 ## ESTADO ACTUAL
 
-**Última fase completada:** PHASE-03 (wharton agents)
-**Próxima fase:** PHASE-04 (quantitative frontier)
+**Última fase completada:** PHASE-04 (quantitative frontier)
+**Próxima fase:** PHASE-05 (chief strategist)
 **Bloqueadores:** _ninguno_
 **Última actualización:** 2026-05-04 (Antigravity)
 
@@ -20,7 +20,7 @@
 | 1 | V3-PHASE-01_unify_worksheets.md | ✅ done | Antigravity / Gemini / 2026-05-04 | tsc OK, tests 22/22 |
 | 2 | V3-PHASE-02_persistent_memory.md | ✅ done | Antigravity / Gemini / 2026-05-04 | state.json ok, tests pass |
 | 3 | V3-PHASE-03_wharton_agents.md | ✅ done | Antigravity / Gemini / 2026-05-04 | tsc OK, smoke tests OK |
-| 4 | V3-PHASE-04_quantitative_frontier.md | ⬜ pending | — | Test unit Pareto |
+| 4 | V3-PHASE-04_quantitative_frontier.md | ✅ done | Antigravity / Gemini / 2026-05-04 | Test unit Pareto OK |
 | 5 | V3-PHASE-05_chief_strategist.md | ⬜ pending | — | Strategy Audit completo |
 | 6 | V3-PHASE-06_handoff_packaging.md | ⬜ pending | — | 4 archivos por move |
 | 7 | V3-PHASE-07_route_and_ui.md | ⬜ pending | — | curl run-v3 OK |
@@ -47,6 +47,7 @@ Cuando una fase termina exitosamente, Antigravity debe:
 | 2026-05-04 | Antigravity | Completó PHASE-01: canonical Wharton schema (WS01-11 + CA) |
 | 2026-05-04 | Antigravity | Completó PHASE-02: persistent project state store |
 | 2026-05-04 | Antigravity | Completó PHASE-03: 13 specialized agents (6 wharton + 4 ca + 7 swarm) |
+| 2026-05-04 | Antigravity | Completó PHASE-04: quantitative frontier engine |
 
 ---
 
