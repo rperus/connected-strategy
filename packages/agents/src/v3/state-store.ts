@@ -36,11 +36,7 @@ export interface SpecialistFinding {
   finding: string;
 }
 
-export interface Priority {
-  id: string;
-  title: string;
-  description: string;
-}
+export type Priority = z.infer<typeof synthesisSchema>['topPriorities'][0];
 
 export interface ProjectStateV3 {
   schemaVersion: '3.0.0';

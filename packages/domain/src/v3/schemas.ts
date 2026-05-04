@@ -254,3 +254,23 @@ export const synthesisSchema = z.object({
   activitySystemMermaid: z.string().optional(),
 });
 
+export const manifestSchema = z.object({
+  moveId: z.string(),
+  title: z.string().max(150),
+  wharton_basis: z.array(z.string()).min(1),
+  frontier_impact: z.object({ wtp_delta: z.number(), cost_delta: z.number() }),
+  files_to_create: z.array(z.object({ path: z.string(), purpose: z.string() })),
+  files_to_edit: z.array(z.object({
+    path: z.string(),
+    lines: z.string().optional(),
+    change: z.string(),
+  })),
+  files_to_delete: z.array(z.object({ path: z.string(), reason: z.string() })),
+  dependencies_to_add: z.array(z.string()),
+  dependencies_to_remove: z.array(z.string()),
+  estimated_loc: z.number().int().nonnegative(),
+  estimated_hours: z.number().nonnegative(),
+  references: z.object({ worksheets: z.array(z.string()), findings: z.array(z.string()) }),
+});
+
+
