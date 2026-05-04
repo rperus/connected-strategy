@@ -42,6 +42,10 @@ const NAV = [
     { to: '/prompts', label: 'Prompt Packets', icon: '⟡' },
     { to: '/reports', label: 'Reportes', icon: '⎙' },
   ]},
+  { section: 'Pipeline V3', items: [
+    { to: '/v3', label: 'V3 Analysis', icon: '🚀' },
+    { to: '/v3/moves', label: 'Antigravity Moves', icon: '🎯' },
+  ]},
 ];
 
 const MATURITY_COLOR: Record<string, string> = {

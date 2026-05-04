@@ -23,7 +23,7 @@
 | 4 | V3-PHASE-04_quantitative_frontier.md | ✅ done | Antigravity / Gemini / 2026-05-04 | Test unit Pareto OK |
 | 5 | V3-PHASE-05_chief_strategist.md | ✅ done | Antigravity / Gemini / 2026-05-04 | Tests 5/5 OK |
 | 6 | V3-PHASE-06_handoff_packaging.md | ✅ done | Antigravity / Gemini / 2026-05-04 | 4 archivos generados por move |
-| 7 | V3-PHASE-07_route_and_ui.md | ⬜ pending | — | curl run-v3 OK |
+| 7 | V3-PHASE-07_route_and_ui.md | ✅ done | Antigravity / Gemini / 2026-05-04 | pnpm build OK, ts-node sin errores |
 
 ---
 

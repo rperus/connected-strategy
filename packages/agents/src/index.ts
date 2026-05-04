@@ -64,3 +64,9 @@ export type { LLMProvider } from './llm-provider.js';
 
 // ─── Gemini Enrichment (opt-in narrative / proposal enhancement) ──────────────
 export { enrichAnalystNarrative, enrichProposals, synthesizePortfolioInsight } from './gemini-enrichment.js';
+
+// ─── V3 Pipeline ──────────────────────────────────────────────────────────────
+export { ProjectStateStore } from './v3/state-store.js';
+export type { ProjectStateV3, Priority } from './v3/state-store.js';
+export { runV3Pipeline } from './v3/pipeline-orchestrator.js';
+export type { RunV3Opts } from './v3/pipeline-orchestrator.js';

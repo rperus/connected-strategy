@@ -84,7 +84,9 @@ import metricsRoutes from './modules/metrics/routes.js';
 app.use('/api/metrics', metricsRoutes);
 
 import pipelineRoutes from './modules/pipeline/routes.js';
+import v3PipelineRoutes from './modules/pipeline/v3-route.js';
 app.use('/api/pipeline', pipelineRoutes);
+app.use('/api/pipeline', v3PipelineRoutes);
 
 import healthDashboardRoutes from './modules/health/routes.js';
 app.use('/api/health-dashboard', healthDashboardRoutes);

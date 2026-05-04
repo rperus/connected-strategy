@@ -21,6 +21,8 @@ import { ProposalsPage } from './pages/ProposalsPage';
 import { PromptPacketsPage } from './pages/PromptPacketsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { LauncherPage } from './pages/LauncherPage';
+import { V3Dashboard } from './pages/v3/V3Dashboard';
+import { V3Moves } from './pages/v3/V3Moves';
 import { HealthDashboardPage } from './pages/HealthDashboardPage';
 import { EfficiencyFrontierPage } from './pages/EfficiencyFrontierPage';
 import { StrategyMatrixPage } from './pages/StrategyMatrixPage';
@@ -72,6 +74,8 @@ function App() {
                 <Route path="/briefing" element={<BriefingPage />} />
                 <Route path="/intel" element={<PlatformIntelPage />} />
                 <Route path="/improve" element={<StrategicImprovePage />} />
+                <Route path="/v3" element={<V3Dashboard />} />
+                <Route path="/v3/moves" element={<V3Moves />} />
               </Routes>
             </ErrorBoundary>
           </main>

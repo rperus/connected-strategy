@@ -56,3 +56,10 @@ export function getLatestRun(projectId: string): V3Run | null {
   const result = stmt.get(projectId);
   return (result as V3Run) || null;
 }
+
+export function getRunById(runId: string): V3Run | null {
+  const db = getDb();
+  const stmt = db.prepare('SELECT * FROM v3_runs WHERE run_id = ?');
+  const result = stmt.get(runId);
+  return (result as V3Run) || null;
+}
