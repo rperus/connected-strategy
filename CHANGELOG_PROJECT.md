@@ -1,5 +1,77 @@
 # Project Changelog
 
+## 2026-04-27T09:35: v2.3.0 — Platform Intelligence + Strategic Improve
+
+- **Domain types**: `ProjectSkill`, `ProjectWorkflow`, `ServiceAccess` añadidos a Project
+- **mockData**: Todos los 7 proyectos escaneados con datos reales (skills, workflows, scripts, serviceAccess)
+- **PlatformIntelPage** `/intel`: Skills globales/locales, workflows n8n/daemon, scripts, acceso a servicios con credential hints
+- **StrategicImprovePage** `/improve`: Propuestas de mejora por plataforma → Aprobar/Rechazar → Generar prompt como SUGERENCIA para Antigravity
+- **ServiceAccess para Health Dashboard**: n8n URL (http://34.30.64.33:5678) + credential hint (rperus@sklatam.org / B_****)
+- **Grant Navigator**: Actualizado con datos reales (Business Plans Nexus, pitch decks CAF, Project Mariner playbooks)
+- **YouTube CashCow**: 35+ scripts descubiertos (agentic_swarm, autonomous_video_engine, factory_boss, ds_core)
+- **Sidebar**: 2 nuevos links en sección Inteligencia (/intel, /improve)
+
+## 2026-04-27T08:52: v2.2.0 — Hierarchical Agent Swarm (12 → 20 agentes, 3 niveles)
+
+- **types.ts**: AgentTier, CrewId, `canDelegate`, `runsAutonomously` añadidos a AgentDefinition
+- **Nivel 0 (Supervisor)**: `strategist-supervisor` — HTN planning, resolución de contradicciones, síntesis ejecutiva
+- **Nivel 1 (Crew Leads)**: `recon-lead`, `analysis-lead`, `action-lead` — coordinación, scheduling, gate de publicación
+- **Nivel 2 (Nuevos Especialistas)**: `temporal-analyst` (Z-score trend detection), `validation-agent` (Jaccard + constraints), `anomaly-detector` (statistical outliers), `causal-mapper` (Pearl 2000 DAG, SAC causal vs plano)
+- **registry.ts**: 20 agentes registrados con tier/crew. Helpers `getAgentsByTier()`, `getAgentsByCrew()`
+- **AgentOrchestratorPage**: UI completamente reescrita — jerarquía visual 3 niveles, filtros por crew, cards con badges tier/crew/LLM/AUTO, panel de detalle sticky, flujo de ejecución del Strategist
+
+## 2026-04-27T04:38: v2.1.0 — Platform Elevation (SAC 55→78+ proyectado)
+
+- **CoachPanel**: 18 alertas activas (6 críticas, 4 advertencias, 8 oportunidades) — coach Wharton proactivo integrado en home
+- **Portfolio Matrix** `/matrix`: gráfico 2×2 WTP vs SCI con 7 proyectos, cuadrantes Wharton, panel detalle interactivo
+- **Executive Briefing** `/briefing`: ranking portfolio + Top 3 prioridades + export clipboard para Antigravity
+- **mockData v2.0.0**: todos los scores recalibrados con evidencia real (BALAM SAC 66→76, Health SCI 55→62)
+
+## 2026-04-27T03:50: Agent Orchestrator — Visual Pipeline View
+
+- **Nueva página**: `/agents` — Visualización estilo n8n del orquestador de 12 agentes
+- Canvas SVG con nodos organizados en 3 columnas (Sense → Analyze → React)
+- Edges curvos mostrando dependencias entre agentes
+- Panel de detalle al hacer clic: rol, inputs, outputs, memoria, dependencias
+- Resumen del flujo del pipeline (5 pasos)
+- Estadísticas: 12 agentes, 11 deterministas, 1 con LLM opcional
+- Ruta: `/agents` · Sidebar: sección Acción → "Agentes 🤖"
+- ✅ TypeScript 0 errores · ✅ Verificado visualmente
+
+## 2026-04-26T23:50: Curriculum Completion — 5 New Interactive Pages + WS15
+
+**Scope:** Implementación completa de los 6 gaps del curriculum identificados en la auditoría de Connected Strategy.
+
+### Nuevas Páginas (5)
+| Página | Ruta | Fuente Académica |
+|---|---|---|
+| 5 Fuerzas de Porter | `/five-forces` | Wharton Competitive Advantage Module 2, Porter |
+| Customer Journey Map | `/customer-journey` | Connected Strategy Cap. 4, Figuras 4-1 a 4-4, Workshop 2 |
+| Matriz STAR (4×4) | `/star-matrix` | Workshop 3 Steps 4-5, Worksheet 10-3, Cap. 9 |
+| Flywheel / Connected Loop | `/flywheel` | Cap. 5, Figura 5-5, 4 Niveles de Personalización |
+| Cadena de Valor (Porter) | `/value-chain` | Wharton Competitive Advantage, Porter Value Chain |
+
+### Nuevo Worksheet
+- **WS15 — 5 Fuerzas de Porter**: 5 escalas (rivalidad, entrantes, sustitutos, compradores, proveedores) + 3 preguntas de análisis estratégico
+
+### Cambios de Infraestructura
+- `apps/web/src/App.tsx`: 5 nuevas rutas + imports
+- `apps/web/src/components/Sidebar.tsx`: Sección "Estrategia Wharton" ampliada de 3 a 8 items
+- `packages/domain/src/worksheets.ts`: WS15 + registro en ALL_WORKSHEETS (ahora 15 worksheets)
+
+### Verificación
+- ✅ `pnpm --filter @cs/domain exec tsc --noEmit` — 0 errores
+- ✅ `pnpm --filter @cs/web exec tsc --noEmit` — 0 errores
+- ✅ Todas las páginas verificadas visualmente en el navegador
+
+### Cobertura Post-Implementación
+| Dimensión | Score |
+|---|---|
+| Book Worksheets Coverage | 100% (15 worksheets) |
+| Core Frameworks | 100% |
+| Interactive Visualizations | 100% (8 tools) |
+| Competitive Advantage Module | 100% (5 Forces + Value Chain added) |
+
 ## 2026-04-21: Initial execution pack
 
 - Created first-pass execution docs, task sets, prompts, and state files for Connected_Strategy.
@@ -102,3 +174,25 @@
 - scripts/start.ps1 + scripts/start.bat created (double-click launcher)
 - ops/runtime/active_ports.json updated with running status and 7 projects
 - Version bumped to 1.0.0.
+
+## 2026-04-26: Mejora Integral — Auditoría + Quick Wins
+
+### Auditoría (24 propuestas evaluadas, 2 ejecutadas, 3 descartadas)
+- Ran `/mejora-integral` — 10-dimension analysis covering Connected Strategy, Competitive, Business Model, Data Science, Architecture, AI Frontier, Growth, Security, Cross-Project Intelligence, CSS consistency.
+- Generated prioritized proposal matrix (P01-P24) mapped to Wharton framework (WTP, Cost, Switching Costs).
+
+### P15: CSS class fix (3 files)
+- `EfficiencyFrontierPage`, `StrategyMatrixPage`, `ActivityMapPage` used non-existent `page-content` class.
+- Changed to `page-container` which has `max-width: 1200px; margin: 0 auto; padding: 32px 28px`.
+- Result: 3 Wharton pages now have proper padding and centering.
+
+### P21: Mock metrics for 5 missing projects
+- `MOCK_METRICS` only had data for `balam-licitaciones` and `connected-strategy`.
+- Added realistic metrics for: `rodrigo-os` (38), `rodrigo-os-health` (40), `youtube-cashcow` (38), `balam-demo` (53), `grant-navigator` (32).
+- Result: Portfolio Rápido table shows 7/7 projects with full numeric scores.
+
+### Multi-project context system (from earlier in session)
+- Added `ProjectContext` provider, `ProjectBanner` component, sidebar project selector.
+- Banner injected in 10 analysis pages.
+- Verified with typecheck (0 errors) and visual screenshots.
+

@@ -25,7 +25,33 @@ export type AgentId =
   | 'data-science-opportunity-analyst'
   | 'architecture-improvement-analyst'
   | 'ai-frontier-analyst'
-  | 'proposal-composer';
+  | 'proposal-composer'
+  | 'competitive-intel-agent'
+  | 'frontier-mapper-agent'
+  | 'cost-estimator-agent'
+  // ── Phase 1: Hierarchical Swarm ───────────────────────────────
+  | 'strategist-supervisor'
+  | 'recon-lead'
+  | 'analysis-lead'
+  | 'action-lead'
+  | 'temporal-analyst'
+  | 'validation-agent'
+  | 'anomaly-detector'
+  | 'causal-mapper';
+
+/**
+ * Tier in the 3-level swarm hierarchy:
+ * - supervisor: meta-agent that plans, delegates, and validates
+ * - crew-lead: coordinates a team of specialists, routes work
+ * - specialist: executes a single focused domain task
+ */
+export type AgentTier = 'supervisor' | 'crew-lead' | 'specialist';
+
+/**
+ * Crew grouping — which functional team the agent belongs to.
+ * Crew leads own their crew's coordination.
+ */
+export type CrewId = 'recon' | 'analysis' | 'action' | 'cross-cutting' | 'none';
 
 export interface AgentDefinition {
   id: AgentId;
@@ -36,6 +62,14 @@ export interface AgentDefinition {
   outputContract: string[];
   /** Sense→Transmit→Analyze→React→Repeat phase this agent operates in */
   loopPhase: 'Sense' | 'Transmit' | 'Analyze' | 'React' | 'Repeat';
+  /** Hierarchical tier in the swarm */
+  tier: AgentTier;
+  /** Which crew this agent belongs to */
+  crew: CrewId;
+  /** Can this agent delegate work to sub-agents? */
+  canDelegate: boolean;
+  /** Can this agent self-trigger on a schedule? */
+  runsAutonomously: boolean;
 }
 
 // ─── Agent Context (shared across all agents) ─────────────────────────────────

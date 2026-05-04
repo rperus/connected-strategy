@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { MOCK_BM } from '../mockData';
 import { useFindings } from '../hooks/useFindings';
 import { FindingsPanel } from '../components/FindingsPanel';
@@ -44,6 +45,7 @@ export function BusinessModelPage() {
           Tipo Connected Strategy: <strong style={{ color: 'var(--cs-accent-hover)' }}>{bm.connectedStrategyType}</strong>
         </p>
       </div>
+      <ProjectBanner context="Business Model" />
 
       {/* BMC simplified grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.4fr 1fr 1fr', gap: 8, marginBottom: 28 }}>

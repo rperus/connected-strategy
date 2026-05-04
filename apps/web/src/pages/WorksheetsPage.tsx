@@ -10,6 +10,7 @@
  * Status badges show "SQLite ✓" or "localStorage" to make storage mode clear.
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { ALL_WORKSHEETS } from '@cs/domain';
 import type { WorksheetDefinition, WorksheetAnswer } from '@cs/domain';
 import { LoopPhasePill } from '../components/Badges';

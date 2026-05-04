@@ -18,14 +18,18 @@ import type {
   DriverScore,
   ActivitySystemMap,
   ThreeFitsAssessment,
-  FrontierAnalysis
+  FrontierAnalysis,
+  synthesisSchema
 } from '@cs/domain';
+import type { z } from 'zod';
 
 export interface DiscoveryResult {
   // placeholder
   files?: string[];
   dependencies?: Record<string, string>;
 }
+
+import type { SwarmFinding } from './agents/swarm/schema.js';
 
 export interface SpecialistFinding {
   agentId: string;
@@ -68,18 +72,11 @@ export interface ProjectStateV3 {
     activitySystem?: ActivitySystemMap;
   };
   swarm?: {
-    findings: SpecialistFinding[];
+    findings: SwarmFinding[];
     perSpecialist: Record<string, { count: number; durationMs: number }>;
   };
   frontier?: FrontierAnalysis;
-  synthesis?: {
-    threeFits: ThreeFitsAssessment;
-    strategyAuditAnswers: Record<string, string>;
-    topPriorities: Priority[];
-    healthScore: { value: number; ci: [number, number] };
-    executiveSummary: string;
-    activitySystemMermaid: string;
-  };
+  synthesis?: z.infer<typeof synthesisSchema>;
   userContext: {
     naturalLanguageUpdates: Array<{ at: string; message: string; appliedChanges: string[] }>;
     dismissedPriorities: string[];

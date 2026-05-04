@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MOCK_PROJECTS, MOCK_METRICS } from '../mockData';
 import { ScoreGrid } from '../components/ScoreGrid';
 import { RadarChart } from '../components/RadarChart';
+import { CoachPanel } from '../components/CoachPanel';
 import { api } from '../config';
 import { usePolling } from '../hooks/usePolling';
 import type { Project, StrategicMetrics } from '@cs/domain';
@@ -193,6 +194,9 @@ export function HomePage() {
           )}
         </p>
       </div>
+
+      {/* Coach Panel — proactive strategic insights */}
+      <CoachPanel projects={projects} metricsMap={liveMetricsMap && Object.keys(liveMetricsMap).length > 0 ? liveMetricsMap : MOCK_METRICS} />
 
       {/* Project quick-select + Analyze button */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>

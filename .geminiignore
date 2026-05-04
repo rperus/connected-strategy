@@ -1,0 +1,6 @@
+.claude/
+tmp/
+*.log
+dist/
+build/
+node_modules/

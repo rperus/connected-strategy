@@ -224,3 +224,33 @@ export const frontierAnalysisSchema = z.object({
     wharton_basis: z.array(z.string()),
   })),
 });
+
+export const synthesisSchema = z.object({
+  strategyAuditAnswers: z.object({
+    industryStateAndEvolution: z.string().min(50),
+    wtpAndCostDrivers: z.string().min(50),
+    competitorMovements: z.string().min(50),
+    bestPracticesVsDifferentiation: z.string().min(50),
+    synergies: z.string().nullable(),
+  }),
+  threeFits: z.object({
+    internal: z.object({ score: z.number().min(0).max(100), justification: z.string(), gaps: z.array(z.string()) }),
+    external: z.object({ score: z.number().min(0).max(100), justification: z.string(), gaps: z.array(z.string()) }),
+    dynamic: z.object({ score: z.number().min(0).max(100), justification: z.string(), gaps: z.array(z.string()) }),
+  }),
+  topPriorities: z.array(z.object({
+    priorityId: z.string(),
+    title: z.string().max(100),
+    summary: z.string(),
+    wharton_basis: z.array(z.string()).min(1),
+    frontierMoveId: z.string().nullable(),
+    swarmFindingId: z.string().nullable(),
+    antigravityPromptHint: z.string().min(20),
+    estimatedImpact: z.enum(['high', 'medium', 'low']),
+    estimatedEffort: z.enum(['hours', 'days', 'weeks']),
+  })).min(3).max(10),
+  executiveSummary: z.string().max(2000),
+  healthScore: z.object({ value: z.number().min(0).max(100), ci: z.tuple([z.number(), z.number()]) }).optional(),
+  activitySystemMermaid: z.string().optional(),
+});
+

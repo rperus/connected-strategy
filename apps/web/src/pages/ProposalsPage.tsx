@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { api } from '../config';
 import { StatusBadge, StrategicFlags, LoopPhasePill } from '../components/Badges';
 import { MOCK_PROPOSALS } from '../mockData';
@@ -45,6 +46,7 @@ export function ProposalsPage() {
           {source === 'loading' && <span className="badge badge-cyan" style={{ marginLeft: 10 }}>Cargando…</span>}
         </p>
       </div>
+      <ProjectBanner context="Proposals" />
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>

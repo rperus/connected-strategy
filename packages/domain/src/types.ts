@@ -21,6 +21,35 @@ export interface LoopMapping {
 // ─── Project ─────────────────────────────────────────────────────────────────
 export type ProjectMaturity = 'nascent' | 'developing' | 'mature' | 'legacy';
 
+export interface ProjectSkill {
+  name: string;
+  scope: 'global' | 'local';  // global = Antigravity-wide, local = this project only
+  description: string;
+  category: 'ai-coding' | 'automation' | 'analysis' | 'dev-workflow' | 'data';
+}
+
+export interface ProjectWorkflow {
+  name: string;
+  file: string;
+  platform: 'n8n' | 'script' | 'daemon' | 'cron';
+  status: 'active' | 'inactive' | 'unknown';
+  description: string;
+  triggers?: string[];
+}
+
+export interface ServiceAccess {
+  name: string;
+  url: string;
+  platform: 'n8n' | 'gcp' | 'cloud-run' | 'stripe' | 'postgres' | 'other';
+  /** Credential hint — stored locally only, never pushed to cloud */
+  credentialHint?: {
+    user: string;
+    passwordHint: string;  // partial hint, not full password
+    note?: string;
+  };
+  status: 'reachable' | 'unreachable' | 'unknown';
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -29,10 +58,17 @@ export interface Project {
   maturity: ProjectMaturity;
   lastScanned?: string;
   tags: string[];
-  platformId?: string; // for multi-platform support
+  platformId?: string;
   description?: string;
+  launcherScript?: string;
+  healthUrl?: string;
   createdAt: string;
   updatedAt: string;
+  skills?: ProjectSkill[];
+  workflows?: ProjectWorkflow[];
+  scriptCount?: number;
+  /** External services this project connects to */
+  serviceAccess?: ServiceAccess[];
 }
 
 // ─── Worksheet Types ─────────────────────────────────────────────────────────
@@ -163,6 +199,14 @@ export interface Competitor {
   wtpPosition?: 'higher' | 'similar' | 'lower';
   costPosition?: 'higher' | 'similar' | 'lower';
   switchingCostLevel?: 'high' | 'medium' | 'low';
+  /** Numeric WTP score 0-100 for Efficiency Frontier chart */
+  wtpScore?: number;
+  /** Numeric fulfillment cost score 0-100 for Efficiency Frontier chart */
+  costScore?: number;
+  /** Computed: wtpScore - costScore */
+  valueCreated?: number;
+  /** Is this "you" (the user's company)? */
+  isOwn?: boolean;
   notes?: string;
   updatedAt: string;
 }
@@ -178,6 +222,67 @@ export interface CompetitiveLandscape {
   costNarrative: string;
   differentiationChoices: string[];
   convergenceRisks: string[];
+  updatedAt: string;
+}
+
+// ─── Efficiency Frontier ─────────────────────────────────────────────────────
+/** Data for the interactive Efficiency Frontier scatter plot (WS12) */
+export interface EfficiencyFrontierData {
+  projectId: string;
+  /** All entities plotted (own company + competitors) */
+  entities: Competitor[];
+  /** IDs of entities on the Pareto frontier */
+  frontierEntityIds: string[];
+  /** CA calculations vs each competitor */
+  competitiveAdvantages: Array<{
+    competitorId: string;
+    competitorName: string;
+    ownValue: number;
+    competitorValue: number;
+    advantage: number;
+  }>;
+  updatedAt: string;
+}
+
+// ─── Connected Strategy Matrix (5×4) ─────────────────────────────────────────
+export type ConnectedExperience = 'respond-to-desire' | 'curated-offering' | 'coach-behavior' | 'automatic-execution';
+export type ConnectionArchitecture = 'connected-producer' | 'connected-retailer' | 'connected-market-maker' | 'crowd-orchestrator' | 'p2p-network-creator';
+
+export interface StrategyMatrixCell {
+  experience: ConnectedExperience;
+  architecture: ConnectionArchitecture;
+  /** Who occupies this cell */
+  occupants: Array<{
+    name: string;
+    isOwn: boolean;
+    description: string;
+  }>;
+  /** Innovation opportunity notes */
+  opportunityNotes?: string;
+  isOpportunity: boolean;
+}
+
+export interface StrategyMatrix {
+  projectId: string;
+  cells: StrategyMatrixCell[];
+  updatedAt: string;
+}
+
+// ─── STAR Deconstruction ─────────────────────────────────────────────────────
+export type STARPhase = 'sense' | 'transmit' | 'analyze' | 'react';
+export type CustomerJourneyPhase = 'recognize' | 'request' | 'respond' | 'repeat';
+
+export interface STARCell {
+  starPhase: STARPhase;
+  journeyPhase: CustomerJourneyPhase;
+  currentSolution: string;
+  technologies: string[];
+  improvementIdeas: string[];
+}
+
+export interface STARDeconstruction {
+  projectId: string;
+  cells: STARCell[];
   updatedAt: string;
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { MOCK_METRICS } from '../mockData';
 import { useFindings } from '../hooks/useFindings';
 import { FindingsPanel } from '../components/FindingsPanel';
@@ -31,6 +32,7 @@ export function ArchitecturePage() {
         <h1 className="page-title">⬡ Arquitectura & Resiliencia</h1>
         <p className="page-subtitle">Modularidad, cobertura de tests, observabilidad y recuperación</p>
       </div>
+      <ProjectBanner context="Arquitectura" />
 
       <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, marginBottom: 28 }}>
         <div className="card" style={{ textAlign: 'center' }}>

@@ -350,6 +350,196 @@ export const WS11_GTM: WorksheetDefinition = {
   updatedAt: '2026-04-22T00:00:00Z',
 };
 
+// ─── WS12: Efficiency Frontier ────────────────────────────────────────────────
+export const WS12_EFFICIENCY_FRONTIER: WorksheetDefinition = {
+  id: 'ws12_efficiency_frontier',
+  title: 'WS12 — Frontera de Eficiencia',
+  description:
+    'Gráfica interactiva donde posicionas tu empresa y competidores en ejes WTP (Willingness-to-Pay) vs Costo de Cumplimiento. ' +
+    'Muestra quién está en la frontera eficiente y quién está dominado (Pareto). ' +
+    'La Ventaja Competitiva se calcula como: CA = (WTP - Cost)_Tú - (WTP - Cost)_Competidor. ' +
+    'Fuente: Workshop 1 Step 4 del libro Connected Strategy (Siggelkow & Terwiesch).',
+  version: 1,
+  status: 'active',
+  sections: [
+    {
+      id: 'own_position',
+      title: 'Tu Posición',
+      description: 'Define los valores de tu empresa. WTP = qué tanto están dispuestos a pagar tus clientes. Cost = cuánto te cuesta cumplir.',
+      questions: [
+        { id: 'ef_own_name', text: 'Nombre de tu empresa o plataforma', type: 'text', required: true },
+        { id: 'ef_own_wtp', text: 'Willingness-to-Pay de tus clientes (0=nada, 100=máximo del mercado)', type: 'scale', required: true, weight: 1.0, loopPhase: 'Analyze' },
+        { id: 'ef_own_cost', text: 'Costo de cumplimiento (0=casi gratis, 100=muy caro)', type: 'scale', required: true, weight: 1.0, loopPhase: 'Analyze' },
+      ],
+    },
+    {
+      id: 'competitors',
+      title: 'Competidores',
+      description: 'Agrega hasta 8 competidores con sus valores de WTP y Cost estimados.',
+      questions: [
+        { id: 'ef_comp_1_name', text: 'Competidor 1: Nombre', type: 'text', required: false },
+        { id: 'ef_comp_1_wtp', text: 'Competidor 1: WTP (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_1_cost', text: 'Competidor 1: Costo (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_2_name', text: 'Competidor 2: Nombre', type: 'text', required: false },
+        { id: 'ef_comp_2_wtp', text: 'Competidor 2: WTP (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_2_cost', text: 'Competidor 2: Costo (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_3_name', text: 'Competidor 3: Nombre', type: 'text', required: false },
+        { id: 'ef_comp_3_wtp', text: 'Competidor 3: WTP (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_3_cost', text: 'Competidor 3: Costo (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_4_name', text: 'Competidor 4: Nombre', type: 'text', required: false },
+        { id: 'ef_comp_4_wtp', text: 'Competidor 4: WTP (0-100)', type: 'scale', required: false, weight: 0.5 },
+        { id: 'ef_comp_4_cost', text: 'Competidor 4: Costo (0-100)', type: 'scale', required: false, weight: 0.5 },
+      ],
+    },
+    {
+      id: 'frontier_analysis',
+      title: 'Análisis de Frontera',
+      description: '¿Estás en la frontera eficiente o estás dominado? ¿Hacia dónde debes moverte?',
+      questions: [
+        { id: 'ef_direction', text: '¿Deberías subir WTP (diferenciación) o bajar Costo (eficiencia)?', type: 'choice', options: ['Subir WTP', 'Bajar Costo', 'Ambos'], required: false },
+        { id: 'ef_strategy_notes', text: '¿Qué acciones concretas tomarías para mejorar tu posición en la frontera?', type: 'text', required: false },
+      ],
+    },
+  ],
+  createdAt: '2026-04-23T00:00:00Z',
+  updatedAt: '2026-04-23T00:00:00Z',
+};
+
+// ─── WS13: Connected Strategy Matrix 5×4 ─────────────────────────────────────
+export const WS13_STRATEGY_MATRIX: WorksheetDefinition = {
+  id: 'ws13_strategy_matrix',
+  title: 'WS13 — Matriz de Estrategia Conectada (5×4)',
+  description:
+    'Matriz que cruza 4 Experiencias Conectadas (Responder al Deseo, Oferta Curada, Coach de Comportamiento, Ejecución Automática) ' +
+    'con 5 Arquitecturas de Conexión (Productor, Retailer, Market Maker, Crowd Orchestrator, Red P2P). ' +
+    'Las celdas vacías son oportunidades de innovación. ' +
+    'Fuente: Workshop 3 Steps 1-2, Capítulo 7 Fig. 7-6.',
+  version: 1,
+  status: 'active',
+  sections: [
+    {
+      id: 'current_position',
+      title: 'Posición Actual',
+      description: 'Marca en qué celdas de la matriz operas tú y tus competidores.',
+      questions: [
+        { id: 'sm_own_experiences', text: '¿Qué experiencias conectadas ofreces? (selecciona todas)', type: 'multi-choice', options: ['Respond-to-Desire', 'Curated Offering', 'Coach Behavior', 'Automatic Execution'], required: true },
+        { id: 'sm_own_architectures', text: '¿Qué arquitecturas de conexión usas?', type: 'multi-choice', options: ['Connected Producer', 'Connected Retailer', 'Connected Market Maker', 'Crowd Orchestrator', 'P2P Network Creator'], required: true },
+        { id: 'sm_competitor_positions', text: 'Describe dónde están tus competidores en la matriz (ej: "Uber = Respond-to-Desire + Crowd Orchestrator")', type: 'text', required: false },
+      ],
+    },
+    {
+      id: 'innovation_opportunities',
+      title: 'Oportunidades de Innovación',
+      description: 'Para cada celda vacía pregúntate: ¿Qué pasaría si operáramos aquí?',
+      questions: [
+        { id: 'sm_empty_cells', text: '¿Qué celdas están vacías en tu industria? (oportunidades)', type: 'text', required: false },
+        { id: 'sm_what_if', text: 'Si entraras en una celda nueva, ¿qué servicio ofrecerías?', type: 'text', required: false },
+        { id: 'sm_required_connections', text: '¿Qué nuevas conexiones necesitarías crear?', type: 'text', required: false },
+        { id: 'sm_revenue_implications', text: '¿Cómo cambiaría tu modelo de ingresos?', type: 'text', required: false },
+      ],
+    },
+  ],
+  createdAt: '2026-04-23T00:00:00Z',
+  updatedAt: '2026-04-23T00:00:00Z',
+};
+
+// ─── WS14: STAR Deconstruction ────────────────────────────────────────────────
+export const WS14_STAR_DECONSTRUCTION: WorksheetDefinition = {
+  id: 'ws14_star_deconstruction',
+  title: 'WS14 — Deconstrucción STAR',
+  description:
+    'Descompone cada subfunción tecnológica en Sense (detectar) / Transmit (enviar) / Analyze (procesar) / React (actuar), ' +
+    'cruzado con las 4 fases del viaje del cliente: Recognize / Request / Respond / Repeat. ' +
+    'Cada celda identifica la solución actual y oportunidades de mejora tecnológica. ' +
+    'Fuente: Workshop 3 Steps 4-5, Capítulo 9 Tabla 9-1.',
+  version: 1,
+  status: 'active',
+  sections: [
+    {
+      id: 'sense_phase',
+      title: 'SENSE — Detectar',
+      description: 'Tecnologías que detectan las necesidades o eventos del cliente (sensores IoT, wearables, reconocimiento de voz, AR).',
+      questions: [
+        { id: 'star_sense_recognize', text: 'SENSE × RECOGNIZE: ¿Cómo detectas que el cliente tiene una necesidad?', type: 'text', required: true, loopPhase: 'Sense' },
+        { id: 'star_sense_request', text: 'SENSE × REQUEST: ¿Cómo el cliente expresa lo que quiere?', type: 'text', required: true, loopPhase: 'Sense' },
+        { id: 'star_sense_respond', text: 'SENSE × RESPOND: ¿Cómo detectas que la entrega fue exitosa?', type: 'text', required: false, loopPhase: 'Sense' },
+        { id: 'star_sense_repeat', text: 'SENSE × REPEAT: ¿Cómo mides la satisfacción para mejorar?', type: 'text', required: false, loopPhase: 'Sense' },
+      ],
+    },
+    {
+      id: 'transmit_phase',
+      title: 'TRANSMIT — Enviar',
+      description: 'Cómo se envían los datos al sistema (WiFi, 5G, Bluetooth, blockchain).',
+      questions: [
+        { id: 'star_transmit_recognize', text: 'TRANSMIT × RECOGNIZE: ¿Cómo llegan las señales del cliente a tu sistema?', type: 'text', required: true, loopPhase: 'Transmit' },
+        { id: 'star_transmit_request', text: 'TRANSMIT × REQUEST: ¿Cómo se transmite el pedido al proveedor?', type: 'text', required: true, loopPhase: 'Transmit' },
+        { id: 'star_transmit_respond', text: 'TRANSMIT × RESPOND: ¿Cómo envías confirmación/resultado al cliente?', type: 'text', required: false, loopPhase: 'Transmit' },
+        { id: 'star_transmit_repeat', text: 'TRANSMIT × REPEAT: ¿Cómo compartes datos con socios/ecosistema?', type: 'text', required: false, loopPhase: 'Transmit' },
+      ],
+    },
+    {
+      id: 'analyze_phase',
+      title: 'ANALYZE — Procesar',
+      description: 'Cómo se procesan los datos para generar insights (ML, cloud, analytics).',
+      questions: [
+        { id: 'star_analyze_recognize', text: 'ANALYZE × RECOGNIZE: ¿Cómo interpretas las señales para identificar la necesidad real?', type: 'text', required: true, loopPhase: 'Analyze' },
+        { id: 'star_analyze_request', text: 'ANALYZE × REQUEST: ¿Cómo evalúas las opciones disponibles para el cliente?', type: 'text', required: true, loopPhase: 'Analyze' },
+        { id: 'star_analyze_respond', text: 'ANALYZE × RESPOND: ¿Cómo verificas que la respuesta fue correcta?', type: 'text', required: false, loopPhase: 'Analyze' },
+        { id: 'star_analyze_repeat', text: 'ANALYZE × REPEAT: ¿Cómo optimizas a nivel de población (no solo individual)?', type: 'text', required: false, loopPhase: 'Analyze' },
+      ],
+    },
+    {
+      id: 'react_phase',
+      title: 'REACT — Actuar',
+      description: 'Cómo se reacciona (IA, automatización, drones, robótica, AR).',
+      questions: [
+        { id: 'star_react_recognize', text: 'REACT × RECOGNIZE: ¿Cómo alertas al cliente de su necesidad?', type: 'text', required: true, loopPhase: 'React' },
+        { id: 'star_react_request', text: 'REACT × REQUEST: ¿Cómo ejecutas el pedido?', type: 'text', required: true, loopPhase: 'React' },
+        { id: 'star_react_respond', text: 'REACT × RESPOND: ¿Cómo entregas el producto/servicio?', type: 'text', required: false, loopPhase: 'React' },
+        { id: 'star_react_repeat', text: 'REACT × REPEAT: ¿Cómo mejoras el sistema con lo aprendido?', type: 'text', required: false, loopPhase: 'React' },
+      ],
+    },
+  ],
+  createdAt: '2026-04-23T00:00:00Z',
+  updatedAt: '2026-04-23T00:00:00Z',
+};
+
+// ─── WS15: Five Forces (Porter) ───────────────────────────────────────────────
+export const WS15_FIVE_FORCES: WorksheetDefinition = {
+  id: 'ws15_five_forces',
+  title: 'WS15 — 5 Fuerzas de Porter',
+  description:
+    'Análisis de estructura de la industria: rivalidad, amenaza de entrantes, sustitutos, poder de compradores y proveedores. ' +
+    'Fuente: Wharton Competitive Advantage Module 2, Michael Porter.',
+  version: 1,
+  status: 'active',
+  sections: [
+    {
+      id: 'forces',
+      title: 'Las 5 Fuerzas',
+      description: 'Evalúa la intensidad de cada fuerza competitiva en tu industria (0=baja presión, 100=alta presión).',
+      questions: [
+        { id: 'ff_rivalry', text: 'Rivalidad entre competidores existentes (0=baja, 100=guerra de precios)', type: 'scale', required: true, weight: 1.0 },
+        { id: 'ff_new_entrants', text: 'Amenaza de nuevos entrantes (0=barreras altas, 100=fácil entrar)', type: 'scale', required: true, weight: 1.0 },
+        { id: 'ff_substitutes', text: 'Amenaza de productos sustitutos (0=sin sustitutos, 100=muchos sustitutos)', type: 'scale', required: true, weight: 1.0 },
+        { id: 'ff_buyer_power', text: 'Poder de negociación de compradores (0=fragmentados, 100=concentrados/poderosos)', type: 'scale', required: true, weight: 1.0 },
+        { id: 'ff_supplier_power', text: 'Poder de negociación de proveedores (0=fragmentados, 100=concentrados/poderosos)', type: 'scale', required: true, weight: 1.0 },
+      ],
+    },
+    {
+      id: 'analysis',
+      title: 'Análisis Estratégico',
+      questions: [
+        { id: 'ff_attractiveness', text: '¿Qué tan atractiva es tu industria para generar beneficios sostenidos?', type: 'text', required: false },
+        { id: 'ff_connected_defense', text: '¿Cómo puede una estrategia conectada reducir la presión de estas fuerzas?', type: 'text', required: false },
+        { id: 'ff_key_barrier', text: '¿Cuál es la barrera de entrada más importante en tu industria?', type: 'text', required: false },
+      ],
+    },
+  ],
+  createdAt: '2026-04-26T00:00:00Z',
+  updatedAt: '2026-04-26T00:00:00Z',
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 export const ALL_WORKSHEETS: WorksheetDefinition[] = [
   WS01_PROBLEM_ACTORS,
@@ -363,6 +553,10 @@ export const ALL_WORKSHEETS: WorksheetDefinition[] = [
   WS09_COMPLIANCE,
   WS10_COMPETITIVE,
   WS11_GTM,
+  WS12_EFFICIENCY_FRONTIER,
+  WS13_STRATEGY_MATRIX,
+  WS14_STAR_DECONSTRUCTION,
+  WS15_FIVE_FORCES,
 ];
 
 export function getWorksheetById(id: string): WorksheetDefinition | undefined {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { MOCK_METRICS } from '../mockData';
 import { useFindings } from '../hooks/useFindings';
 import { FindingsPanel } from '../components/FindingsPanel';
@@ -23,6 +24,7 @@ export function DataSciencePage() {
         <h1 className="page-title">∑ Data Science Readiness</h1>
         <p className="page-subtitle">Rigor analítico basado en MITx MicroMasters in Data Science</p>
       </div>
+      <ProjectBanner context="Data Science" />
 
       <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, marginBottom: 28 }}>
         <div className="card" style={{ textAlign: 'center' }}>

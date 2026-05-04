@@ -2,6 +2,7 @@ import React from 'react';
 import { MOCK_LANDSCAPE } from '../mockData';
 import { useFindings } from '../hooks/useFindings';
 import { FindingsPanel } from '../components/FindingsPanel';
+import { ProjectBanner } from '../components/ProjectBanner';
 
 const AGENT_IDS = ['competitive-advantage-analyst'];
 
@@ -18,6 +19,7 @@ export function CompetitivePage() {
         <h1 className="page-title">⚔ Ventaja Competitiva</h1>
         <p className="page-subtitle">Activity system, landscape y posicionamiento diferenciado</p>
       </div>
+      <ProjectBanner context="Ventaja Competitiva" />
 
       {/* Fit summary */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 28 }}>

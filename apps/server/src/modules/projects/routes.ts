@@ -7,6 +7,7 @@
 
 import express from 'express';
 import type { Request, Response, Router } from 'express';
+import { spawn } from 'child_process';
 import {
   createJob,
   markRunning,
@@ -18,6 +19,7 @@ import type { AgentContext, ScanEntry } from '@cs/agents';
 import type { Project } from '@cs/domain';
 import { upsertProject, getProject, listProjects, deleteProject, countProjects } from '../../db/repositories/projects.js';
 import { insertJob, updateJob } from '../../db/repositories/jobs.js';
+
 
 const router: Router = express.Router();
 
@@ -158,6 +160,53 @@ router.delete('/:id', (req: Request, res: Response) => {
     return;
   }
   res.json({ ok: true, message: `Project ${req.params.id} removed` });
+});
+
+/**
+ * POST /api/projects/:id/launch
+ * Launches the project using its launcherScript, or opens VS Code if none.
+ */
+router.post('/:id/launch', (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  // Project registry: lookup from DB or use a built-in map
+  const LAUNCHER_MAP: Record<string, { path: string; script?: string }> = {
+    'balam-licitaciones':  { path: 'C:\\dev\\antigravity-tenders-platform', script: 'start.bat' },
+    'connected-strategy':  { path: 'C:\\dev\\Connected_Strategy',            script: 'Connected Strategy.bat' },
+    'rodrigo-os':          { path: 'C:\\dev\\rodrigo-os' },
+    'rodrigo-os-health':   { path: 'C:\\dev\\rodrigo-os-health',             script: 'run_dashboard.bat' },
+    'youtube-cashcow':     { path: 'C:\\dev\\youtube-cashcow',               script: 'CashCow_Dashboard.bat' },
+    'balam-demo':          { path: 'C:\\dev\\balam-demo-v2' },
+    'grant-navigator':     { path: 'C:\\dev\\Grant-Navigator' },
+  };
+
+  const entry = LAUNCHER_MAP[id] ?? getProject(id);
+  if (!entry) {
+    res.status(404).json({ ok: false, error: `Project ${id} not found` });
+    return;
+  }
+
+  const { path: projectPath, script } = entry as { path: string; script?: string };
+
+  try {
+    if (script && script !== 'code') {
+      // Launch bat file in a new window (detached)
+      spawn('cmd.exe', ['/c', `start "" "${script}"`], {
+        cwd: projectPath,
+        detached: true,
+        stdio: 'ignore',
+      }).unref();
+    } else {
+      // Open in VS Code
+      spawn('cmd.exe', ['/c', `code "${projectPath}"`], {
+        detached: true,
+        stdio: 'ignore',
+      }).unref();
+    }
+    res.json({ ok: true, launched: true, projectId: id, method: script ?? 'vscode' });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err) });
+  }
 });
 
 export default router;

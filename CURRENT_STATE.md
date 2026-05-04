@@ -1,48 +1,115 @@
 # Current State
 
-> Date: 2026-04-22
+> Date: 2026-04-27
 > Status: operational
-> Version: 1.7.0 "Full Coverage"
+> Version: 2.3.0 "Platform Intelligence — Skills, Workflows & Service Access"
 > Coordinator: Cerebro
 
-## Platform Status — v1.7.0
+## Platform Status — v2.2.0
 
 | Check | Result |
 |---|---|
-| pnpm -r typecheck (9 packages) | ✅ 0 errors |
-| Pipeline (0.2s) | ✅ 7 projects, 228 findings, 214 proposals |
-| **ALL 13 pages wired** | ✅ Every page shows real pipeline data |
-| Health Dashboard | ✅ /health — portfolio grade + per-project health |
-| Findings by agent | ✅ 28-42 findings per agent |
+| pnpm --filter @cs/domain typecheck | ✅ 0 errors |
+| pnpm --filter @cs/agents typecheck | ✅ 0 errors |
+| pnpm --filter @cs/web typecheck | ✅ 0 errors |
+| Worksheets | ✅ 15 worksheets (WS01-WS15) |
+| Agents | ✅ 20 agents registered (3-tier swarm) |
+| Interactive Pages | ✅ 27 pages |
+| Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (16) |
+| Crews | ✅ Recon · Analysis · Action · Cross-cutting |
 
-## Pages — ALL wired to real API
+## What Changed: v2.0.0 → v2.2.0
 
-| Page | Data Source | Status |
-|---|---|---|
-| HomePage | /api/metrics + pipeline | ✅ |
-| HealthDashboardPage | /api/health-dashboard | ✅ |
-| PortfolioPage | /api/projects + /api/metrics | ✅ |
-| ProjectDetailPage | /api/projects/:id + metrics + findings | ✅ |
-| WorksheetsPage | /api/worksheets | ✅ |
-| CompetitivePage | Template + pipeline findings | ✅ |
-| BusinessModelPage | Template + pipeline findings | ✅ |
-| DataSciencePage | Template + pipeline findings | ✅ |
-| ArchitecturePage | Template + pipeline findings | ✅ |
-| AIFrontierPage | Template + pipeline findings | ✅ |
-| ProposalsPage | /api/pipeline/proposals | ✅ |
-| PromptPacketsPage | /api/pipeline/prompts + proposals | ✅ |
-| ReportsPage | /api/projects + metrics + proposals | ✅ |
+### v2.2.0 — Hierarchical Agent Swarm (current)
+- **8 new agents**: Strategist Supervisor, 3 Crew Leads, Temporal Analyst, Validation Agent, Anomaly Detector, Causal Mapper
+- **Type system**: `AgentTier`, `CrewId`, `canDelegate`, `runsAutonomously` added to AgentDefinition
+- **Registry**: `getAgentsByTier()`, `getAgentsByCrew()` lookup helpers
+- **Orchestrator UI**: Complete rewrite — 3-tier hierarchy view, crew filters, sticky detail panel
+- **Scientific foundations**: Z-score trend detection, Jaccard similarity, Pearl DAG (causal SAC), constraint satisfaction
 
-## Findings Distribution by Agent
+### v2.1.0 — Platform Elevation
+- **CoachPanel**: 18 proactive alerts (critical/warning/opportunity) on HomePage
+- **Portfolio Matrix** `/matrix`: 2×2 WTP×SCI plot with Wharton quadrants
+- **Executive Briefing** `/briefing`: Portfolio ranking + clipboard export for Antigravity
+- **mockData v2.0.0**: All scores recalibrated with production evidence (BALAM SAC 66→76)
 
-| Agent | Findings |
+### v2.0.1 — Agent Orchestrator
+- **Agent Orchestrator** `/agents`: n8n-style pipeline visualization (now upgraded to 3-tier)
+
+## Agent Registry — 20 Total (3-Tier Swarm)
+
+### Level 0: Supervisor
+| Agent | Purpose |
 |---|---|
-| connected-strategy-analyst | 28 |
-| competitive-advantage-analyst | 42 |
-| business-model-analyst | 42 |
-| data-science-opportunity-analyst | 42 |
-| architecture-improvement-analyst | 32 |
-| ai-frontier-analyst | 42 |
+| strategist-supervisor | HTN planning, contradiction resolution, portfolio synthesis |
+
+### Level 1: Crew Leads
+| Agent | Crew | Purpose |
+|---|---|---|
+| recon-lead | recon | Cache invalidation, data quality gate |
+| analysis-lead | analysis | Dependency-aware scheduling, cross-agent communication |
+| action-lead | action | Publication gate, cost budget enforcement |
+
+### Level 2: Specialists (16)
+| Agent | Crew | Phase | New? |
+|---|---|---|---|
+| portfolio-scanner | recon | Sense | |
+| competitive-intel-agent | recon | Sense | |
+| worksheet-synthesizer | analysis | Analyze | |
+| connected-strategy-analyst | analysis | Analyze | |
+| competitive-advantage-analyst | analysis | Analyze | |
+| business-model-analyst | analysis | Analyze | |
+| data-science-opportunity-analyst | analysis | Analyze | |
+| architecture-improvement-analyst | analysis | Analyze | |
+| ai-frontier-analyst | analysis | Analyze | |
+| causal-mapper | analysis | Analyze | ✅ |
+| frontier-mapper-agent | analysis | Analyze | |
+| temporal-analyst | cross-cutting | Analyze | ✅ |
+| anomaly-detector | cross-cutting | Analyze | ✅ |
+| proposal-composer | action | React | |
+| validation-agent | action | React | ✅ |
+| cost-estimator-agent | action | React | |
+
+## Pages — 27 Total
+
+| Page | Route | Status |
+|---|---|---|
+| HomePage (+ CoachPanel) | / | ✅ |
+| HealthDashboardPage | /health | ✅ |
+| PortfolioPage | /portfolio | ✅ |
+| ProjectDetailPage | /project/:id | ✅ |
+| WorksheetsPage | /worksheets | ✅ |
+| CompetitivePage | /competitive | ✅ |
+| BusinessModelPage | /business-model | ✅ |
+| DataSciencePage | /data-science | ✅ |
+| ArchitecturePage | /architecture | ✅ |
+| AIFrontierPage | /ai-frontier | ✅ |
+| ProposalsPage | /proposals | ✅ |
+| PromptPacketsPage | /prompts | ✅ |
+| ReportsPage | /reports | ✅ |
+| LauncherPage | /launcher | ✅ |
+| EfficiencyFrontierPage | /frontier | ✅ |
+| StrategyMatrixPage | /strategy-matrix | ✅ |
+| ActivityMapPage | /activity-map | ✅ |
+| FiveForcesPage | /five-forces | ✅ |
+| CustomerJourneyPage | /customer-journey | ✅ |
+| STARMatrixPage | /star-matrix | ✅ |
+| FlywheelPage | /flywheel | ✅ |
+| ValueChainPage | /value-chain | ✅ |
+| **AgentOrchestratorPage** | /agents | ✅ v2.2 rewrite |
+| **PortfolioMatrixPage** | /matrix | ✅ NEW v2.1 |
+| **BriefingPage** | /briefing | ✅ NEW v2.1 |
+
+## Sidebar Sections
+
+| Section | Items |
+|---|---|
+| Inicio | Inicio, Salud |
+| Proyectos | Portfolio, Launcher |
+| Análisis | Worksheets, Ventaja Competitiva, Business Model, Data Science, Arquitectura, AI Frontier |
+| Inteligencia | Matriz de Portfolio, Briefing Ejecutivo |
+| Acción | Agentes, Proposals, Prompt Packets, Reportes |
+| Estrategia Wharton | Frontera de Eficiencia, STAR Matrix, Activity Map, 5 Fuerzas, Customer Journey, Flywheel, Cadena de Valor |
 
 ## URLs
 

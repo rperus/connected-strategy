@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ProjectBanner } from '../components/ProjectBanner';
 import { MOCK_PROJECTS, MOCK_METRICS, MOCK_PROPOSALS } from '../mockData';
 import { ScoreGrid } from '../components/ScoreGrid';
 import { api } from '../config';
@@ -54,6 +55,7 @@ export function ReportsPage() {
           {source === 'mock' && <span className="badge badge-warning" style={{ marginLeft: 10 }}>Datos demo</span>}
         </p>
       </div>
+      <ProjectBanner context="Reportes" />
       <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
         <button className="btn btn-primary btn-sm" onClick={() => window.print()}>🖨 Imprimir / PDF</button>
       </div>

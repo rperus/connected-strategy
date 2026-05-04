@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFindings } from '../hooks/useFindings';
 import { FindingsPanel } from '../components/FindingsPanel';
+import { ProjectBanner } from '../components/ProjectBanner';
 
 const AGENT_IDS = ['ai-frontier-analyst'];
 
@@ -23,6 +24,7 @@ export function AIFrontierPage() {
         <h1 className="page-title">✦ AI Frontier</h1>
         <p className="page-subtitle">Oportunidades de IA priorizadas por valor real, no por novedad</p>
       </div>
+      <ProjectBanner context="AI Frontier" />
 
       <div style={{ marginBottom: 16, padding: '12px 16px', background: 'var(--cs-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #6366f1', fontSize: 12, color: 'var(--cs-text-muted)' }}>
         <strong style={{ color: 'var(--cs-text)' }}>Principio:</strong> Toda mejora de IA frontier debe ser priorizada por valor real, no por novedad.
