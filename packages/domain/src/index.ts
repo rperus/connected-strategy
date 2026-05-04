@@ -56,6 +56,22 @@ export type {
   InformationFlow,
   // Scoring weights
   ScoringWeights,
+  // Efficiency Frontier (V2)
+  EfficiencyFrontierData,
+  // Strategy Matrix 5×4 (V2)
+  ConnectedExperience,
+  ConnectionArchitecture,
+  StrategyMatrixCell,
+  StrategyMatrix,
+  // Project intelligence (skills, workflows, service access)
+  ProjectSkill,
+  ProjectWorkflow,
+  ServiceAccess,
+  // STAR Deconstruction (V2)
+  STARPhase,
+  CustomerJourneyPhase,
+  STARCell,
+  STARDeconstruction,
 } from './types.js';
 
 export { defaultScoringWeights } from './types.js';
@@ -88,8 +104,14 @@ export {
   WS09_COMPLIANCE,
   WS10_COMPETITIVE,
   WS11_GTM,
+  WS12_EFFICIENCY_FRONTIER,
+  WS13_STRATEGY_MATRIX,
+  WS14_STAR_DECONSTRUCTION,
   ALL_WORKSHEETS,
   getWorksheetById,
   getAllQuestionIds,
   getScoringQuestions,
 } from './worksheets.js';
+
+export * from './v3/worksheets-canonical.js';
+export * from './v3/competitive-canonical.js';

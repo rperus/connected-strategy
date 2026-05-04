@@ -8,13 +8,16 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "tsc --noEmit && node --test dist/scoring.test.js",
+    "test": "tsc --noEmit && node --test \"dist/**/*.test.js\"",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.4.0",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
   }
 }
