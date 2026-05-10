@@ -169,6 +169,9 @@ router.delete('/:id', (req: Request, res: Response) => {
 router.post('/:id/launch', (req: Request, res: Response) => {
   const { id } = req.params;
 
+  // Allowed root directories for launch (security: prevents arbitrary path execution)
+  const ALLOWED_ROOTS = ['C:\\dev\\'];
+
   // Project registry: lookup from DB or use a built-in map
   const LAUNCHER_MAP: Record<string, { path: string; script?: string }> = {
     'balam-licitaciones':  { path: 'C:\\dev\\antigravity-tenders-platform', script: 'start.bat' },
@@ -187,6 +190,17 @@ router.post('/:id/launch', (req: Request, res: Response) => {
   }
 
   const { path: projectPath, script } = entry as { path: string; script?: string };
+
+  // Security: validate path starts with allowed root
+  const isAllowed = ALLOWED_ROOTS.some(root => projectPath.startsWith(root));
+  if (!isAllowed) {
+    console.warn(`[SECURITY] Launch blocked — path outside allowed roots: ${projectPath}`);
+    res.status(403).json({ ok: false, error: 'Launch path outside allowed directories' });
+    return;
+  }
+
+  // Audit log
+  console.log(`[LAUNCH] Project=${id} Path=${projectPath} Script=${script ?? 'vscode'} Time=${new Date().toISOString()}`);
 
   try {
     if (script && script !== 'code') {

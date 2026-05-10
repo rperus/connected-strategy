@@ -6,7 +6,7 @@
 - **mockData**: Todos los 7 proyectos escaneados con datos reales (skills, workflows, scripts, serviceAccess)
 - **PlatformIntelPage** `/intel`: Skills globales/locales, workflows n8n/daemon, scripts, acceso a servicios con credential hints
 - **StrategicImprovePage** `/improve`: Propuestas de mejora por plataforma → Aprobar/Rechazar → Generar prompt como SUGERENCIA para Antigravity
-- **ServiceAccess para Health Dashboard**: n8n URL (http://34.30.64.33:5678) + credential hint (rperus@sklatam.org / B_****)
+- **ServiceAccess para Health Dashboard**: n8n URL + credential hint [REDACTED — moved to .env.local]
 - **Grant Navigator**: Actualizado con datos reales (Business Plans Nexus, pitch decks CAF, Project Mariner playbooks)
 - **YouTube CashCow**: 35+ scripts descubiertos (agentic_swarm, autonomous_video_engine, factory_boss, ds_core)
 - **Sidebar**: 2 nuevos links en sección Inteligencia (/intel, /improve)

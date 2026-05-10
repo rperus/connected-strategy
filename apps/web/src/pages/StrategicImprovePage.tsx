@@ -55,7 +55,7 @@ const STATIC: Record<string, Array<{ title: string; description: string; impact:
   ],
   'rodrigo-os-health': [
     { title: 'Activar 5 workflows n8n en GCP', impact: 'high', category: 'automation',
-      description: 'Los JSON existen. Importar y activar en http://34.30.64.33:5678. SAC actual: 26/100, AR=11 (arquitectura frágil).' },
+      description: 'Los JSON existen. Importar y activar en la instancia n8n (ver .env.local). SAC actual: 26/100, AR=11 (arquitectura frágil).' },
   ],
   'youtube-cashcow': [
     { title: 'Verificar workflows n8n activos', impact: 'high', category: 'automation',

@@ -118,15 +118,11 @@ export const MOCK_PROJECTS: Project[] = [
     ],
     serviceAccess: [
       {
-        name: 'n8n Instance — GCP e2-micro',
-        url: 'http://34.30.64.33:5678/home/workflows',
+        name: 'n8n Instance — GCP',
+        url: '(ver .env.local)',
         platform: 'n8n',
         status: 'unknown',
-        credentialHint: {
-          user: 'rperus@sklatam.org',
-          passwordHint: 'B_****',
-          note: 'Instancia n8n en GCP e2-micro. Workflows: Supervisor, Daily Briefing, Email Triage, Health Monitor, Moltbot Bridge.',
-        },
+        // Credentials removed from source — see .env.local or Secret Manager
       },
     ],
   },

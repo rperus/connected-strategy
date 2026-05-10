@@ -41,7 +41,10 @@ try {
 
 const app: Express = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://127.0.0.1:4310', 'http://localhost:4310'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+}));
 app.use(express.json({ limit: '5mb' }));
 
 // ─── Initialize SQLite on startup ───────────────────────────────
