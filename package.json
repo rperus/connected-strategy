@@ -1,6 +1,6 @@
 {
   "name": "connected-strategy",
-  "version": "0.1.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Connected Strategy — Local-first strategic control tower for multi-project analysis, launcher, prompt packets, and continuous improvement.",
   "scripts": {

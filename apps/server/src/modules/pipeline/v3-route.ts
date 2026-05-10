@@ -4,7 +4,9 @@ import { ProjectStateStore, runV3Pipeline } from '@cs/agents';
 import { listProjects } from '../../db/repositories/projects.js';
 import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
 import fs from 'fs';
+import { EventEmitter } from 'events';
 
+const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
 const store = new ProjectStateStore('data/projects');
 
@@ -50,12 +52,17 @@ router.post('/run-v3', async (req: Request, res: Response) => {
             skipPhases: body.skipPhases ?? [],
             competitorHints: body.competitorHints,
             customerSegment: body.customerSegment,
+            onProgress: (phase: string, msg: string) => {
+              pipelineEvents.emit(`v3-${runId}`, { phase, msg });
+            }
           },
         });
       }
       updateRunStatus(runId, 'done', { ended_at: new Date().toISOString() });
+      pipelineEvents.emit(`v3-${runId}`, { phase: 'DONE', msg: 'Pipeline Finished successfully' });
     } catch (err) {
       updateRunStatus(runId, 'failed', { ended_at: new Date().toISOString(), error_message: String(err) });
+      pipelineEvents.emit(`v3-${runId}`, { phase: 'FAILED', msg: String(err) });
     }
   })();
 
@@ -66,6 +73,23 @@ router.get('/v3-status/:runId', (req, res) => {
   const run = getRunById(req.params.runId);   // from db/repositories/v3-runs
   if (!run) return res.status(404).json({ ok: false });
   res.json({ ok: true, run });
+});
+
+router.get('/v3-stream/:runId', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const listener = (data: any) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  pipelineEvents.on(`v3-${req.params.runId}`, listener);
+
+  req.on('close', () => {
+    pipelineEvents.off(`v3-${req.params.runId}`, listener);
+  });
 });
 
 router.get('/v3-state/:projectId', (req, res) => {

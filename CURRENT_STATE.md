@@ -5,7 +5,7 @@
 > Version: 2.3.0 "Platform Intelligence — Skills, Workflows & Service Access"
 > Coordinator: Cerebro
 
-## Platform Status — v2.2.0
+## Platform Status — v2.3.0
 
 | Check | Result |
 |---|---|

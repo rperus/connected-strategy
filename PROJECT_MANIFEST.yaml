@@ -3,7 +3,7 @@ project_slug: "connected_strategy"
 project_root: "C:\\dev\\Connected_Strategy"
 project_type: "local-first strategic control tower"
 status: "scaffold-complete"
-version: "0.2.0"
+version: "2.3.0"
 last_updated: "2026-04-22"
 
 tech_stack:

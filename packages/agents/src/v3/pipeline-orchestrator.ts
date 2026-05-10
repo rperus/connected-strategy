@@ -26,6 +26,7 @@ export interface RunV3Opts {
     skipPhases: Array<'A'|'B'|'C'|'D'|'E'|'F'|'G'>;
     competitorHints?: string[];
     customerSegment?: string;
+    onProgress?: (phase: string, msg: string) => void;
   };
 }
 
@@ -57,23 +58,29 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     startedAt: new Date().toISOString(),
     llm: { generate: async () => ({ text: '' }), generateStructured: async () => null, model: 'mock', available: true },
     store,
-    fileReader: { read: () => '', grep: () => '' } as any,
-    log: (msg: string) => console.log(`[${runId}] ${msg}`)
+    fileReader: { read: () => '', grep: () => '', getReadFilesList: () => [] } as any,
+    log: (msg: string) => {
+      console.log(`[${runId}] ${msg}`);
+      options.onProgress?.('general', msg);
+    }
   };
 
   const phasesCompleted: string[] = [];
   const errors: Array<{ phase: string; message: string }> = [];
 
   if (!skip.has('A')) {
+    options.onProgress?.('A', 'Starting Discovery (Code Cartographer)...');
     try {
       const disco = await runCodeCartographer({ projectPath: project.path }, ctx);
       state.discovery = disco.data! as any;
       phasesCompleted.push('A');
       store.save(state);
+      options.onProgress?.('A', 'Discovery Complete.');
     } catch (e) { errors.push({ phase: 'A', message: String(e) }); }
   }
 
   if (!skip.has('B')) {
+    options.onProgress?.('B', 'Starting Wharton Phase (Journey, Experience, Tech Stack)...');
     try {
       const segment = options.customerSegment ?? 'primary user';
       const competitors = options.competitorHints ?? [];
@@ -98,16 +105,20 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
       };
       phasesCompleted.push('B');
       store.save(state);
+      options.onProgress?.('B', 'Wharton Phase Complete.');
     } catch (e) { errors.push({ phase: 'B', message: String(e) }); }
   }
 
   if (!skip.has('C')) {
+    options.onProgress?.('C', 'Starting Competitive Analysis (Five Forces, WTP, Activity System)...');
     try {
       const segment = options.customerSegment ?? 'primary user';
-      const forces = await runIndustryStructureAnalyst({ projectName: project.name, sector: 'auto-detect', segment }, ctx);
-      const intel = await runCompetitorIntelligence({ projectName: project.name, sector: 'auto-detect', projectDescription: '', knownCompetitors: options.competitorHints }, ctx);
-      const drivers = await runWtpCostDriverScorer({ ws01Output: state.wharton!.ws01!, competitors: [] }, ctx);
-      const activitySys = await runActivitySystemMapper({ ws01Output: state.wharton!.ws01!, ws07Output: state.wharton!.ws07!, ws08Output: state.wharton!.ws08! }, ctx);
+      const [forces, intel, drivers, activitySys] = await Promise.all([
+        runIndustryStructureAnalyst({ projectName: project.name, sector: 'auto-detect', segment }, ctx),
+        runCompetitorIntelligence({ projectName: project.name, sector: 'auto-detect', projectDescription: '', knownCompetitors: options.competitorHints }, ctx),
+        runWtpCostDriverScorer({ ws01Output: state.wharton!.ws01!, competitors: [] }, ctx),
+        runActivitySystemMapper({ ws01Output: state.wharton!.ws01!, ws07Output: state.wharton!.ws07!, ws08Output: state.wharton!.ws08! }, ctx)
+      ]);
 
       state.competitive = {
         fiveForces: forces.data?.fiveForces,
@@ -119,38 +130,57 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
       };
       phasesCompleted.push('C');
       store.save(state);
+      options.onProgress?.('C', 'Competitive Analysis Complete.');
     } catch (e) { errors.push({ phase: 'C', message: String(e) }); }
   }
 
   if (!skip.has('D')) {
+    options.onProgress?.('D', 'Starting Swarm Phase (Parallel QA & Ops Agents)...');
     try {
-      state.swarm = mergeSwarmResults([]);
+      const files = (state.discovery as any)?.files || [];
+      const swarmResults = await Promise.all([
+        runDbArchitect({ files }, ctx),
+        runSecurityAuditor({ files }, ctx),
+        runApiDesignCritic({ files }, ctx),
+        runPerformanceEngineer({ files }, ctx),
+        runMlReadiness({ files }, ctx),
+        runFrontendPerf({ files }, ctx),
+        runObservability({ files }, ctx)
+      ]);
+      state.swarm = mergeSwarmResults(swarmResults);
       phasesCompleted.push('D');
       store.save(state);
+      options.onProgress?.('D', 'Swarm Phase Complete.');
     } catch (e) { errors.push({ phase: 'D', message: String(e) }); }
   }
 
   if (!skip.has('E')) {
+    options.onProgress?.('E', 'Starting Quantitative Frontier Engine...');
     try {
       state.frontier = await runFrontierPhase(state);
       phasesCompleted.push('E');
       store.save(state);
+      options.onProgress?.('E', 'Frontier Phase Complete.');
     } catch (e) { errors.push({ phase: 'E', message: String(e) }); }
   }
 
   if (!skip.has('F')) {
+    options.onProgress?.('F', 'Starting Chief Strategist (Synthesis)...');
     try {
       const synth = await runChiefStrategist({ state }, ctx);
       state.synthesis = synth.data;
       phasesCompleted.push('F');
       store.save(state);
+      options.onProgress?.('F', 'Synthesis Complete.');
     } catch (e) { errors.push({ phase: 'F', message: String(e) }); }
   }
 
   if (!skip.has('G')) {
+    options.onProgress?.('G', 'Starting Antigravity Handoff Packaging...');
     try {
       await runHandoffPhase(state, ctx);
       phasesCompleted.push('G');
+      options.onProgress?.('G', 'Handoff Complete.');
     } catch (e) { errors.push({ phase: 'G', message: String(e) }); }
   }
 
