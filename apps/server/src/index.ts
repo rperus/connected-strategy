@@ -75,10 +75,12 @@ const database = getDb();
 // Wire telemetry persistence
 initTelemetryDb(database);
 
-// Run maintenance to clean orphan records
-import { cleanOrphanWorksheetAnswers, cleanDuplicateProjects } from './db/maintenance.js';
+// Run maintenance to clean orphan records and enforce data retention
+import { cleanOrphanWorksheetAnswers, cleanDuplicateProjects, cleanOldTelemetryEvents } from './db/maintenance.js';
 cleanOrphanWorksheetAnswers();
 cleanDuplicateProjects();
+cleanOldTelemetryEvents(90); // 90 days retention for telemetry
+
 
 // ─── Auto-mode Scheduler ────────────────────────────────────────
 startScheduler();

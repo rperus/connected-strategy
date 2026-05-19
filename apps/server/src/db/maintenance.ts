@@ -45,3 +45,28 @@ export function cleanDuplicateProjects(): number {
 
   return result.changes;
 }
+
+/**
+ * Remove telemetry events older than 90 days to comply with Data Retention policy
+ * and prevent infinite database growth.
+ */
+export function cleanOldTelemetryEvents(daysToKeep = 90): number {
+  const db = getDb();
+  
+  // Wrap in try-catch in case the telemetry table hasn't been created yet on first boot
+  try {
+    const result = db.prepare(`
+      DELETE FROM telemetry_events 
+      WHERE created_at < datetime('now', '-' || ? || ' days')
+    `).run(daysToKeep);
+
+    if (result.changes > 0) {
+      console.log(`[CS-DB] Cleaned ${result.changes} old telemetry event(s)`);
+    }
+
+    return result.changes;
+  } catch (e) {
+    // Table might not exist yet, safe to ignore
+    return 0;
+  }
+}
