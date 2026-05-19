@@ -3,8 +3,11 @@
  * Level 0: Supervisor | Level 1: Crew Leads | Level 2: Specialists
  * Views: hierarchy | orgchart | flow
  */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ProjectBanner } from '../components/ProjectBanner';
+import { useProject } from '../context/ProjectContext';
+
+const API_BASE_URL = 'http://127.0.0.1:4311';
 
 type Tier = 'supervisor' | 'crew-lead' | 'specialist';
 type Crew = 'recon' | 'analysis' | 'action' | 'cross-cutting' | 'none';
@@ -130,9 +133,60 @@ const AGENTS: AgentNode[] = [
 const TIER_ORDER: Tier[] = ['supervisor', 'crew-lead', 'specialist'];
 
 export function AgentOrchestratorPage() {
+  const { activeProject } = useProject();
   const [selected, setSelected] = useState<AgentNode | null>(null);
   const [filterCrew, setFilterCrew] = useState<Crew | 'all'>('all');
   const [view, setView] = useState<'hierarchy' | 'orgchart' | 'flow'>('hierarchy');
+  const [runId, setRunId] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle'|'running'|'done'|'failed'>('idle');
+  const [logs, setLogs] = useState<{phase?: string, msg?: string, message?: string, type?: string, agentId?: string}[]>([]);
+  const [activeAgentId, setActiveAgentId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (runId) {
+      const eventSource = new EventSource(`${API_BASE_URL}/api/pipeline/v3-stream/${runId}`);
+      eventSource.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setLogs(prev => [...prev, data]);
+        
+        // Track active agent
+        if (data.type === 'telemetry' && data.agentId) {
+          if (data.message.includes('started') || data.message.includes('Starting')) {
+            setActiveAgentId(data.agentId);
+          }
+        } else if (data.phase && data.phase !== 'general') {
+           // Approximate active agent by phase if needed
+        }
+
+        if (data.phase === 'DONE' || data.phase === 'FAILED') {
+          eventSource.close();
+          setStatus(data.phase === 'DONE' ? 'done' : 'failed');
+          setActiveAgentId(null);
+        }
+      };
+      return () => eventSource.close();
+    }
+  }, [runId]);
+
+  const runPipeline = async () => {
+    if (!activeProject?.id) return alert('Selecciona un proyecto primero.');
+    setLogs([]);
+    setStatus('running');
+    setActiveAgentId(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/pipeline/run-v3`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectIds: [activeProject.id], useGemini: true })
+      });
+      const data = await res.json();
+      if (data.ok) setRunId(data.runId);
+      else setStatus('failed');
+    } catch (e) {
+      console.error(e);
+      setStatus('failed');
+    }
+  };
 
   const crews: Crew[] = ['recon', 'analysis', 'action', 'cross-cutting'];
   const visible = filterCrew === 'all' ? AGENTS : AGENTS.filter(a => a.crew === filterCrew || a.tier !== 'specialist');
@@ -190,6 +244,31 @@ export function AgentOrchestratorPage() {
       <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:16 }}>
         {/* Main Canvas */}
         <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          {/* Telemetry Bar */}
+          <div style={{ padding: '16px', background: 'var(--cs-surface-2)', borderRadius: 12, border: '1px solid var(--cs-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>Control de Ejecución</div>
+              <div style={{ fontSize: 11, color: 'var(--cs-text-muted)', marginTop: 4 }}>
+                {status === 'running' ? 'Pipeline ejecutándose...' : status === 'done' ? 'Ejecución completada.' : 'Pipeline en espera.'}
+              </div>
+            </div>
+            <button onClick={runPipeline} disabled={status === 'running'} style={{
+              padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: status === 'running' ? 'not-allowed' : 'pointer',
+              background: status === 'running' ? '#4b5563' : '#6366f1', color: 'white', border: 'none'
+            }}>
+              {status === 'running' ? '⏳ Ejecutando...' : '🚀 Iniciar V3 Swarm'}
+            </button>
+          </div>
+          {logs.length > 0 && (
+            <div style={{ padding: 12, background: '#0a0d14', border: '1px solid #1f2937', borderRadius: 8, maxHeight: 150, overflowY: 'auto', fontFamily: 'monospace', fontSize: 10 }}>
+              {logs.map((l, i) => (
+                <div key={i} style={{ color: l.type === 'telemetry' ? '#a855f7' : '#10b981', marginBottom: 4 }}>
+                  <span style={{ color: '#6b7280' }}>[{new Date().toLocaleTimeString()}]</span> {l.agentId ? `<${l.agentId}> ` : ''}{l.msg || l.message}
+                </div>
+              ))}
+              <div ref={el => el?.scrollIntoView({ behavior: 'smooth' })} />
+            </div>
+          )}
 
           {/* ── ORGCHART VIEW ─────────────────────────────────────── */}
           {view === 'orgchart' && (() => {
@@ -265,15 +344,17 @@ export function AgentOrchestratorPage() {
                         : a.tier === 'crew-lead'  ? '#06b6d4'
                         : CREW_COLORS[a.crew];
               const isSel = selected?.id === id;
+              const isActive = activeAgentId === id;
               const label = a.name.length > 15 ? a.name.slice(0,15)+'…' : a.name;
               return (
                 <g key={id} style={{cursor:'pointer'}} onClick={() => setSelected(isSel ? null : a)}>
                   <rect x={nx} y={ny} width={NW} height={NH} rx={8}
-                    fill={isSel ? `${col}25` : '#131929'}
-                    stroke={isSel ? col : `${col}50`} strokeWidth={isSel ? 2 : 1}/>
+                    fill={isSel ? `${col}25` : isActive ? `${col}40` : '#131929'}
+                    stroke={isSel || isActive ? col : `${col}50`} strokeWidth={isSel || isActive ? 2 : 1}/>
                   {/* Left accent bar */}
                   <rect x={nx} y={ny+8} width={3} height={NH-16} rx={1.5} fill={col}/>
-                  <text x={nx+12} y={ny+22} fontSize={11} fontWeight={700} fill={col}
+                  {isActive && <circle cx={nx+NW-8} cy={ny+8} r={4} fill="#10b981" style={{ animation: 'pulse 1.5s infinite' }} />}
+                  <text x={nx+12} y={ny+22} fontSize={11} fontWeight={700} fill={isActive ? '#ffffff' : col}
                     fontFamily="Inter,system-ui,sans-serif">
                     {a.emoji} {label}
                   </text>
@@ -364,11 +445,13 @@ export function AgentOrchestratorPage() {
                       <div key={agent.id} onClick={() => setSelected(isSel ? null : agent)}
                         style={{
                           padding:'10px 12px', borderRadius:9, cursor:'pointer',
-                          background: isSel ? `${color}20` : '#1e2433',
-                          border:`1px solid ${isSel ? color : `${color}33`}`,
+                          background: isSel ? `${color}20` : (activeAgentId === agent.id ? `${color}40` : '#1e2433'),
+                          border:`1px solid ${isSel || activeAgentId === agent.id ? color : `${color}33`}`,
                           borderLeft:`3px solid ${crewColor}`,
                           transition:'all 0.15s',
+                          position: 'relative'
                         }}>
+                        {activeAgentId === agent.id && <div style={{ position:'absolute', top:6, right:6, width:8, height:8, borderRadius:'50%', background:'#10b981', animation:'pulse 1.5s infinite' }} />}
                         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
                           <span style={{ fontSize:18 }}>{agent.emoji}</span>
                           <div style={{ flex:1, minWidth:0 }}>

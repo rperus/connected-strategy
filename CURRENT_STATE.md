@@ -1,13 +1,17 @@
 # Current State
 
-> Date: 2026-04-27
+> Date: 2026-05-11
 > Status: operational
-> Version: 2.3.0 "Platform Intelligence — Skills, Workflows & Service Access"
+> Version: 2.3.2 "Super Audit Remediation"
 > Coordinator: Cerebro
 
-## Platform Status — v2.3.0
+## Platform Status — v2.3.2
 
 | Check | Result |
+|---|---|
+| Security | ✅ 0 High/Moderate CVEs (Electron ^39) |
+| Architecture | ✅ 0 Circular Dependencies |
+| Web Bundle | ✅ Code-split (240kB initial) |
 |---|---|
 | pnpm --filter @cs/domain typecheck | ✅ 0 errors |
 | pnpm --filter @cs/agents typecheck | ✅ 0 errors |
@@ -18,9 +22,16 @@
 | Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (16) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
 
-## What Changed: v2.0.0 → v2.2.0
+## What Changed: v2.0.0 → v2.3.2
 
-### v2.2.0 — Hierarchical Agent Swarm (current)
+### v2.3.2 — Super Audit Remediation (Wave 6)
+- **Security Patch**: Upgraded `electron` and `electron-builder` to close 26 CVEs.
+- **Architecture Fix**: Resolved `packages/agents` circular dependency via standalone `state-types.ts`.
+- **Test Integrity**: Migrated all 8 failing test suites to `vitest`, achieving 100% pass rate (88 tests).
+- **Performance**: Implemented `React.lazy()` code-splitting in the web app router.
+- **Fixture Rigor**: Replaced static mock data with the real Sun King case study dataset.
+
+### v2.2.0 — Hierarchical Agent Swarm (previous)
 - **8 new agents**: Strategist Supervisor, 3 Crew Leads, Temporal Analyst, Validation Agent, Anomaly Detector, Causal Mapper
 - **Type system**: `AgentTier`, `CrewId`, `canDelegate`, `runsAutonomously` added to AgentDefinition
 - **Registry**: `getAgentsByTier()`, `getAgentsByCrew()` lookup helpers

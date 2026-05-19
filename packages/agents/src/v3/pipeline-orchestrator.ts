@@ -15,6 +15,9 @@ import { mergeSwarmResults, runDbArchitect, runSecurityAuditor, runApiDesignCrit
 import { runFrontierPhase } from './frontier/index.js';
 import { runChiefStrategist } from './agents/chief-strategist.js';
 import { runHandoffPhase } from './handoff/index.js';
+import { saveHistoricalRun } from './db/index.js';
+import EventEmitter from 'events';
+import type { TelemetryEvent } from './state-types.js';
 
 export interface RunV3Opts {
   runId: string;
@@ -28,10 +31,11 @@ export interface RunV3Opts {
     customerSegment?: string;
     onProgress?: (phase: string, msg: string) => void;
   };
+  emitter?: EventEmitter;
 }
 
 export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
-  const { runId, project, store, options } = opts;
+  const { runId, project, store, options, emitter } = opts;
   const skip = new Set(options.skipPhases);
 
   let state = store.load(project.id) || {
@@ -62,6 +66,18 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     log: (msg: string) => {
       console.log(`[${runId}] ${msg}`);
       options.onProgress?.('general', msg);
+    },
+    emitTelemetry: (partialEvent: Partial<TelemetryEvent>) => {
+      if (emitter) {
+        emitter.emit(`v3-${runId}`, {
+          type: 'telemetry',
+          id: Math.random().toString(36).substring(7),
+          runId,
+          projectId: project.id,
+          timestamp: new Date().toISOString(),
+          ...partialEvent
+        });
+      }
     }
   };
 
@@ -185,12 +201,30 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   }
 
   const snapshotPath = store.snapshotState(project.id, runId);
+  const endedAt = new Date().toISOString();
+  
+  // Legacy JSONL history
   store.appendHistory(project.id, {
     runId,
     startedAt: state.lastRunAt!,
-    endedAt: new Date().toISOString(),
+    endedAt,
     phasesCompleted: phasesCompleted as any,
     delta: { newPriorities: 0, resolvedPriorities: 0, healthScoreDelta: 0 },
     errors,
   });
+
+  // New SQLite historical run
+  saveHistoricalRun({
+    runId,
+    projectId: project.id,
+    startedAt: state.lastRunAt!,
+    endedAt,
+    status: errors.length === 0 ? 'success' : 'failed',
+    error: errors.length > 0 ? errors[0].message : undefined,
+    healthScoreDelta: 0,
+    newPriorities: 0,
+    resolvedPriorities: 0
+  });
+
+  ctx.emitTelemetry({ type: 'pipeline_finished', message: 'Pipeline completed.' });
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response, Router } from 'express';
-import { ProjectStateStore, runV3Pipeline } from '@cs/agents';
+import { ProjectStateStore, runV3Pipeline, getHistoricalRuns } from '@cs/agents';
 import { listProjects } from '../../db/repositories/projects.js';
 import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
 import fs from 'fs';
@@ -56,6 +56,7 @@ router.post('/run-v3', async (req: Request, res: Response) => {
               pipelineEvents.emit(`v3-${runId}`, { phase, msg });
             }
           },
+          emitter: pipelineEvents,
         });
       }
       updateRunStatus(runId, 'done', { ended_at: new Date().toISOString() });
@@ -130,9 +131,14 @@ router.post('/v3-context/:projectId', (req, res) => {
 });
 
 router.get('/v3-history/:projectId', (req, res) => {
-  // Read history.jsonl
-  const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
-  res.json({ ok: true, runs: lines });
+  try {
+    const runs = getHistoricalRuns(req.params.projectId);
+    res.json({ ok: true, runs });
+  } catch (err) {
+    // Fallback to legacy JSONL if DB not initialized or errored
+    const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
+    res.json({ ok: true, runs: lines });
+  }
 });
 
 export default router;

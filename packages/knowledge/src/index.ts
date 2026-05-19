@@ -10,37 +10,23 @@
  * - The LLM is a consumer of this index, not the producer of scores.
  */
 
-// ─── Source Types ─────────────────────────────────────────────────────────────
-export type KnowledgeSourceType =
-  | 'wharton_core'
-  | 'wharton_worksheet'
-  | 'module_design'
-  | 'business_plan'
-  | 'custom';
+import type {
+  KnowledgeSourceType,
+  KnowledgeSource,
+  KnowledgeIndex,
+  KnowledgeChunk,
+  IngestionResult,
+  BusinessPlanSource
+} from './types.js';
 
-export interface KnowledgeSource {
-  id: string;
-  path: string;
-  type: KnowledgeSourceType;
-  title: string;
-  description?: string;
-  indexed: boolean;
-  indexedAt?: string;
-  /** Worksheet IDs this source maps to */
-  worksheetIds?: string[];
-  /** Lower = higher priority */
-  priority?: number;
-  chunkCount?: number;
-}
-
-// ─── Knowledge Index ──────────────────────────────────────────────────────────
-export interface KnowledgeIndex {
-  version: string;
-  sources: KnowledgeSource[];
-  lastFullScan: string;
-  totalChunks: number;
-  readyForFts: boolean;
-}
+export type {
+  KnowledgeSourceType,
+  KnowledgeSource,
+  KnowledgeIndex,
+  KnowledgeChunk,
+  IngestionResult,
+  BusinessPlanSource
+};
 
 export function createEmptyIndex(): KnowledgeIndex {
   return {
@@ -50,30 +36,6 @@ export function createEmptyIndex(): KnowledgeIndex {
     totalChunks: 0,
     readyForFts: false,
   };
-}
-
-// ─── Chunk (FTS-ready unit) ───────────────────────────────────────────────────
-export interface KnowledgeChunk {
-  id: string;           // e.g. "wharton_connected_strategy::chunk_003"
-  sourceId: string;
-  worksheetIds: string[];
-  sectionTitle?: string;
-  content: string;      // raw text, max ~600 tokens
-  startLine?: number;
-  endLine?: number;
-  loopPhase?: string;   // Sense | Transmit | Analyze | React | Repeat
-  keywords?: string[];
-  createdAt: string;
-}
-
-// ─── Ingestion Result ─────────────────────────────────────────────────────────
-export interface IngestionResult {
-  sourceId: string;
-  success: boolean;
-  chunksProduced: number;
-  errorMessage?: string;
-  durationMs: number;
-  indexedAt: string;
 }
 
 // ─── Chunker (deterministic, no LLM) ─────────────────────────────────────────
@@ -172,14 +134,6 @@ export function buildIndex(
  * Placeholder structure for future business plan ingestion.
  * A business plan source can be added by the user or an agent at runtime.
  */
-export interface BusinessPlanSource {
-  id: string;
-  title: string;
-  path: string;
-  projectId: string;
-  addedAt: string;
-  indexed: boolean;
-}
 
 export function createBusinessPlanSource(
   projectId: string,

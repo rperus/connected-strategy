@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import { runCustomerJourneyMapper } from '../agents/customer-journey-mapper.js';
 import { runCodeCartographer } from '../agents/code-cartographer.js';
 import { FileReader } from '../file-reader.js';
@@ -13,8 +12,8 @@ describe('V3 Agents Smoke Tests', () => {
     };
 
     const res = await runCodeCartographer({ projectPath: process.cwd() }, ctx);
-    assert.ok(res.success);
-    assert.ok(res.data?.fileDiscovery);
+    expect(res.success).toBe(true);
+    expect(res.data?.fileDiscovery).toBeTruthy();
   });
 
   it('customer-journey-mapper validates schema with mock provider', async () => {
@@ -45,7 +44,7 @@ describe('V3 Agents Smoke Tests', () => {
       competitorNames: ['A']
     }, ctx);
     
-    assert.ok(res.success);
-    assert.ok(res.data?.ws01.scope);
+    expect(res.success).toBe(true);
+    expect(res.data?.ws01.scope).toBeTruthy();
   });
 });

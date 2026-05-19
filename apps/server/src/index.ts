@@ -11,8 +11,11 @@ import { resolve } from 'path';
 import express from 'express';
 import type { Express } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { resolvePort, getProjectRoot } from '@cs/runtime';
 import { getDb, closeDb } from './db/index.js';
+import { startScheduler, stopScheduler } from './scheduler.js';
 
 // ─── Load .env before anything else ────────────────────────────────────────
 try {
@@ -41,8 +44,24 @@ try {
 
 const app: Express = express();
 
+// Security middleware
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+app.use('/api/', limiter);
+
+// Configurable CORS
+const corsOrigins = process.env.CS_CORS_ORIGINS 
+  ? process.env.CS_CORS_ORIGINS.split(',') 
+  : ['http://127.0.0.1:4310', 'http://localhost:4310'];
+
 app.use(cors({
-  origin: ['http://127.0.0.1:4310', 'http://localhost:4310'],
+  origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 app.use(express.json({ limit: '5mb' }));
@@ -54,6 +73,9 @@ getDb();
 import { cleanOrphanWorksheetAnswers, cleanDuplicateProjects } from './db/maintenance.js';
 cleanOrphanWorksheetAnswers();
 cleanDuplicateProjects();
+
+// ─── Auto-mode Scheduler ────────────────────────────────────────
+startScheduler();
 
 // ─── Health check ───────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
@@ -106,12 +128,14 @@ const server = app.listen(PORT, '127.0.0.1', () => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('[CS-API] Shutting down...');
+  stopScheduler();
   closeDb();
   server.close();
 });
 
 process.on('SIGINT', () => {
   console.log('[CS-API] Interrupted, closing DB...');
+  stopScheduler();
   closeDb();
   server.close();
   process.exit(0);

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import { computeFrontier } from '../engine.js';
 import { evaluateMove } from '../candidate-moves.js';
 import { discoverMoves } from '../discover-moves.js';
@@ -22,8 +21,8 @@ describe('computeFrontier', () => {
     // self dominates all
     
     const result = computeFrontier(input);
-    assert.deepEqual(result.paretoFront, ['self']);
-    assert.equal(result.selfPosition, 'above');
+    expect(result.paretoFront).toEqual(['self']);
+    expect(result.selfPosition).toBe('above');
   });
 
   it('detecta self below frontier', () => {
@@ -38,9 +37,9 @@ describe('computeFrontier', () => {
     // self: wtp=-1, cost=-1
     // comp: wtp=2, cost=-(-2)=2
     const result = computeFrontier(input);
-    assert.equal(result.selfPosition, 'below');
+    expect(result.selfPosition).toBe('below');
     const selfPoint = result.points.find(p => p.entity === 'self');
-    assert.ok(selfPoint?.dominatedBy.includes('comp'));
+    expect(selfPoint?.dominatedBy).toContain('comp');
   });
 
   it('detecta self above frontier (raro)', () => {
@@ -53,8 +52,8 @@ describe('computeFrontier', () => {
       competitors: [{ name: 'comp_a' }, { name: 'comp_b' }]
     };
     const result = computeFrontier(input);
-    assert.equal(result.selfPosition, 'above');
-    assert.deepEqual(result.paretoFront, ['self']);
+    expect(result.selfPosition).toBe('above');
+    expect(result.paretoFront).toEqual(['self']);
   });
 
   it('handles empty competitors', () => {
@@ -67,8 +66,8 @@ describe('computeFrontier', () => {
       competitors: []
     };
     const result = computeFrontier(input);
-    assert.equal(result.paretoFront.length, 1);
-    assert.equal(result.selfPosition, 'above');
+    expect(result.paretoFront.length).toBe(1);
+    expect(result.selfPosition).toBe('above');
   });
 
   it('respects custom weights', () => {
@@ -83,7 +82,7 @@ describe('computeFrontier', () => {
     };
     const result = computeFrontier(input);
     const selfPoint = result.points.find(p => p.entity === 'self');
-    assert.equal(selfPoint?.wtp, 4); // 2 * 2
+    expect(selfPoint?.wtp).toBe(4); // 2 * 2
   });
 });
 
@@ -98,7 +97,7 @@ describe('evaluateMove', () => {
       wtpDriverDeltas: { 'A': 1 }, costDriverDeltas: { 'B': 1 }, requiredActivities: []
     };
     const res = evaluateMove(current, competitors, move, baseDrivers, undefined);
-    assert.ok(res.breaksTradeOffs);
+    expect(res.breaksTradeOffs).toBe(true);
   });
 
   it('breaksTradeOffs=false cuando sólo mejora WTP a costa de Cost', () => {
@@ -107,7 +106,7 @@ describe('evaluateMove', () => {
       wtpDriverDeltas: { 'A': 1 }, costDriverDeltas: { 'B': -1 }, requiredActivities: []
     };
     const res = evaluateMove(current, competitors, move, baseDrivers, undefined);
-    assert.equal(res.breaksTradeOffs, false);
+    expect(res.breaksTradeOffs).toBe(false);
   });
 
   it('imitabilityScore alto cuando required activities son SP + alta centralidad', () => {
@@ -121,7 +120,7 @@ describe('evaluateMove', () => {
       wtpDriverDeltas: {}, costDriverDeltas: {}, requiredActivities: ['1']
     };
     const res = evaluateMove(current, competitors, move, baseDrivers, sys);
-    assert.ok(res.imitabilityScore > 0.5); 
+    expect(res.imitabilityScore).toBeGreaterThan(0.5); 
   });
 
   it('imitabilityScore bajo cuando required activities son OE', () => {
@@ -135,7 +134,7 @@ describe('evaluateMove', () => {
       wtpDriverDeltas: {}, costDriverDeltas: {}, requiredActivities: ['1']
     };
     const res = evaluateMove(current, competitors, move, baseDrivers, sys);
-    assert.ok(res.imitabilityScore < 0.5); 
+    expect(res.imitabilityScore).toBeLessThan(0.5); 
   });
 });
 
@@ -155,9 +154,9 @@ describe('discoverMoves', () => {
     } as any;
     
     const moves = discoverMoves(state);
-    assert.equal(moves.length, 1);
-    assert.equal(moves[0].source, 'ws08_idea');
-    assert.deepEqual(moves[0].requiredActivities, ['act1']);
+    expect(moves.length).toBe(1);
+    expect(moves[0].source).toBe('ws08_idea');
+    expect(moves[0].requiredActivities).toEqual(['act1']);
   });
 
   it('filtra swarm findings por severity y whartonImpact', () => {
@@ -171,8 +170,8 @@ describe('discoverMoves', () => {
     } as any;
     
     const moves = discoverMoves(state);
-    assert.equal(moves.length, 1);
-    assert.equal(moves[0].name, 'Critical');
-    assert.equal(moves[0].source, 'swarm_finding');
+    expect(moves.length).toBe(1);
+    expect(moves[0].name).toBe('Critical');
+    expect(moves[0].source).toBe('swarm_finding');
   });
 });

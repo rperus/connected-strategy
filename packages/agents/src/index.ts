@@ -70,3 +70,4 @@ export { ProjectStateStore } from './v3/state-store.js';
 export type { ProjectStateV3, Priority } from './v3/state-store.js';
 export { runV3Pipeline } from './v3/pipeline-orchestrator.js';
 export type { RunV3Opts } from './v3/pipeline-orchestrator.js';
+export { getHistoricalRuns } from './v3/db/index.js';

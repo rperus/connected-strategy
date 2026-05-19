@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { ProjectStateStore, ProjectStateV3 } from '../state-store.js';
@@ -25,13 +24,13 @@ describe('ProjectStateStore', () => {
     store.save(state);
     
     const loaded = store.load('p1');
-    assert.deepEqual(loaded, state);
+    expect(loaded).toEqual(state);
   });
 
   it('load de proyecto inexistente devuelve null', () => {
     const store = new ProjectStateStore(testDir);
     const loaded = store.load('non-existent');
-    assert.equal(loaded, null);
+    expect(loaded).toBeNull();
   });
 
   it('appendHistory escribe línea jsonl válida', () => {
@@ -41,8 +40,8 @@ describe('ProjectStateStore', () => {
     
     const historyPath = path.join(testDir, 'p2', 'history.jsonl');
     const content = fs.readFileSync(historyPath, 'utf-8');
-    assert.ok(content.includes('{"runId":"r1"'));
-    assert.ok(content.endsWith('\n'));
+    expect(content).toContain('{"runId":"r1"');
+    expect(content.endsWith('\n')).toBe(true);
   });
 
   it('save concurrente (2 writes simultáneos) no corrompe', () => {
@@ -55,8 +54,8 @@ describe('ProjectStateStore', () => {
     store.save(s2);
     
     const loaded = store.load('p3');
-    assert.ok(loaded !== null);
-    assert.ok(loaded!.projectName === 'P3' || loaded!.projectName === 'P3_MOD');
+    expect(loaded).not.toBeNull();
+    expect(loaded!.projectName === 'P3' || loaded!.projectName === 'P3_MOD').toBe(true);
   });
 
   it('cacheLLM(hash) -> readLLMCache(mismo hash) devuelve mismo objeto', () => {
@@ -65,6 +64,6 @@ describe('ProjectStateStore', () => {
     store.cacheLLM('p4', 'hash123', response);
     
     const loaded = store.readLLMCache('p4', 'hash123');
-    assert.deepEqual(loaded, response);
+    expect(loaded).toEqual(response);
   });
 });

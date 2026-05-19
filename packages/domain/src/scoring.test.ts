@@ -3,13 +3,12 @@
  *
  * Unit tests for all 10 scoring contracts.
  * Tests cover: correct formula execution, clamp behavior, zero inputs,
- * full inputs, and that breakdowns expose formula + rationale.
+ * full inputs, and that breakdowns expose formula & rationale.
  *
- * Run: node --test src/scoring.test.ts  (Node.js 20+ native test runner)
+ * Run: pnpm test
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 
 import {
   scoreConnectedExperience,
@@ -27,35 +26,31 @@ import {
 
 import { defaultScoringWeights } from './types.js';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const equalWeights4 = { a: 0.25, b: 0.25, c: 0.25, d: 0.25 };
-const equalWeights3 = { a: 0.333, b: 0.334, c: 0.333 };
-
 // ─── Score 1: Connected Experience ───────────────────────────────────────────
 describe('scoreConnectedExperience', () => {
   it('all-zero inputs → score 0', () => {
     const w = { respondToDesire: 0.25, curatedOffering: 0.25, coachBehavior: 0.25, automaticExecution: 0.25 };
     const bd = scoreConnectedExperience({ respondToDesire: 0, curatedOffering: 0, coachBehavior: 0, automaticExecution: 0 }, w);
-    assert.equal(bd.score, 0);
+    expect(bd.score).toBe(0);
   });
 
   it('all-100 inputs → score 100', () => {
     const w = { respondToDesire: 0.25, curatedOffering: 0.25, coachBehavior: 0.25, automaticExecution: 0.25 };
     const bd = scoreConnectedExperience({ respondToDesire: 100, curatedOffering: 100, coachBehavior: 100, automaticExecution: 100 }, w);
-    assert.equal(bd.score, 100);
+    expect(bd.score).toBe(100);
   });
 
   it('partial inputs → weighted average', () => {
     const w = { respondToDesire: 0.5, curatedOffering: 0.5, coachBehavior: 0, automaticExecution: 0 };
     const bd = scoreConnectedExperience({ respondToDesire: 80, curatedOffering: 40, coachBehavior: 0, automaticExecution: 0 }, w);
-    assert.equal(bd.score, 60); // (80*0.5 + 40*0.5) / 1.0
+    expect(bd.score).toBe(60); // (80*0.5 + 40*0.5) / 1.0
   });
 
   it('breakdown has formula and rationale', () => {
     const w = { respondToDesire: 0.25, curatedOffering: 0.25, coachBehavior: 0.25, automaticExecution: 0.25 };
     const bd = scoreConnectedExperience({ respondToDesire: 50, curatedOffering: 50, coachBehavior: 50, automaticExecution: 50 }, w);
-    assert.ok(bd.formula.length > 0, 'formula must be non-empty');
-    assert.ok(bd.rationale.length > 0, 'rationale must be non-empty');
+    expect(bd.formula.length).toBeGreaterThan(0);
+    expect(bd.rationale.length).toBeGreaterThan(0);
   });
 });
 
@@ -64,20 +59,20 @@ describe('scoreClosedLoopMaturity', () => {
   it('all-zero → 0', () => {
     const w = { senseQuality: 0.25, transmitCoverage: 0.25, analyzeDepth: 0.25, reactSpeed: 0.25 };
     const bd = scoreClosedLoopMaturity({ senseQuality: 0, transmitCoverage: 0, analyzeDepth: 0, reactSpeed: 0 }, w);
-    assert.equal(bd.score, 0);
+    expect(bd.score).toBe(0);
   });
 
   it('all-100 → 100', () => {
     const w = { senseQuality: 0.25, transmitCoverage: 0.25, analyzeDepth: 0.25, reactSpeed: 0.25 };
     const bd = scoreClosedLoopMaturity({ senseQuality: 100, transmitCoverage: 100, analyzeDepth: 100, reactSpeed: 100 }, w);
-    assert.equal(bd.score, 100);
+    expect(bd.score).toBe(100);
   });
 
   it('inputs map matches output breakdown inputs', () => {
     const w = { senseQuality: 0.3, transmitCoverage: 0.2, analyzeDepth: 0.3, reactSpeed: 0.2 };
     const inputs = { senseQuality: 70, transmitCoverage: 50, analyzeDepth: 60, reactSpeed: 40 };
     const bd = scoreClosedLoopMaturity(inputs, w);
-    assert.deepEqual(bd.inputs, inputs);
+    expect(bd.inputs).toEqual(inputs);
   });
 });
 
@@ -86,13 +81,14 @@ describe('scoreSwitchingCostIndex', () => {
   it('returns score between 0 and 100', () => {
     const w = { dataLock: 0.3, habitFormation: 0.3, integrationDepth: 0.25, networkEffect: 0.15 };
     const bd = scoreSwitchingCostIndex({ dataLock: 60, habitFormation: 80, integrationDepth: 40, networkEffect: 20 }, w);
-    assert.ok(bd.score >= 0 && bd.score <= 100);
+    expect(bd.score).toBeGreaterThanOrEqual(0);
+    expect(bd.score).toBeLessThanOrEqual(100);
   });
 
   it('no network effect does not crash', () => {
     const w = { dataLock: 0.4, habitFormation: 0.4, integrationDepth: 0.2, networkEffect: 0 };
     const bd = scoreSwitchingCostIndex({ dataLock: 50, habitFormation: 50, integrationDepth: 50, networkEffect: 0 }, w);
-    assert.ok(bd.score >= 0);
+    expect(bd.score).toBeGreaterThanOrEqual(0);
   });
 });
 
@@ -101,13 +97,13 @@ describe('scoreWtpUpliftIndex', () => {
   it('high pain resolution drives score', () => {
     const w = { valuePerception: 0.4, painResolution: 0.35, convenienceDelta: 0.25 };
     const bd = scoreWtpUpliftIndex({ valuePerception: 100, painResolution: 100, convenienceDelta: 100 }, w);
-    assert.equal(bd.score, 100);
+    expect(bd.score).toBe(100);
   });
 
   it('zero convenience delta does not zero the score', () => {
     const w = { valuePerception: 0.5, painResolution: 0.5, convenienceDelta: 0 };
     const bd = scoreWtpUpliftIndex({ valuePerception: 80, painResolution: 80, convenienceDelta: 0 }, w);
-    assert.ok(bd.score > 0);
+    expect(bd.score).toBeGreaterThan(0);
   });
 });
 
@@ -116,13 +112,13 @@ describe('scoreCostReductionPotential', () => {
   it('all-zero → 0', () => {
     const w = { automationCoverage: 0.4, manualOpsReduction: 0.35, supportBurdenReduction: 0.25 };
     const bd = scoreCostReductionPotential({ automationCoverage: 0, manualOpsReduction: 0, supportBurdenReduction: 0 }, w);
-    assert.equal(bd.score, 0);
+    expect(bd.score).toBe(0);
   });
 
   it('all-100 → 100', () => {
     const w = { automationCoverage: 0.4, manualOpsReduction: 0.35, supportBurdenReduction: 0.25 };
     const bd = scoreCostReductionPotential({ automationCoverage: 100, manualOpsReduction: 100, supportBurdenReduction: 100 }, w);
-    assert.equal(bd.score, 100);
+    expect(bd.score).toBe(100);
   });
 });
 
@@ -131,13 +127,14 @@ describe('scoreCompetitivePositioningIndex', () => {
   it('returns 0 for all-zero', () => {
     const w = { internalFit: 0.3, externalFit: 0.3, dynamicFit: 0.2, differentiationClarity: 0.2 };
     const bd = scoreCompetitivePositioningIndex({ internalFit: 0, externalFit: 0, dynamicFit: 0, differentiationClarity: 0 }, w);
-    assert.equal(bd.score, 0);
+    expect(bd.score).toBe(0);
   });
 
   it('uneven weights still produce clamped result', () => {
     const w = { internalFit: 0.6, externalFit: 0.4, dynamicFit: 0, differentiationClarity: 0 };
     const bd = scoreCompetitivePositioningIndex({ internalFit: 90, externalFit: 70, dynamicFit: 0, differentiationClarity: 0 }, w);
-    assert.ok(bd.score <= 100 && bd.score >= 0);
+    expect(bd.score).toBeLessThanOrEqual(100);
+    expect(bd.score).toBeGreaterThanOrEqual(0);
   });
 });
 
@@ -146,7 +143,7 @@ describe('scoreBusinessModelStrength', () => {
   it('high moat depth increases score', () => {
     const w = { revenueModelClarity: 0.25, moatDepth: 0.3, scalability: 0.25, customerRelationshipDepth: 0.2 };
     const bd = scoreBusinessModelStrength({ revenueModelClarity: 70, moatDepth: 100, scalability: 70, customerRelationshipDepth: 70 }, w);
-    assert.ok(bd.score > 70, 'high moat depth should push score above 70');
+    expect(bd.score).toBeGreaterThan(70);
   });
 });
 
@@ -155,7 +152,8 @@ describe('scoreDataScienceReadiness', () => {
   it('zero rigor level is allowed', () => {
     const w = { dataAvailability: 0.3, instrumentationCoverage: 0.3, modelingCapability: 0.2, rigorLevel: 0.2 };
     const bd = scoreDataScienceReadiness({ dataAvailability: 60, instrumentationCoverage: 60, modelingCapability: 40, rigorLevel: 0 }, w);
-    assert.ok(bd.score >= 0 && bd.score <= 100);
+    expect(bd.score).toBeGreaterThanOrEqual(0);
+    expect(bd.score).toBeLessThanOrEqual(100);
   });
 });
 
@@ -165,7 +163,7 @@ describe('scoreArchitectureResilience', () => {
     const w = { modularity: 0.25, testCoverage: 0.25, observability: 0.25, recoverability: 0.25 };
     const bd = scoreArchitectureResilience({ modularity: 80, testCoverage: 60, observability: 70, recoverability: 50 }, w);
     const expected = (80 + 60 + 70 + 50) / 4;
-    assert.ok(Math.abs(bd.score - expected) < 0.01, `expected ~${expected}, got ${bd.score}`);
+    expect(Math.abs(bd.score - expected)).toBeLessThan(0.01);
   });
 });
 
@@ -178,7 +176,7 @@ describe('scoreStrategicAdvantageComposite', () => {
       wtpUplift: 0, costReduction: 0, competitivePositioning: 0,
       businessModelStrength: 0, dataScienceReadiness: 0, architectureResilience: 0,
     }, w);
-    assert.equal(bd.score, 0);
+    expect(bd.score).toBe(0);
   });
 
   it('all-100 sub-scores → composite 100', () => {
@@ -188,7 +186,7 @@ describe('scoreStrategicAdvantageComposite', () => {
       wtpUplift: 100, costReduction: 100, competitivePositioning: 100,
       businessModelStrength: 100, dataScienceReadiness: 100, architectureResilience: 100,
     }, w);
-    assert.ok(Math.abs(bd.score - 100) < 0.1, `expected 100, got ${bd.score}`);
+    expect(Math.abs(bd.score - 100)).toBeLessThan(0.1);
   });
 });
 
@@ -221,18 +219,28 @@ describe('computeStrategicMetrics', () => {
 
     const metrics = computeStrategicMetrics('proj_integration', answers, weights);
 
-    assert.ok(metrics.connectedExperienceScore >= 0 && metrics.connectedExperienceScore <= 100);
-    assert.ok(metrics.closedLoopMaturity >= 0 && metrics.closedLoopMaturity <= 100);
-    assert.ok(metrics.switchingCostIndex >= 0 && metrics.switchingCostIndex <= 100);
-    assert.ok(metrics.wtpUpliftIndex >= 0 && metrics.wtpUpliftIndex <= 100);
-    assert.ok(metrics.costReductionPotential >= 0 && metrics.costReductionPotential <= 100);
-    assert.ok(metrics.competitivePositioningIndex >= 0 && metrics.competitivePositioningIndex <= 100);
-    assert.ok(metrics.businessModelStrength >= 0 && metrics.businessModelStrength <= 100);
-    assert.ok(metrics.dataScienceReadiness >= 0 && metrics.dataScienceReadiness <= 100);
-    assert.ok(metrics.architectureResilience >= 0 && metrics.architectureResilience <= 100);
-    assert.ok(metrics.strategicAdvantageComposite >= 0 && metrics.strategicAdvantageComposite <= 100);
-    assert.equal(metrics.projectId, 'proj_integration');
-    assert.ok(metrics.calculatedAt.length > 0);
+    expect(metrics.connectedExperienceScore).toBeGreaterThanOrEqual(0);
+    expect(metrics.connectedExperienceScore).toBeLessThanOrEqual(100);
+    expect(metrics.closedLoopMaturity).toBeGreaterThanOrEqual(0);
+    expect(metrics.closedLoopMaturity).toBeLessThanOrEqual(100);
+    expect(metrics.switchingCostIndex).toBeGreaterThanOrEqual(0);
+    expect(metrics.switchingCostIndex).toBeLessThanOrEqual(100);
+    expect(metrics.wtpUpliftIndex).toBeGreaterThanOrEqual(0);
+    expect(metrics.wtpUpliftIndex).toBeLessThanOrEqual(100);
+    expect(metrics.costReductionPotential).toBeGreaterThanOrEqual(0);
+    expect(metrics.costReductionPotential).toBeLessThanOrEqual(100);
+    expect(metrics.competitivePositioningIndex).toBeGreaterThanOrEqual(0);
+    expect(metrics.competitivePositioningIndex).toBeLessThanOrEqual(100);
+    expect(metrics.businessModelStrength).toBeGreaterThanOrEqual(0);
+    expect(metrics.businessModelStrength).toBeLessThanOrEqual(100);
+    expect(metrics.dataScienceReadiness).toBeGreaterThanOrEqual(0);
+    expect(metrics.dataScienceReadiness).toBeLessThanOrEqual(100);
+    expect(metrics.architectureResilience).toBeGreaterThanOrEqual(0);
+    expect(metrics.architectureResilience).toBeLessThanOrEqual(100);
+    expect(metrics.strategicAdvantageComposite).toBeGreaterThanOrEqual(0);
+    expect(metrics.strategicAdvantageComposite).toBeLessThanOrEqual(100);
+    expect(metrics.projectId).toBe('proj_integration');
+    expect(metrics.calculatedAt.length).toBeGreaterThan(0);
   });
 
   it('missing answers default to 0 gracefully', () => {
@@ -247,6 +255,6 @@ describe('computeStrategicMetrics', () => {
       updatedAt: new Date().toISOString(),
     };
     const metrics = computeStrategicMetrics('proj_empty', emptyAnswers, weights);
-    assert.equal(metrics.strategicAdvantageComposite, 0);
+    expect(metrics.strategicAdvantageComposite).toBe(0);
   });
 });

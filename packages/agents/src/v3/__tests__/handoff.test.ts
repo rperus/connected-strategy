@@ -1,5 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'fs/promises';
 import path from 'path';
 import { runHandoffPhase } from '../handoff/index.js';
@@ -55,19 +54,19 @@ describe('handoff phase', () => {
     } as any;
 
     const { movesGenerated, indexPath } = await runHandoffPhase(state, mockCtx);
-    assert.equal(movesGenerated, 1);
+    expect(movesGenerated).toBe(1);
     
     // Check INDEX.md exists
     const idxContent = await fs.readFile(indexPath, 'utf-8');
-    assert.ok(idxContent.includes('Antigravity Moves — Test Proj'));
-    assert.ok(idxContent.includes('Health Score: 90'));
+    expect(idxContent).toContain('Antigravity Moves — Test Proj');
+    expect(idxContent).toContain('Health Score: 90');
 
     // Check move folder files
     const moveDir = path.join(baseDir, 'move-1');
     const files = await fs.readdir(moveDir);
-    assert.ok(files.includes('manifest.json'));
-    assert.ok(files.includes('acceptance-tests.md'));
-    assert.ok(files.includes('strategy.md'));
-    assert.ok(files.includes('prompt.md'));
+    expect(files).toContain('manifest.json');
+    expect(files).toContain('acceptance-tests.md');
+    expect(files).toContain('strategy.md');
+    expect(files).toContain('prompt.md');
   });
 });

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import { computeHealthScoreWithCI } from '../synthesis/health-score.js';
 import { buildChiefStrategistPrompt } from '../synthesis/prompt-builder.js';
 import { runChiefStrategist } from '../agents/chief-strategist.js';
@@ -11,9 +10,9 @@ describe('Chief Strategist', () => {
     it('computes empty state', () => {
       const state = {} as ProjectStateV3;
       const { value, ci } = computeHealthScoreWithCI(state);
-      assert.equal(value, 50); // baseline
-      assert.equal(ci[0], 22); // 50 - 28
-      assert.equal(ci[1], 78); // 50 + 28
+      expect(value).toBe(50); // baseline
+      expect(ci[0]).toBe(22); // 50 - 28
+      expect(ci[1]).toBe(78); // 50 + 28
     });
 
     it('computes complete state with good values', () => {
@@ -28,9 +27,9 @@ describe('Chief Strategist', () => {
       } as any;
       const { value, ci } = computeHealthScoreWithCI(state);
       // 50 + 30 (above) + 20 (imitability) + 20 (repeat) = 120 -> capped to 100
-      assert.equal(value, 100);
-      assert.equal(ci[0], 100);
-      assert.equal(ci[1], 100);
+      expect(value).toBe(100);
+      expect(ci[0]).toBe(100);
+      expect(ci[1]).toBe(100);
     });
   });
 
@@ -38,8 +37,8 @@ describe('Chief Strategist', () => {
     it('builds safely with minimal state', () => {
       const state = { projectName: 'Test' } as ProjectStateV3;
       const prompt = buildChiefStrategistPrompt(state);
-      assert.ok(prompt.includes('Strategy Audit — Test'));
-      assert.ok(prompt.includes('N/A'));
+      expect(prompt).toContain('Strategy Audit — Test');
+      expect(prompt).toContain('N/A');
     });
   });
 
@@ -61,9 +60,9 @@ describe('Chief Strategist', () => {
       };
 
       const result = await runChiefStrategist({ state }, ctx);
-      assert.equal(result.success, false);
-      assert.equal(result.llmCalls, 3);
-      assert.ok(result.error?.includes('validation failed') || result.error?.includes('failed'));
+      expect(result.success).toBe(false);
+      expect(result.llmCalls).toBe(3);
+      expect(result.error?.includes('validation failed') || result.error?.includes('failed')).toBe(true);
     });
 
     it('returns success when LLM gives valid JSON directly', async () => {
@@ -105,8 +104,8 @@ describe('Chief Strategist', () => {
       };
 
       const result = await runChiefStrategist({ state }, ctx);
-      assert.equal(result.success, true);
-      assert.equal(result.data?.executiveSummary, 'Exec');
+      expect(result.success).toBe(true);
+      expect(result.data?.executiveSummary).toBe('Exec');
     });
   });
 });

@@ -16,8 +16,8 @@
     "clean":         "rimraf dist"
   },
   "devDependencies": {
-    "electron":         "^30.0.0",
-    "electron-builder": "^24.0.0",
+    "electron":         "^39.0.0",
+    "electron-builder": "^25.0.0",
     "nodemon":          "^3.0.0",
     "rimraf":           "^5.0.0"
   }

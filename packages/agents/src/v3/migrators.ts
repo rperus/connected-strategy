@@ -1,4 +1,4 @@
-import type { ProjectStateV3 } from './state-store.js';
+import type { ProjectStateV3 } from './state-types.js';
 
 export function migrateState(raw: unknown): ProjectStateV3 {
   const state = raw as Record<string, unknown>;

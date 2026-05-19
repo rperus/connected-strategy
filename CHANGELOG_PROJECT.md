@@ -1,5 +1,40 @@
 # Project Changelog
 
+## 2026-05-18: Super Audit v2 Remediation — Zero Vulnerabilities
+
+### P0: Security
+- **API Key Leak**: Removed hardcoded `GEMINI_API_KEY` from `.env` tracked file to prevent credential exposure.
+- **Dependency CVEs**: Added strict `pnpm.overrides` for `vite`, `tar`, `esbuild`, `brace-expansion`, and `@tootallnate/once`.
+- Ran `pnpm install` achieving **0 vulnerabilities** across the monorepo.
+
+### P1: Security & Architecture
+- **Express Hardening**: Added `helmet` and `express-rate-limit` middleware to the API server to protect against common web vulnerabilities and brute force.
+- **CORS Config**: Replaced hardcoded localhost array with dynamic `process.env.CS_CORS_ORIGINS`.
+- **Circular Dependencies**: Extracted `KnowledgeSource` and related domain types to `packages/knowledge/src/types.ts`. Resolved import cycles (`index.ts` ↔ `sources.ts`). Verified with `madge` (0 cycles).
+
+## 2026-05-11: Super Audit Remediation — P0/P1/P2 Fixes
+
+### P0: Security — Electron CVE Remediation
+- Bumped `electron` from `^30.0.0` to `^39.0.0` in `apps/desktop/package.json`
+- Bumped `electron-builder` from `^24.0.0` to `^25.0.0`
+- Resolves 10 High + 12 Moderate CVEs (GHSA-jfqx, GHSA-9899, GHSA-f37v, etc.)
+
+### P1: Circular Dependency — agents package
+- Created `packages/agents/src/v3/state-types.ts` — standalone type definitions
+- Refactored `state-store.ts` to re-export types from `state-types.ts`
+- Refactored `migrators.ts` to import from `state-types.ts` instead of `state-store.ts`
+- Verified with `madge --circular`: 0 cycles
+
+### P1: Test Infrastructure — vitest migration
+- Migrated 8 test files from `node:test` + `node:assert` to vitest globals (`describe`/`it`/`expect`)
+- Fixed `schemas.test.ts` broken assertion (empty `z.record()` is valid; changed to test missing `scope`)
+- Result: 10/10 suites, 88/88 tests passing
+
+### P2: Bundle Optimization — React.lazy code-splitting
+- Converted 28 page imports in `apps/web/src/App.tsx` to `React.lazy()` with `Suspense`
+- Added `PageLoader` fallback component
+- Initial bundle: 531kB → 240kB (55% reduction), no chunk exceeds 500kB warning
+
 ## 2026-04-27T09:35: v2.3.0 — Platform Intelligence + Strategic Improve
 
 - **Domain types**: `ProjectSkill`, `ProjectWorkflow`, `ServiceAccess` añadidos a Project

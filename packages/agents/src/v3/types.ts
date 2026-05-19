@@ -2,6 +2,7 @@ import type { z } from 'zod';
 import type { LLMProvider } from '../llm-provider.js';
 import type { ProjectStateStore } from './state-store.js';
 import type { FileReader } from './file-reader.js';
+import type { TelemetryEvent } from './state-types.js';
 
 export interface AgentV3Context {
   runId: string;
@@ -21,6 +22,7 @@ export interface AgentV3Context {
 
   // logging / events
   log: (msg: string, data?: unknown) => void;
+  emitTelemetry?: (event: Partial<TelemetryEvent>) => void;
 }
 
 export interface AgentV3Result<T> {

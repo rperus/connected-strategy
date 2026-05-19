@@ -1,25 +1,21 @@
 # Current Task
 
-**Date:** 2026-04-27
-**Status:** done
-**Version:** 2.2.0
+**Date:** 2026-05-11
+**Status:** planning
+**Version:** 2.4.0 (Targeting Wave 7)
 
 ## Completado Esta Sesión
 
-### v2.2.0 — Hierarchical Agent Swarm
-- [x] Extender types.ts: AgentTier, CrewId, canDelegate, runsAutonomously
-- [x] Crear strategist-supervisor.ts (Level 0: HTN planning)
-- [x] Crear recon-lead.ts (Level 1: cache invalidation, data quality gate)
-- [x] Crear analysis-lead.ts (Level 1: dependency scheduling, early stopping)
-- [x] Crear action-lead.ts (Level 1: publication gate, cost budget)
-- [x] Crear temporal-analyst.ts (Level 2: Z-score trend detection)
-- [x] Crear validation-agent.ts (Level 2: Jaccard + constraint satisfaction)
-- [x] Crear anomaly-detector.ts (Level 2: statistical outlier detection)
-- [x] Crear causal-mapper.ts (Level 2: Pearl 2000 DAG, causal SAC)
-- [x] Reescribir registry.ts: 20 agentes, 3 tiers, 4 crews
-- [x] Reescribir AgentOrchestratorPage: jerarquía visual 3 niveles
-- [x] Typecheck ✅ 0 errores (web + agents)
-- [x] Browser verification ✅
+### Wave 6: SaaS Platform Super Audit Remediation (v2.3.2)
+- [x] Ejecutar escaneos de diagnóstico (madge, depcheck, pnpm audit, ts-prune)
+- [x] Generar `super_audit_report.md` (14-pillar framework)
+- [x] **P0**: Actualizar `electron` y `electron-builder` para mitigar 26 CVEs
+- [x] **P1**: Resolver dependencia circular `state-store.ts` > `migrators.ts` aislando los tipos
+- [x] **P1**: Migrar 8 suites de prueba rotas desde `node:test` hacia `vitest` globals (100% passing)
+- [x] **P2**: Implementar code-splitting (`React.lazy` + `Suspense`) en `App.tsx`, reduciendo el bundle inicial en un 55% (531kB -> 240kB)
+- [x] **P2**: Instalar dependencias de script faltantes (`sharp`, `png-to-ico`)
+- [x] **P2**: Reemplazar mock data estático en `fixtures.ts` con la data real del caso de estudio "Sun King"
+- [x] Validar construcción de UI (`pnpm --filter @cs/web build`) y 0 errores de TypeScript
 
 ### v2.1.0 — Platform Elevation
 - [x] CoachPanel.tsx: 18 alertas proactivas Wharton en HomePage
@@ -37,10 +33,10 @@
 scripts\start.bat
 ```
 
-## Próximo Wave Sugerido (Wave 7 — Phase 2)
+## Próximo Wave (Wave 7 — Phase 2: Telemetry & Memory)
 
-1. **Telemetría en tiempo real**: conectar eventos del backend (`POST /api/pipeline/run-full`) a los nodos de agentes para visualización live
-2. **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales
-3. **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
-4. **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
-5. **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run
+1. [ ] **Telemetría en tiempo real**: conectar eventos del backend (`POST /api/pipeline/run-full`) a los nodos de agentes para visualización live
+2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales
+3. [ ] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
+4. [ ] **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
+5. [ ] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run

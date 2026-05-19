@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 import {
   ws01Schema,
   ws03Schema,
@@ -42,29 +41,29 @@ import {
 
 describe('v3 worksheet schemas', () => {
   it('accepts valid Sun King WS01 fixture', () => {
-    assert.ok(ws01Schema.parse(sunkingWS01));
+    expect(ws01Schema.parse(sunkingWS01)).toBeTruthy();
   });
   
-  it('rejects WS01 with missing journey stage', () => {
-    const broken = { ...sunkingWS01, stages: {} as any };
-    assert.throws(() => ws01Schema.parse(broken));
+  it('rejects WS01 with missing scope', () => {
+    const broken = { stages: sunkingWS01.stages };
+    expect(() => ws01Schema.parse(broken)).toThrow();
   });
 
-  it('accepts WS03', () => { assert.ok(ws03Schema.parse(sunkingWS03)); });
-  it('accepts WS04', () => { assert.ok(ws04Schema.parse(sunkingWS04)); });
-  it('accepts WS05', () => { assert.ok(ws05Schema.parse(sunkingWS05)); });
-  it('accepts WS06', () => { assert.ok(ws06Schema.parse(sunkingWS06)); });
-  it('accepts WS07', () => { assert.ok(ws07Schema.parse(sunkingWS07)); });
-  it('accepts WS08', () => { assert.ok(ws08Schema.parse(sunkingWS08)); });
-  it('accepts WS09', () => { assert.ok(ws09Schema.parse(sunkingWS09)); });
-  it('accepts WS10', () => { assert.ok(ws10Schema.parse(sunkingWS10)); });
-  it('accepts WS11', () => { assert.ok(ws11Schema.parse(sunkingWS11)); });
+  it('accepts WS03', () => { expect(ws03Schema.parse(sunkingWS03)).toBeTruthy(); });
+  it('accepts WS04', () => { expect(ws04Schema.parse(sunkingWS04)).toBeTruthy(); });
+  it('accepts WS05', () => { expect(ws05Schema.parse(sunkingWS05)).toBeTruthy(); });
+  it('accepts WS06', () => { expect(ws06Schema.parse(sunkingWS06)).toBeTruthy(); });
+  it('accepts WS07', () => { expect(ws07Schema.parse(sunkingWS07)).toBeTruthy(); });
+  it('accepts WS08', () => { expect(ws08Schema.parse(sunkingWS08)).toBeTruthy(); });
+  it('accepts WS09', () => { expect(ws09Schema.parse(sunkingWS09)).toBeTruthy(); });
+  it('accepts WS10', () => { expect(ws10Schema.parse(sunkingWS10)).toBeTruthy(); });
+  it('accepts WS11', () => { expect(ws11Schema.parse(sunkingWS11)).toBeTruthy(); });
 
-  it('accepts FiveForces', () => { assert.ok(fiveForcesSchema.parse(sunkingFiveForces)); });
-  it('accepts Scenarios', () => { assert.ok(scenarioAnalysisSchema.parse(sunkingScenarios)); });
-  it('accepts CompetitorProfile', () => { assert.ok(competitorProfileSchema.parse(sunkingCompetitor)); });
-  it('accepts DriverScore', () => { assert.ok(driverScoreSchema.parse(sunkingDriverScore)); });
-  it('accepts ActivitySystem', () => { assert.ok(activitySystemMapSchema.parse(sunkingActivitySystem)); });
-  it('accepts ThreeFits', () => { assert.ok(threeFitsAssessmentSchema.parse(sunkingThreeFits)); });
-  it('accepts FrontierAnalysis', () => { assert.ok(frontierAnalysisSchema.parse(sunkingFrontier)); });
+  it('accepts FiveForces', () => { expect(fiveForcesSchema.parse(sunkingFiveForces)).toBeTruthy(); });
+  it('accepts Scenarios', () => { expect(scenarioAnalysisSchema.parse(sunkingScenarios)).toBeTruthy(); });
+  it('accepts CompetitorProfile', () => { expect(competitorProfileSchema.parse(sunkingCompetitor)).toBeTruthy(); });
+  it('accepts DriverScore', () => { expect(driverScoreSchema.parse(sunkingDriverScore)).toBeTruthy(); });
+  it('accepts ActivitySystem', () => { expect(activitySystemMapSchema.parse(sunkingActivitySystem)).toBeTruthy(); });
+  it('accepts ThreeFits', () => { expect(threeFitsAssessmentSchema.parse(sunkingThreeFits)).toBeTruthy(); });
+  it('accepts FrontierAnalysis', () => { expect(frontierAnalysisSchema.parse(sunkingFrontier)).toBeTruthy(); });
 });

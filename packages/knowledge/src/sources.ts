@@ -8,7 +8,7 @@
  * degrade gracefully — the system marks them as not-indexed rather than crashing.
  */
 
-import type { KnowledgeSource } from './index.js';
+import type { KnowledgeSource } from './types.js';
 
 // ─── Wharton Source Catalog ───────────────────────────────────────────────────
 export const WHARTON_SOURCES: KnowledgeSource[] = [
