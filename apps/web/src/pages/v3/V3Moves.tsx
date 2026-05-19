@@ -19,7 +19,7 @@ export const V3Moves: React.FC = () => {
   const fetchMoves = async () => {
     if (!selectedProjectId) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/pipeline/v3-moves/${selectedProjectId}`);
+      const res = await fetch(`${API_BASE_URL}/api/pipeline/moves/${selectedProjectId}`);
       const data = await res.json();
       if (data.ok) {
         setMoves(data.moves || []);
@@ -35,7 +35,7 @@ export const V3Moves: React.FC = () => {
 
   const markComplete = async (moveId: string) => {
     try {
-      await fetch(`${API_BASE_URL}/api/pipeline/v3-context/${selectedProjectId}`, {
+      await fetch(`${API_BASE_URL}/api/pipeline/context/${selectedProjectId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: `Completed ${moveId}` })

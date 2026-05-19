@@ -18,7 +18,7 @@ export function SwarmComparatorPage() {
   useEffect(() => {
     if (!activeProject?.id || !targetProjectId) return;
     setLoading(true);
-    fetch(`${API_BASE_URL}/api/pipeline/v3-swarm-comparator?p1=${activeProject.id}&p2=${targetProjectId}`)
+    fetch(`${API_BASE_URL}/api/pipeline/swarm-comparator?p1=${activeProject.id}&p2=${targetProjectId}`)
       .then(r => r.json())
       .then(res => {
         if (res.ok) setData(res);

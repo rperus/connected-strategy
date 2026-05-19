@@ -14,9 +14,12 @@
 
 ## [2.6.0] - 2026-05-19 (Wave 10)
 ### Added
+- **Strategy Copilot (Chat)**: Added `StrategyCopilot.tsx` floating UI and `/api/copilot/chat` endpoint. Uses Gemini to provide live strategy consulting based on project state and findings.
+- **Batch Reporter**: Added `batch-reporter.ts` agent and `/api/reports/batch-executive` endpoint to generate portfolio-wide executive markdown summaries.
 - **Gemini Live Provider**: V3 Pipeline Orchestrator is now fully wired to use the real Gemini LLM.
 - **Autonomous Execution**: Finished the `autonomous-executor` to capture git diffs, run `typecheck` validation, and automatically create a new branch and `git push` to origin.
-- **V3 UI Data Binding**: Replaced static UI mock endpoints (`/api/pipeline/proposals` and `/api/pipeline/findings`) with endpoints that parse directly from `state.json` via `/v3-proposals` and `/v3-findings`.
+- **V3 UI Data Binding**: Replaced static UI mock endpoints (`/api/pipeline/proposals` and `/api/pipeline/findings`) with endpoints that parse directly from `state.json` via `/proposals` and `/findings`.
+- **Architectural Cleanup**: Deleted legacy V2 pipeline `routes.ts` and V2 `registry.ts`, promoting `v3-route.ts` and `registry-v3.ts` as the canonical implementation. Removed all `/v3-` prefixes from API calls.
 
 ## [2.4.0] - 2026-05-18 (Wave 7)
 ### Added

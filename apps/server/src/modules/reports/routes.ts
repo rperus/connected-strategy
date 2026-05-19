@@ -186,6 +186,24 @@ router.post('/project/:id', (req: Request, res: Response) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GET /api/reports/batch-executive
+// Generate a batch portfolio executive report via Gemini
+// ─────────────────────────────────────────────────────────────────────────────
+
+router.get('/batch-executive', async (req: Request, res: Response) => {
+  try {
+    const { runBatchReporter } = await import('@cs/agents');
+    const { listProjects } = await import('../../db/repositories/projects.js');
+    const projects = listProjects().map((p: any) => p.id);
+    const reportText = await runBatchReporter(projects);
+    res.json({ ok: true, data: { content: reportText } });
+  } catch (err: any) {
+    console.error('[Reports] Error running batch reporter:', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // POST /api/reports/proposal/:id
 // Generate a proposal dossier report
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,593 +1,362 @@
-/**
- * Full Pipeline Routes — Express Router
- *
- * ONE-CLICK pipeline: scan → auto-fill worksheets → analyze → generate prompts
- * Mount at: /api/pipeline
- *
- * POST /api/pipeline/run-full
- *   Scans projects in workspace → auto-fills worksheets with scoring keys →
- *   runs all 6 analysts + proposal composer → generates prompt packets for Antigravity.
- *   Returns everything in one response.
- */
-
-import fs from 'node:fs';
-import path from 'node:path';
 import express from 'express';
-import type { Request, Response, Router } from 'express';
-import {
-  createJob,
-  markRunning,
-  markDone,
-  markFailed,
-  getRegisteredAgent,
-  getQueueStats,
-} from '@cs/agents';
-import type { AgentId, AgentContext, AnalystReport } from '@cs/agents';
-import { computeStrategicMetrics, defaultScoringWeights } from '@cs/domain';
-import type { WorksheetAnswer, StrategicMetrics } from '@cs/domain';
-import { insertJob, updateJob } from '../../db/repositories/jobs.js';
-import { listProjects, upsertProject, deleteProject } from '../../db/repositories/projects.js';
-import { upsertAnswer, listAnswers } from '../../db/repositories/worksheets.js';
-import { insertPipelineRun, listPipelineRuns } from '../../db/repositories/pipeline-runs.js';
+import { Request, Response, Router } from 'express';
+import { ProjectStateStore, runV3Pipeline, getHistoricalRuns } from '@cs/agents';
+import { runCausalMapper } from '@cs/agents/dist/agents/causal-mapper.js';
+import { listProjects } from '../../db/repositories/projects.js';
+import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
+import fs from 'fs';
+import fsp from 'fs/promises';
+import path from 'path';
+import { EventEmitter } from 'events';
+import { broadcastEvent } from '../../services/telemetry.js';
+import { getRegisteredAgent } from '@cs/agents';
 
+const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
+const store = new ProjectStateStore('data/projects');
 
-// ── Results cache (persists across requests within same server session) ────────
-interface PipelineResults {
-  timestamp: string;
-  elapsed: string;
-  findings: Array<{ projectId: string; projectName: string; finding: import('@cs/agents').AnalystFinding; agentId: string }>;
-  proposals: Array<import('@cs/domain').ImprovementProposal>;
-  promptPackets: Array<{ projectName: string; promptForAntigravity: string }>;
+function readJsonl(path: string) {
+  if (!fs.existsSync(path)) return [];
+  return fs.readFileSync(path, 'utf-8').split('\n').filter(Boolean).map(line => {
+    try { return JSON.parse(line); } catch { return null; }
+  }).filter(Boolean);
 }
-let cachedResults: PipelineResults | null = null;
 
-
-/**
- * POST /api/pipeline/run-full
- *
- * Full pipeline: scan → auto-fill → analyze → prompts.
- * Body (optional): { scanPath?: string, useGemini?: boolean }
- * Default scanPath: CS_WORKSPACE_ROOT
- * Default useGemini: true (uses Gemini API if key is available)
- * Set useGemini: false for zero-cost deterministic-only mode
- */
 router.post('/run-full', async (req: Request, res: Response) => {
-  const startTime = Date.now();
-  const body = req.body as { scanPath?: string; useGemini?: boolean };
-  const scanPath = body.scanPath || process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
-  const useGemini = body.useGemini !== false; // default true
-
-  // If useGemini is false, temporarily disable the LLM provider
-  if (!useGemini) {
-    process.env._CS_FORCE_OFFLINE = '1';
-  }
-
-  const log: string[] = [];
-  const push = (msg: string) => { log.push(`[${((Date.now() - startTime) / 1000).toFixed(1)}s] ${msg}`); };
-
-  try {
-    // ── Step 0: Clean duplicate projects ──────────────────────────────────────
-    push('Step 0: Cleaning duplicate projects...');
-    cleanDuplicateProjects();
-
-    // ── Step 1: Scan projects ─────────────────────────────────────────────────
-    push('Step 1: Scanning projects...');
-    const scanner = getRegisteredAgent('portfolio-scanner')!;
-    const scanContext: AgentContext = { jobId: 'pipeline-scan', projectId: 'portfolio', startedAt: new Date().toISOString() };
-    const scanResult = await scanner.run({ scanPath }, scanContext);
-
-    if (!scanResult.success || !scanResult.data) {
-      res.status(500).json({ ok: false, error: 'Scan failed', log });
-      return;
-    }
-
-    const scanData = scanResult.data as { projects: Array<{ path: string; name: string; stack: string[]; maturity: string; tags: string[]; fileCount: number }> };
-    push(`Found ${scanData.projects.length} projects`);
-
-    // Register projects in SQLite with consistent IDs
-    for (const p of scanData.projects) {
-      const projectId = normalizeProjectId(p.name);
-      upsertProject({
-        id: projectId,
-        name: p.name,
-        path: p.path,
-        stack: p.stack,
-        maturity: p.maturity as 'nascent' | 'developing' | 'mature' | 'legacy',
-        tags: p.tags,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-
-    // ── Step 2: Auto-fill worksheets ──────────────────────────────────────────
-    push('Step 2: Auto-filling worksheets...');
-    const projects = listProjects();
-    const synthesizer = getRegisteredAgent('worksheet-synthesizer')!;
-
-    const worksheetResults: Array<{ projectId: string; worksheetsFilledCount: number }> = [];
-
-    for (const project of projects) {
-      const synthCtx: AgentContext = { jobId: `synth-${project.id}`, projectId: project.id, startedAt: new Date().toISOString() };
-      const synthResult = await synthesizer.run(
-        { projectId: project.id, projectPath: project.path, stack: project.stack },
-        synthCtx,
-      );
-
-      if (synthResult.success && synthResult.data) {
-        const synthData = synthResult.data as Array<{
-          worksheetId: string;
-          projectId: string;
-          autoFilledAnswers: Record<string, unknown>;
-          confidence: Record<string, 'observed' | 'inferred' | 'confirmed'>;
-        }>;
-
-        // Build scoring keys from synthesized answers
-        const scoringKeys = buildScoringKeys(project.path, project.stack);
-
-        for (const ws of synthData) {
-          // Merge worksheet answers with scoring keys
-          const mergedAnswers = { ...ws.autoFilledAnswers, ...scoringKeys };
-
-          const answer: WorksheetAnswer = {
-            id: `${ws.worksheetId}::${project.id}`,
-            worksheetId: ws.worksheetId,
-            projectId: project.id,
-            version: 1,
-            answers: mergedAnswers,
-            confidence: ws.confidence,
-            updatedAt: new Date().toISOString(),
-          };
-          upsertAnswer(answer);
-        }
-
-        worksheetResults.push({ projectId: project.id, worksheetsFilledCount: synthData.length });
-        push(`  ${project.name}: ${synthData.length} worksheets auto-filled`);
-      }
-    }
-
-    // ── Step 3: Run analysis agents ───────────────────────────────────────────
-    push('Step 3: Running analysis agents...');
-
-    const analystIds: AgentId[] = [
-      'connected-strategy-analyst',
-      'competitive-advantage-analyst',
-      'business-model-analyst',
-      'data-science-opportunity-analyst',
-      'architecture-improvement-analyst',
-      'ai-frontier-analyst',
-    ];
-
-    const analysisResults: Array<{
-      projectId: string;
-      projectName: string;
-      findings: number;
-      proposals: number;
-      metrics: StrategicMetrics | null;
-      jobIds: string[];
-    }> = [];
-
-    // Cache arrays for findings and proposals
-    const allFindings: PipelineResults['findings'] = [];
-    const allProposals: import('@cs/domain').ImprovementProposal[] = [];
-
-    for (const project of projects) {
-      const jobIds: string[] = [];
-      const reports: AnalystReport[] = [];
-
-      // Get all merged answers for this project
-      const savedAnswers = listAnswers(project.id);
-      const mergedAnswerRecord: Record<string, unknown> = {};
-      for (const sa of savedAnswers) {
-        Object.assign(mergedAnswerRecord, sa.answers);
-      }
-
-      for (const agentId of analystIds) {
-        const input: Record<string, unknown> = {
-          projectId: project.id,
-          answers: mergedAnswerRecord,
-          projectPath: project.path,
-        };
-
-        const job = createJob(project.id, agentId, input);
-        jobIds.push(job.id);
-        try { insertJob(job); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-
-        markRunning(job.id);
-        const agent = getRegisteredAgent(agentId)!;
-        const ctx: AgentContext = { jobId: job.id, projectId: project.id, startedAt: new Date().toISOString() };
-
-        try {
-          const result = await agent.run(input, ctx);
-          const updated = markDone(job.id, result);
-          if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-          if (result.success && result.data) {
-            const report = result.data as AnalystReport;
-            reports.push(report);
-            // Cache findings
-            for (const f of report.findings ?? []) {
-              allFindings.push({ projectId: project.id, projectName: project.name, finding: f, agentId });
-            }
-          }
-        } catch (err) {
-          const updated = markFailed(job.id, String(err));
-          if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-        }
-      }
-
-      // Compose proposals
-      let proposalCount = 0;
-      const composerInput = { projectId: project.id, reports };
-      const composerJob = createJob(project.id, 'proposal-composer', composerInput as unknown as Record<string, unknown>);
-      jobIds.push(composerJob.id);
-      try { insertJob(composerJob); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-      markRunning(composerJob.id);
-
-      const composer = getRegisteredAgent('proposal-composer')!;
-      const composerCtx: AgentContext = { jobId: composerJob.id, projectId: project.id, startedAt: new Date().toISOString() };
-
-      try {
-        const composerResult = await composer.run(composerInput as unknown as Record<string, unknown>, composerCtx);
-        const updated = markDone(composerJob.id, composerResult);
-        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-        // composerResult.data is ImprovementProposal[] directly (not wrapped in { proposals })
-        const proposals = composerResult.data;
-        proposalCount = Array.isArray(proposals) ? proposals.length : 0;
-        // Cache proposals
-        if (Array.isArray(proposals)) {
-          allProposals.push(...(proposals as import('@cs/domain').ImprovementProposal[]));
-        }
-      } catch (err) {
-        const updated = markFailed(composerJob.id, String(err));
-        if (updated) try { updateJob(updated); } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-      }
-
-      // Compute real metrics
-      let metrics: StrategicMetrics | null = null;
-      try {
-        const syntheticAnswer: WorksheetAnswer = {
-          id: 'synthetic',
-          worksheetId: 'all',
-          projectId: project.id,
-          version: 1,
-          answers: mergedAnswerRecord,
-          confidence: {},
-          updatedAt: new Date().toISOString(),
-        };
-        metrics = computeStrategicMetrics(project.id, syntheticAnswer, defaultScoringWeights(project.id));
-      } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-
-      const totalFindings = reports.reduce((sum, r) => sum + (r.findings?.length ?? 0), 0);
-      analysisResults.push({
-        projectId: project.id,
-        projectName: project.name,
-        findings: totalFindings,
-        proposals: proposalCount,
-        metrics,
-        jobIds,
-      });
-
-      push(`  ${project.name}: ${totalFindings} findings, ${proposalCount} proposals, SAC=${metrics?.strategicAdvantageComposite?.toFixed(0) ?? 0}`);
-    }
-
-    // ── Step 4: Generate prompt packets ───────────────────────────────────────
-    push('Step 4: Generating Antigravity prompt packets...');
-
-    const promptPackets: Array<{
-      projectName: string;
-      promptForAntigravity: string;
-    }> = [];
-
-    for (const ar of analysisResults) {
-      if (ar.findings === 0 && ar.proposals === 0) continue;
-
-      const packet = generateAntigravityPrompt(ar.projectName, ar.findings, ar.proposals, ar.metrics);
-      promptPackets.push({ projectName: ar.projectName, promptForAntigravity: packet });
-    }
-
-    push(`Generated ${promptPackets.length} prompt packets for Antigravity`);
-
-    // ── Done ──────────────────────────────────────────────────────────────────
-    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    push(`Pipeline complete in ${elapsed}s`);
-
-    // Save results for GET endpoints
-    cachedResults = {
-      timestamp: new Date().toISOString(),
-      elapsed: `${elapsed}s`,
-      findings: allFindings,
-      proposals: allProposals,
-      promptPackets,
-    };
-
-    // Persist run to DB history
-    try {
-      insertPipelineRun({
-        timestamp: cachedResults.timestamp,
-        elapsed: `${elapsed}s`,
-        projects_scanned: scanData.projects.length,
-        total_findings: allFindings.length,
-        total_proposals: allProposals.length,
-        total_prompts: promptPackets.length,
-        summary: JSON.stringify({
-          projectNames: projects.map(p => p.name),
-          byProject: analysisResults.map(a => ({ id: a.projectId, f: a.findings, p: a.proposals })),
-        }),
-      });
-    } catch (e) { console.warn('[CS-Pipeline] DB history write failed:', e); }
-
-    res.json({
-      ok: true,
-      data: {
-        mode: useGemini ? 'gemini' : 'offline',
-        elapsed: `${elapsed}s`,
-        projectsScanned: scanData.projects.length,
-        projectsAnalyzed: projects.length,
-        worksheetsFilled: worksheetResults,
-        analysis: analysisResults.map(({ metrics: _m, ...rest }) => rest),
-        promptPackets,
-        stats: getQueueStats(),
-        log,
-      },
-    });
-  } catch (err) {
-    push(`FATAL: ${String(err)}`);
-    res.status(500).json({ ok: false, error: String(err), log });
-  } finally {
-    // Always clean up the offline flag
-    delete process.env._CS_FORCE_OFFLINE;
-  }
-});
-
-/**
- * Build scoring keys from filesystem analysis.
- * These are the specific answer keys that the scoring engine reads.
- */
-function buildScoringKeys(projectPath: string, stack: string[]): Record<string, number> {
-
-  const exists = (p: string) => fs.existsSync(path.join(projectPath, p));
-  const readFile = (p: string) => { try { return fs.readFileSync(path.join(projectPath, p), 'utf-8'); } catch { return ''; } };
-
-  const readme = readFile('README.md').toLowerCase();
-  const pkgJson = readFile('package.json');
-
-  // Architecture signals
-  const hasTests = exists('tests') || exists('__tests__') || exists('test') || exists('spec');
-  const hasCI = exists('.github/workflows') || exists('.gitlab-ci.yml');
-  const hasMonorepo = exists('pnpm-workspace.yaml') || exists('nx.json') || exists('lerna.json');
-  const hasDocker = exists('Dockerfile') || exists('docker-compose.yml');
-  const hasTypeScript = exists('tsconfig.json');
-  const hasLinting = exists('.eslintrc.js') || exists('.eslintrc.json') || exists('biome.json');
-  const hasSrc = exists('src');
-
-  // Observability
-  const hasLogging = readme.includes('log') || readme.includes('monitor') || readme.includes('telemetry');
-
-  // Data signals
-  const hasDB = readme.includes('database') || readme.includes('postgres') || readme.includes('sqlite') ||
-    readme.includes('mongo') || pkgJson.includes('prisma') || pkgJson.includes('knex') || pkgJson.includes('sequelize');
-  const hasPipeline = readme.includes('pipeline') || readme.includes('etl') || readme.includes('ingestion');
-
-  // Business signals
-  const hasAPI = hasSrc || exists('api') || exists('routes') || exists('endpoints');
-  const hasAuth = readme.includes('auth') || readme.includes('login') || readme.includes('session') || pkgJson.includes('passport') || pkgJson.includes('jwt');
-  const hasPayment = readme.includes('payment') || readme.includes('stripe') || readme.includes('subscription');
-
-  // Connected strategy signals
-  const hasNotifications = readme.includes('notification') || readme.includes('alert') || readme.includes('email');
-  const hasRecommendations = readme.includes('recommend') || readme.includes('suggest') || readme.includes('curated');
-  const hasAutomation = readme.includes('automat') || readme.includes('cron') || readme.includes('schedule') || hasCI;
-
-  // Count source files for richness estimation
-  let fileCount = 0;
-  try {
-    const countFiles = (dir: string, depth = 0): number => {
-      if (depth > 3) return 0;
-      let c = 0;
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
-      for (const e of entries) {
-        if (e.name.startsWith('.') || e.name === 'node_modules' || e.name === '__pycache__' || e.name === 'dist') continue;
-        if (e.isDirectory()) c += countFiles(path.join(dir, e.name), depth + 1);
-        else c++;
-      }
-      return c;
-    };
-    fileCount = countFiles(projectPath);
-  } catch (e) { console.warn('[CS-Pipeline] DB write failed:', e); }
-
-  // Scale factor based on project size
-  const sizeFactor = Math.min(fileCount / 500, 1); // 0-1 scale, 500 files = mature
-
-  return {
-    // Score 1: Connected Experience (0-100)
-    ce_respond_to_desire: hasAPI ? 40 + (hasAuth ? 20 : 0) : 10,
-    ce_curated_offering: hasRecommendations ? 55 : 15,
-    ce_coach_behavior: hasNotifications ? 45 : 10,
-    ce_automatic_execution: hasAutomation ? 50 : (hasCI ? 30 : 5),
-
-    // Score 2: Closed Loop Maturity
-    clm_sense_quality: hasLogging ? 50 : (hasSrc ? 25 : 5),
-    clm_transmit_coverage: hasPipeline ? 55 : (hasDB ? 35 : 10),
-    clm_analyze_depth: hasDB ? 40 : 10,
-    clm_react_speed: hasCI ? 45 : (hasDocker ? 30 : 10),
-
-    // Score 3: Switching Cost Index
-    sci_data_lock: hasDB ? 50 : (hasAuth ? 30 : 5),
-    sci_habit_formation: Math.round(sizeFactor * 60),
-    sci_integration_depth: hasAPI ? 45 : 10,
-    sci_network_effect: hasAuth ? 30 : 5,
-
-    // Score 4: WTP Uplift
-    wtp_value_perception: Math.round(30 + sizeFactor * 40),
-    wtp_pain_resolution: hasAPI && hasDB ? 50 : 20,
-    wtp_convenience_delta: hasAutomation ? 55 : 20,
-
-    // Score 5: Cost Reduction
-    cr_automation_coverage: hasCI ? 50 : (hasDocker ? 35 : 10),
-    cr_manual_ops_reduction: hasAutomation ? 55 : 15,
-    cr_support_burden_reduction: hasNotifications ? 40 : 10,
-
-    // Score 6: Competitive Positioning
-    cp_internal_fit: hasMonorepo ? 65 : (hasSrc ? 40 : 15),
-    cp_external_fit: hasAPI && hasAuth ? 50 : 20,
-    cp_dynamic_fit: hasCI ? 45 : (hasDocker ? 30 : 10),
-    cp_differentiation_clarity: Math.round(20 + sizeFactor * 35),
-
-    // Score 7: Business Model Strength
-    bms_revenue_model_clarity: hasPayment ? 60 : 20,
-    bms_moat_depth: hasDB && hasAuth ? 45 : 15,
-    bms_scalability: hasDocker ? 55 : (hasMonorepo ? 45 : 20),
-    bms_customer_relationship_depth: hasAuth ? 40 : 10,
-
-    // Score 8: Data Science Readiness
-    dsr_data_availability: hasDB ? 55 : 10,
-    dsr_instrumentation_coverage: hasLogging ? 45 : (hasCI ? 30 : 5),
-    dsr_modeling_capability: stack.includes('python') ? 45 : 10,
-    dsr_rigor_level: hasTests ? 40 : 5,
-
-    // Score 9: Architecture Resilience
-    ar_modularity: hasMonorepo ? 75 : (hasTypeScript ? 55 : 25),
-    ar_test_coverage: hasTests ? 55 : 5,
-    ar_observability: hasLogging ? 50 : (hasCI ? 25 : 5),
-    ar_recoverability: hasDocker ? 55 : (hasCI ? 35 : 10),
+  const body = req.body as {
+    projectIds?: string[];
+    naturalLanguageContext?: string;
+    skipPhases?: Array<'A'|'B'|'C'|'D'|'E'|'F'|'G'>;
+    useGemini?: boolean;
+    competitorHints?: string[];
+    customerSegment?: string;
   };
-}
 
-/**
- * Generate an Antigravity-ready prompt from analysis findings.
- */
-function generateAntigravityPrompt(
-  projectName: string,
-  findingsCount: number,
-  proposalsCount: number,
-  metrics: StrategicMetrics | null,
-): string {
-  const sac = metrics?.strategicAdvantageComposite?.toFixed(0) ?? '?';
-  const ce = metrics?.connectedExperienceScore?.toFixed(0) ?? '?';
-  const ar = metrics?.architectureResilience?.toFixed(0) ?? '?';
-  const ds = metrics?.dataScienceReadiness?.toFixed(0) ?? '?';
-  const bm = metrics?.businessModelStrength?.toFixed(0) ?? '?';
+  const runId = `v3-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  const projects = listProjects().filter((p: { id: string }) => !body.projectIds || body.projectIds.includes(p.id));
 
-  // Find weakest score for priority
-  const scores = metrics ? [
-    { name: 'Connected Experience', score: metrics.connectedExperienceScore },
-    { name: 'Closed Loop Maturity', score: metrics.closedLoopMaturity },
-    { name: 'Switching Cost Index', score: metrics.switchingCostIndex },
-    { name: 'WTP Uplift', score: metrics.wtpUpliftIndex },
-    { name: 'Cost Reduction', score: metrics.costReductionPotential },
-    { name: 'Competitive Positioning', score: metrics.competitivePositioningIndex },
-    { name: 'Business Model', score: metrics.businessModelStrength },
-    { name: 'Data Science Readiness', score: metrics.dataScienceReadiness },
-    { name: 'Architecture Resilience', score: metrics.architectureResilience },
-  ].sort((a, b) => a.score - b.score) : [];
-
-  const weakest = scores.slice(0, 3);
-  const weakestList = weakest.map(s => `${s.name}: ${s.score.toFixed(0)}/100`).join(', ');
-
-  return `## Connected Strategy Analysis — ${projectName}
-
-**Strategic Advantage Composite: ${sac}/100**
-CE:${ce} | AR:${ar} | DS:${ds} | BM:${bm}
-
-**Analysis Summary:**
-- ${findingsCount} strategic findings identified
-- ${proposalsCount} improvement proposals generated
-- Weakest areas: ${weakestList || 'N/A'}
-
-**Priority improvements for Antigravity:**
-${weakest.map((s, i) => `${i + 1}. Improve **${s.name}** (currently ${s.score.toFixed(0)}/100) — focus on the specific sub-metrics that score lowest.`).join('\n')}
-
-**Instructions for Antigravity:**
-Review the project at its path and implement improvements targeting the weak scores above.
-Focus on changes that directly raise the metric values through observable code/architecture changes.
-After implementing, the Connected Strategy platform will automatically re-score.`;
-}
-
-/**
- * Normalize project name to a consistent ID.
- * Always uses underscores, never hyphens, to avoid duplicates.
- */
-function normalizeProjectId(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-}
-
-/**
- * Remove duplicate projects from the DB.
- * Keeps the version with underscore ID (canonical) and deletes hyphen variants.
- */
-function cleanDuplicateProjects(): void {
-  const projects = listProjects();
-  const byPath = new Map<string, Array<{ id: string; path: string }>>();
-  for (const p of projects) {
-    const entries = byPath.get(p.path) ?? [];
-    entries.push({ id: p.id, path: p.path });
-    byPath.set(p.path, entries);
+  if (projects.length === 0) {
+    return res.status(400).json({ ok: false, error: 'No projects matched' });
   }
 
-  // For each path with multiple IDs, keep the underscore version
-  for (const [, entries] of byPath) {
-    if (entries.length <= 1) continue;
-    const canonical = entries.find(e => e.id.includes('_'))?.id ?? entries[0].id;
-    for (const entry of entries) {
-      if (entry.id !== canonical) {
-        deleteProject(entry.id);
-      }
+  // Fire-and-track: long-running, return runId immediately
+  const startedAt = new Date().toISOString();
+  insertRun({ run_id: runId, project_id: projects[0].id, started_at: startedAt, status: 'running', state_snapshot_path: '', ended_at: null, health_score: null, total_tokens: null, estimated_cost_usd: null, error_message: null });
+  broadcastEvent('pipeline:started', { runId, projectId: projects[0].id, startedAt });
+
+  // Forward internal events to the global telemetry bus
+  const telemetryForwarder = (data: any) => {
+    if (data.type === 'telemetry') {
+      broadcastEvent('agent:activity', data);
     }
-  }
-}
+  };
+  pipelineEvents.on(`v3-${runId}`, telemetryForwarder);
 
-/** GET /api/pipeline/proposals — returns cached proposals from last run */
-router.get('/proposals', (_req: Request, res: Response) => {
-  if (!cachedResults) {
-    res.json({ ok: true, data: [], message: 'No pipeline run yet. POST /api/pipeline/run-full first.' });
-    return;
-  }
-  res.json({ ok: true, data: cachedResults.proposals, timestamp: cachedResults.timestamp });
+  // Run async (don't await — let HTTP return)
+  (async () => {
+    try {
+      for (const project of projects) {
+        await runV3Pipeline({
+          runId,
+          project,
+          store,
+          options: {
+            useGemini: body.useGemini !== false,
+            naturalLanguageContext: body.naturalLanguageContext,
+            skipPhases: body.skipPhases ?? [],
+            competitorHints: body.competitorHints,
+            customerSegment: body.customerSegment,
+            onProgress: (phase: string, msg: string) => {
+              pipelineEvents.emit(`v3-${runId}`, { phase, msg });
+              broadcastEvent('agent:started', { runId, phase, message: msg });
+            }
+          },
+          emitter: pipelineEvents,
+        });
+      }
+      updateRunStatus(runId, 'done', { ended_at: new Date().toISOString() });
+      pipelineEvents.emit(`v3-${runId}`, { phase: 'DONE', msg: 'Pipeline Finished successfully' });
+      broadcastEvent('pipeline:completed', { runId, status: 'done' });
+    } catch (err) {
+      updateRunStatus(runId, 'failed', { ended_at: new Date().toISOString(), error_message: String(err) });
+      pipelineEvents.emit(`v3-${runId}`, { phase: 'FAILED', msg: String(err) });
+      broadcastEvent('pipeline:completed', { runId, status: 'failed', error: String(err) });
+    } finally {
+      pipelineEvents.off(`v3-${runId}`, telemetryForwarder);
+    }
+  })();
+
+  res.json({ ok: true, runId, projectsQueued: projects.length, statusEndpoint: `/api/pipeline/v3-status/${runId}` });
 });
 
-/** GET /api/pipeline/findings — returns cached findings from last run */
-router.get('/findings', (_req: Request, res: Response) => {
-  if (!cachedResults) {
-    res.json({ ok: true, data: [], message: 'No pipeline run yet.' });
-    return;
-  }
-  res.json({ ok: true, data: cachedResults.findings, timestamp: cachedResults.timestamp });
+router.get('/status/:runId', (req, res) => {
+  const run = getRunById(req.params.runId);   // from db/repositories/v3-runs
+  if (!run) return res.status(404).json({ ok: false });
+  res.json({ ok: true, run });
 });
 
-/** GET /api/pipeline/prompts — returns cached prompt packets from last run */
-router.get('/prompts', (_req: Request, res: Response) => {
-  if (!cachedResults) {
-    res.json({ ok: true, data: [], message: 'No pipeline run yet.' });
-    return;
-  }
-  res.json({ ok: true, data: cachedResults.promptPackets, timestamp: cachedResults.timestamp });
-});
+router.get('/stream/:runId', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
 
-/** GET /api/pipeline/last-run — returns summary of last pipeline run */
-router.get('/last-run', (_req: Request, res: Response) => {
-  if (!cachedResults) {
-    res.json({ ok: true, data: null });
-    return;
-  }
-  res.json({
-    ok: true,
-    data: {
-      timestamp: cachedResults.timestamp,
-      elapsed: cachedResults.elapsed,
-      totalFindings: cachedResults.findings.length,
-      totalProposals: cachedResults.proposals.length,
-      totalPromptPackets: cachedResults.promptPackets.length,
-    },
+  const listener = (data: unknown) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  pipelineEvents.on(`v3-${req.params.runId}`, listener);
+
+  req.on('close', () => {
+    pipelineEvents.off(`v3-${req.params.runId}`, listener);
   });
 });
 
-/** GET /api/pipeline/history — returns persisted pipeline run history */
-router.get('/history', (_req: Request, res: Response) => {
+router.get('/state/:projectId', (req, res) => {
+  const state = store.load(req.params.projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'No v3 state for this project' });
+  res.json({ ok: true, state });
+});
+
+router.get('/moves/:projectId', (req, res) => {
+  const state = store.load(req.params.projectId);
+  if (!state?.synthesis) return res.json({ ok: true, moves: [] });
+  // Read INDEX.md from disk
+  const indexPath = `data/projects/${req.params.projectId}/antigravity/INDEX.md`;
+  res.json({
+    ok: true,
+    moves: state.synthesis.topPriorities.map((p: { title: string; summary: string; estimatedImpact: string; estimatedEffort: string }, i: number) => ({
+      moveId: `move-${i + 1}`,
+      title: p.title,
+      summary: p.summary,
+      impact: p.estimatedImpact,
+      effort: p.estimatedEffort,
+      paths: {
+        manifest: `data/projects/${req.params.projectId}/antigravity/move-${i + 1}/manifest.json`,
+        prompt: `data/projects/${req.params.projectId}/antigravity/move-${i + 1}/prompt.md`,
+        strategy: `data/projects/${req.params.projectId}/antigravity/move-${i + 1}/strategy.md`,
+        acceptance: `data/projects/${req.params.projectId}/antigravity/move-${i + 1}/acceptance-tests.md`,
+      },
+    })),
+    indexPath,
+  });
+});
+
+router.post('/context/:projectId', (req, res) => {
+  const message = req.body.message as string;
+  if (!message) return res.status(400).json({ ok: false, error: 'message required' });
+  store.appendContext(req.params.projectId, message, []);
+  res.json({ ok: true });
+});
+
+router.put('/state/:projectId/auto-mode', (req, res) => {
+  const { enabled } = req.body as { enabled: boolean };
+  const state = store.load(req.params.projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  
+  state.runsAutonomously = !!enabled;
+  store.save(state);
+  res.json({ ok: true, runsAutonomously: state.runsAutonomously });
+});
+
+router.get('/proposals', (req, res) => {
+  const projects = listProjects();
+  let allProposals: import('@cs/domain').ImprovementProposal[] = [];
+  
+  for (const p of projects) {
+    const state = store.load(p.id);
+    if (!state?.synthesis?.topPriorities) continue;
+    
+    for (const priority of state.synthesis.topPriorities) {
+      allProposals.push({
+        id: priority.priorityId || Math.random().toString(36).substring(7),
+        projectId: p.id,
+        title: priority.title,
+        context: priority.summary || '',
+        evidence: [],
+        expectedImpact: '',
+        risk: '',
+        riskLevel: 'medium',
+        acceptanceCriteria: [],
+        changeType: 'architecture',
+        affectedComponents: [],
+        strategicMapping: {
+          raisesWTP: true,
+          reducesCost: false,
+          increasesSwitchingCosts: false,
+          improvesActivitySystem: true,
+          strengthensBusinessModel: false,
+          senseTransmitPhase: 'Analyze',
+          recognizeRequestPhase: 'Respond'
+        },
+        status: state.userContext?.completedPriorities?.includes(priority.priorityId) ? 'implemented' :
+               state.userContext?.dismissedPriorities?.includes(priority.priorityId) ? 'rejected' : 'draft',
+        requiresHumanApproval: true,
+        createdAt: state.lastRunAt || new Date().toISOString(),
+        updatedAt: state.lastRunAt || new Date().toISOString(),
+      });
+    }
+  }
+  
+  res.json({ ok: true, data: allProposals });
+});
+
+router.get('/findings', (req, res) => {
+  const projects = listProjects();
+  let allFindings: Array<{ projectId: string; projectName: string; finding: any; agentId: string }> = [];
+  
+  for (const p of projects) {
+    const state = store.load(p.id);
+    if (!state?.swarm?.findings) continue;
+    
+    for (const f of state.swarm.findings) {
+      allFindings.push({
+        projectId: p.id,
+        projectName: p.name,
+        finding: {
+          id: Math.random().toString(36).substring(7),
+          title: (f as any).finding || f.title,
+          description: (f as any).rationale || (f as any).finding || f.description || '',
+          severity: f.severity === 'critical' ? 'high' : f.severity === 'high' ? 'medium' : 'low',
+          confidence: (f as any).confidence || 0.8,
+          category: f.category || 'architecture',
+          recommendedAction: (f as any).proposedAction || (f as any).remediation || ''
+        },
+        agentId: (f as any).agent || f.category
+      });
+    }
+  }
+  
+  res.json({ ok: true, data: allFindings });
+});
+
+router.get('/history/:projectId', (req, res) => {
   try {
-    const runs = listPipelineRuns(50);
-    res.json({ ok: true, data: runs });
+    const runs = getHistoricalRuns(req.params.projectId);
+    res.json({ ok: true, runs });
   } catch (err) {
-    res.json({ ok: false, error: String(err), data: [] });
+    // Fallback to legacy JSONL if DB not initialized or errored
+    const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
+    res.json({ ok: true, runs: lines });
+  }
+});
+
+router.get('/causal/:projectId', async (req, res) => {
+  const state = store.load(req.params.projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  
+  // Extract scores or default to 50
+  const scores: Record<string, number> = {
+    connectedExperienceScore: state.competitive?.wtpDrivers?.find(d => d.name === 'Connected Experience')?.selfScore ? 50 + state.competitive.wtpDrivers.find(d => d.name === 'Connected Experience')!.selfScore * 25 : 50,
+    closedLoopMaturity: state.wharton?.ws05 ? 70 : 40,
+    switchingCostIndex: 60,
+    wtpUpliftIndex: state.competitive?.wtpDrivers?.reduce((a,b) => a + b.selfScore, 0) ? 50 + state.competitive.wtpDrivers.reduce((a,b) => a + b.selfScore, 0) * 10 : 50,
+    costReductionPotential: state.competitive?.costDrivers?.reduce((a,b) => a + b.selfScore, 0) ? 50 + state.competitive.costDrivers.reduce((a,b) => a + b.selfScore, 0) * 10 : 50,
+    competitivePositioningIndex: 55,
+    businessModelStrength: state.wharton?.revenueModel ? 80 : 45,
+    dataScienceReadiness: state.wharton?.ws03 ? 65 : 30,
+    architectureResilience: 75,
+  };
+
+  const result = await runCausalMapper({ projectId: req.params.projectId, scores }, { jobId: 'v3-causal', projectId: req.params.projectId, startedAt: new Date().toISOString() } as any);
+  
+  res.json({ ok: true, causal: result.data });
+});
+
+router.get('/swarm-comparator', (req, res) => {
+  const p1Id = req.query.p1 as string;
+  const p2Id = req.query.p2 as string;
+
+  if (!p1Id || !p2Id) return res.status(400).json({ ok: false, error: 'Requires p1 and p2 query params' });
+
+  const state1 = store.load(p1Id);
+  const state2 = store.load(p2Id);
+
+  if (!state1 || !state2) return res.status(404).json({ ok: false, error: 'One or both projects not found' });
+
+  // Extract and group findings
+  const findings1 = state1.swarm?.findings || [];
+  const findings2 = state2.swarm?.findings || [];
+
+  const agents = Array.from(new Set([
+    ...findings1.map(f => (f as any).agent ?? f.category),
+    ...findings2.map(f => (f as any).agent ?? f.category)
+  ]));
+
+  const comparison = agents.map(agent => ({
+    agent,
+    project1: findings1.filter(f => ((f as any).agent ?? f.category) === agent),
+    project2: findings2.filter(f => ((f as any).agent ?? f.category) === agent)
+  }));
+
+  res.json({
+    ok: true,
+    projects: {
+      p1: { id: p1Id, name: state1.projectName },
+      p2: { id: p2Id, name: state2.projectName }
+    },
+    comparison
+  });
+});
+
+router.get('/prompts', async (req, res) => {
+  const projects = listProjects();
+  const allPrompts = [];
+
+  for (const p of projects) {
+    const baseDir = path.join('data', 'projects', p.id, 'antigravity');
+    try {
+      const stats = await fsp.stat(baseDir);
+      if (!stats.isDirectory()) continue;
+      
+      const entries = await fsp.readdir(baseDir, { withFileTypes: true });
+      const moves = entries.filter(e => e.isDirectory() && e.name.startsWith('move-')).map(e => e.name);
+      
+      for (const move of moves) {
+        try {
+          const promptContent = await fsp.readFile(path.join(baseDir, move, 'prompt.md'), 'utf-8');
+          allPrompts.push({
+            projectId: p.id,
+            projectName: p.name,
+            moveId: move,
+            promptForAntigravity: promptContent
+          });
+        } catch (err) {
+          // Ignore missing prompt.md
+        }
+      }
+    } catch (err) {
+      // Directory doesn't exist
+    }
+  }
+
+  res.json({ ok: true, data: allPrompts });
+});
+
+router.post('/auto-execute/:projectId/:moveId', async (req, res) => {
+  const { projectId, moveId } = req.params;
+  const project = listProjects().find(p => p.id === projectId);
+  if (!project) return res.status(404).json({ ok: false, error: 'Project not found' });
+
+  const ctx = {
+    jobId: `auto-${moveId}-${Date.now()}`,
+    projectId,
+    startedAt: new Date().toISOString()
+  };
+
+  try {
+    const agent = getRegisteredAgent('autonomous-executor');
+    if (!agent) throw new Error('Autonomous Executor agent not found');
+
+    const result = await agent.run({ projectId, projectPath: project.path, moveId }, {
+      jobId: `auto-${moveId}-${Date.now()}`,
+      projectId,
+      startedAt: new Date().toISOString()
+    } as any);
+
+    res.json({ ok: true, data: result.data });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err) });
   }
 });
 

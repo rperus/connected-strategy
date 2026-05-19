@@ -24,7 +24,7 @@ export function CausalDagPage() {
   useEffect(() => {
     if (!activeProject?.id) return;
     setLoading(true);
-    fetch(`${API_BASE_URL}/api/pipeline/v3-causal/${activeProject.id}`)
+    fetch(`${API_BASE_URL}/api/pipeline/causal/${activeProject.id}`)
       .then(r => r.json())
       .then(res => { if (res.ok) setData(res.causal); setLoading(false); })
       .catch(() => setLoading(false));

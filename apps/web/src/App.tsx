@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProjectProvider } from './context/ProjectContext';
 import { Sidebar } from './components/Sidebar';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { StrategyCopilot } from './components/StrategyCopilot';
 
 // ─── Eager: HomePage loads immediately (landing page) ────────────────────────
 import { HomePage } from './pages/HomePage';
@@ -53,12 +54,13 @@ function PageLoader() {
   );
 }
 
-function App() {
+export function App() {
   return (
     <ProjectProvider>
       <BrowserRouter>
-        <div className="workbench">
+        <div className="app-layout">
           <Sidebar />
+          <StrategyCopilot />
           <main className="main-content">
             <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>

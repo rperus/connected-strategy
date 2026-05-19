@@ -24,7 +24,7 @@ export const V3Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (runId) {
-      const eventSource = new EventSource(`${API_BASE_URL}/api/pipeline/v3-stream/${runId}`);
+      const eventSource = new EventSource(`${API_BASE_URL}/api/pipeline/stream/${runId}`);
       eventSource.onmessage = (e) => {
         const data = JSON.parse(e.data);
         setLogs(prev => [...prev, data]);
@@ -41,7 +41,7 @@ export const V3Dashboard: React.FC = () => {
   const fetchState = async () => {
     if (!selectedProjectId) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/pipeline/v3-state/${selectedProjectId}`);
+      const res = await fetch(`${API_BASE_URL}/api/pipeline/state/${selectedProjectId}`);
       const data = await res.json();
       if (data.ok) setState(data.state);
     } catch (e) {

@@ -71,3 +71,12 @@ export type { ProjectStateV3, Priority } from './v3/state-store.js';
 export { runV3Pipeline } from './v3/pipeline-orchestrator.js';
 export type { RunV3Opts } from './v3/pipeline-orchestrator.js';
 export { getHistoricalRuns } from './v3/db/index.js';
+export * from './v3/types.js';
+
+// V3 Pipeline
+export * from './v3/pipeline-orchestrator.js';
+export * from './v3/state-store.js';
+export * from './v3/shared-findings.js';
+
+// New Agents
+export * from './agents/batch-reporter.js';

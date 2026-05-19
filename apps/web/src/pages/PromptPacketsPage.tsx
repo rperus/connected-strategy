@@ -77,7 +77,7 @@ export function PromptPacketsPage() {
 
   useEffect(() => {
     // Fetch v3 generated prompts
-    fetch(`${api.health.replace('/health', '')}/pipeline/v3-prompts`)
+    fetch(`${api.health.replace('/health', '')}/pipeline/prompts`)
       .then(r => r.json())
       .catch(() => ({ ok: false }))
       .then(promptResp => {
@@ -103,7 +103,7 @@ export function PromptPacketsPage() {
     
     setToast('🚀 Iniciando ejecución autónoma...');
     try {
-      const res = await fetch(`${api.health.replace('/health', '')}/pipeline/v3-auto-execute/${projectId}/${moveId}`, { method: 'POST' });
+      const res = await fetch(`${api.health.replace('/health', '')}/pipeline/auto-execute/${projectId}/${moveId}`, { method: 'POST' });
       const data = await res.json();
       if (data.ok) {
         setToast(`✅ Ejecución exitosa. Branch: ${data.data?.branch}. Revisa: ${data.data?.tmpDir}`);

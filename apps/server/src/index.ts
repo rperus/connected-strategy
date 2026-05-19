@@ -109,15 +109,16 @@ import metricsRoutes from './modules/metrics/routes.js';
 app.use('/api/metrics', metricsRoutes);
 
 import pipelineRoutes from './modules/pipeline/routes.js';
-import v3PipelineRoutes from './modules/pipeline/v3-route.js';
 app.use('/api/pipeline', pipelineRoutes);
-app.use('/api/pipeline', v3PipelineRoutes);
 
 import healthDashboardRoutes from './modules/health/routes.js';
 app.use('/api/health-dashboard', healthDashboardRoutes);
 
 import telemetryRoutes from './modules/telemetry/routes.js';
 app.use('/api/telemetry', telemetryRoutes);
+
+import copilotRoutes from './modules/copilot/routes.js';
+app.use('/api/copilot', copilotRoutes);
 
 // ─── Start ──────────────────────────────────────────────────────
 const PORT = resolvePort('connected_strategy_api', 4311);

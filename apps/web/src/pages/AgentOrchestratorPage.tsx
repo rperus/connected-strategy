@@ -146,7 +146,7 @@ export function AgentOrchestratorPage() {
   useEffect(() => {
     // Fetch initial state to see if auto-mode is enabled
     if (activeProject?.id) {
-      fetch(`${API_BASE_URL}/api/pipeline/v3-state/${activeProject.id}`)
+      fetch(`${API_BASE_URL}/api/pipeline/state/${activeProject.id}`)
         .then(r => r.json())
         .then(data => {
           if (data.ok && data.state) {
@@ -218,7 +218,7 @@ export function AgentOrchestratorPage() {
     const nextState = !autoMode;
     setAutoMode(nextState);
     try {
-      await fetch(`${API_BASE_URL}/api/pipeline/v3-state/${activeProject.id}/auto-mode`, {
+      await fetch(`${API_BASE_URL}/api/pipeline/state/${activeProject.id}/auto-mode`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: nextState })

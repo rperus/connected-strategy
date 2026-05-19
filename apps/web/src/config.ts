@@ -35,13 +35,11 @@ export const api = {
   // Metrics (real computed scores from worksheet answers)
   metrics: `${API_BASE_URL}/api/metrics`,
   metricsForProject: (projectId: string) => `${API_BASE_URL}/api/metrics/${projectId}`,
-  metricsEnrich: (projectId: string) => `${API_BASE_URL}/api/metrics/${projectId}/enrich`,
-
   // Full pipeline (scan → auto-fill → analyze → prompts)
   pipelineRunFull: `${API_BASE_URL}/api/pipeline/run-full`,
-  pipelineProposals: `${API_BASE_URL}/api/pipeline/v3-proposals`,
-  pipelineFindings: `${API_BASE_URL}/api/pipeline/v3-findings`,
-  pipelinePrompts: `${API_BASE_URL}/api/pipeline/v3-prompts`,
+  pipelineProposals: `${API_BASE_URL}/api/pipeline/proposals`,
+  pipelineFindings: `${API_BASE_URL}/api/pipeline/findings`,
+  pipelinePrompts: `${API_BASE_URL}/api/pipeline/prompts`,
   pipelineLastRun: `${API_BASE_URL}/api/pipeline/last-run`,
   pipelineHistory: `${API_BASE_URL}/api/pipeline/history`,
 
