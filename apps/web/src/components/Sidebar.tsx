@@ -18,6 +18,7 @@ const NAV = [
     { to: '/business-model', label: 'Business Model', icon: '◈' },
     { to: '/data-science', label: 'Data Science', icon: '∑' },
     { to: '/architecture', label: 'Arquitectura', icon: '⬡' },
+    { to: '/causal', label: 'Causal DAG (Pearl)', icon: '🕸️' },
     { to: '/ai-frontier', label: 'AI Frontier', icon: '✦' },
   ]},
   { section: 'Estrategia Wharton', items: [

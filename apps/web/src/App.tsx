@@ -41,6 +41,7 @@ const PortfolioMatrixPage = React.lazy(() => import('./pages/PortfolioMatrixPage
 const BriefingPage = React.lazy(() => import('./pages/BriefingPage').then(m => ({ default: m.BriefingPage })));
 const PlatformIntelPage = React.lazy(() => import('./pages/PlatformIntelPage').then(m => ({ default: m.PlatformIntelPage })));
 const StrategicImprovePage = React.lazy(() => import('./pages/StrategicImprovePage').then(m => ({ default: m.StrategicImprovePage })));
+const CausalDagPage = React.lazy(() => import('./pages/CausalDagPage').then(m => ({ default: m.CausalDagPage })));
 
 // ─── Loading fallback ────────────────────────────────────────────────────────
 function PageLoader() {
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/briefing" element={<BriefingPage />} />
                   <Route path="/intel" element={<PlatformIntelPage />} />
                   <Route path="/improve" element={<StrategicImprovePage />} />
+                  <Route path="/causal" element={<CausalDagPage />} />
                   <Route path="/v3" element={<V3Dashboard />} />
                   <Route path="/v3/moves" element={<V3Moves />} />
                 </Routes>

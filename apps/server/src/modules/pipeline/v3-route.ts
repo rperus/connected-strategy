@@ -1,6 +1,7 @@
 import express from 'express';
 import { Request, Response, Router } from 'express';
 import { ProjectStateStore, runV3Pipeline, getHistoricalRuns } from '@cs/agents';
+import { runCausalMapper } from '@cs/agents/dist/agents/causal-mapper.js';
 import { listProjects } from '../../db/repositories/projects.js';
 import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
 import fs from 'fs';
@@ -164,6 +165,28 @@ router.get('/v3-history/:projectId', (req, res) => {
     const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
     res.json({ ok: true, runs: lines });
   }
+});
+
+router.get('/v3-causal/:projectId', async (req, res) => {
+  const state = store.load(req.params.projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  
+  // Extract scores or default to 50
+  const scores: Record<string, number> = {
+    connectedExperienceScore: state.competitive?.wtpDrivers?.find(d => d.name === 'Connected Experience')?.selfScore ? 50 + state.competitive.wtpDrivers.find(d => d.name === 'Connected Experience')!.selfScore * 25 : 50,
+    closedLoopMaturity: state.wharton?.ws05 ? 70 : 40,
+    switchingCostIndex: 60,
+    wtpUpliftIndex: state.competitive?.wtpDrivers?.reduce((a,b) => a + b.selfScore, 0) ? 50 + state.competitive.wtpDrivers.reduce((a,b) => a + b.selfScore, 0) * 10 : 50,
+    costReductionPotential: state.competitive?.costDrivers?.reduce((a,b) => a + b.selfScore, 0) ? 50 + state.competitive.costDrivers.reduce((a,b) => a + b.selfScore, 0) * 10 : 50,
+    competitivePositioningIndex: 55,
+    businessModelStrength: state.wharton?.revenueModel ? 80 : 45,
+    dataScienceReadiness: state.wharton?.ws03 ? 65 : 30,
+    architectureResilience: 75,
+  };
+
+  const result = await runCausalMapper({ projectId: req.params.projectId, scores }, { jobId: 'v3-causal', projectId: req.params.projectId, startedAt: new Date().toISOString() } as any);
+  
+  res.json({ ok: true, causal: result.data });
 });
 
 export default router;
