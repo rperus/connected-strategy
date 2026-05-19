@@ -101,7 +101,7 @@ export function LauncherPage() {
         setTimeout(checkStatuses, 4000);
       } else {
         // Fallback: if API server is down, try to open via browser link
-        setToast(`API no disponible — usa el .bat manualmente en C:/dev`);
+        setToast(`API no disponible — lanza el script manualmente en tu workspace`);
       }
     } catch {
       setToast(`Servidor API caído. Reinicia Connected Strategy.bat primero.`);

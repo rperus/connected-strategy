@@ -169,18 +169,20 @@ router.delete('/:id', (req: Request, res: Response) => {
 router.post('/:id/launch', (req: Request, res: Response) => {
   const { id } = req.params;
 
+  const WORKSPACE = process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
+  
   // Allowed root directories for launch (security: prevents arbitrary path execution)
-  const ALLOWED_ROOTS = ['C:\\dev\\'];
+  const ALLOWED_ROOTS = [WORKSPACE, WORKSPACE + '\\'];
 
   // Project registry: lookup from DB or use a built-in map
   const LAUNCHER_MAP: Record<string, { path: string; script?: string }> = {
-    'balam-licitaciones':  { path: 'C:\\dev\\antigravity-tenders-platform', script: 'start.bat' },
-    'connected-strategy':  { path: 'C:\\dev\\Connected_Strategy',            script: 'Connected Strategy.bat' },
-    'rodrigo-os':          { path: 'C:\\dev\\rodrigo-os' },
-    'rodrigo-os-health':   { path: 'C:\\dev\\rodrigo-os-health',             script: 'run_dashboard.bat' },
-    'youtube-cashcow':     { path: 'C:\\dev\\youtube-cashcow',               script: 'CashCow_Dashboard.bat' },
-    'balam-demo':          { path: 'C:\\dev\\balam-demo-v2' },
-    'grant-navigator':     { path: 'C:\\dev\\Grant-Navigator' },
+    'balam-licitaciones':  { path: `${WORKSPACE}\\antigravity-tenders-platform`, script: 'start.bat' },
+    'connected-strategy':  { path: `${WORKSPACE}\\Connected_Strategy`,            script: 'Connected Strategy.bat' },
+    'rodrigo-os':          { path: `${WORKSPACE}\\rodrigo-os` },
+    'rodrigo-os-health':   { path: `${WORKSPACE}\\rodrigo-os-health`,             script: 'run_dashboard.bat' },
+    'youtube-cashcow':     { path: `${WORKSPACE}\\youtube-cashcow`,               script: 'CashCow_Dashboard.bat' },
+    'balam-demo':          { path: `${WORKSPACE}\\balam-demo-v2` },
+    'grant-navigator':     { path: `${WORKSPACE}\\Grant-Navigator` },
   };
 
   const entry = LAUNCHER_MAP[id] ?? getProject(id);

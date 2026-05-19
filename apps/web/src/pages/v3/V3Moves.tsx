@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProject } from '../../context/ProjectContext';
 
-const API_BASE_URL = 'http://127.0.0.1:4311';
+import { API_BASE_URL } from '../../config';
 
 export const V3Moves: React.FC = () => {
   const { allProjects: projects, activeProject, setActiveProject } = useProject();

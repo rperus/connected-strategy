@@ -110,7 +110,7 @@ export function StrategicImprovePage() {
       const r = await fetch(api.pipelineRunFull, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanPath: 'C:\\dev', useGemini: false }),
+        body: JSON.stringify({ useGemini: false }),
       });
       if (r.ok) {
         await loadLiveData();

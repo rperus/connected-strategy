@@ -10,11 +10,14 @@
 
 import type { KnowledgeSource } from './types.js';
 
+const KNOWLEDGE_ROOT = process.env.CS_KNOWLEDGE_DIR || 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton';
+const WORKSPACE_ROOT = process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
+
 // ─── Wharton Source Catalog ───────────────────────────────────────────────────
 export const WHARTON_SOURCES: KnowledgeSource[] = [
   {
     id: 'wharton_connected_strategy',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\Connected_strategy.txt',
+    path: `${KNOWLEDGE_ROOT}\\Connected_strategy.txt`,
     type: 'wharton_core',
     title: 'Connected Strategy — Core Framework',
     description:
@@ -26,7 +29,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'wharton_worksheets_all',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WorkSheet_Todas.txt',
+    path: `${KNOWLEDGE_ROOT}\\WorkSheet_Todas.txt`,
     type: 'wharton_worksheet',
     title: 'All Wharton Worksheets — Combined',
     description: 'Combined text of all Wharton strategy worksheets WS01-WS11.',
@@ -41,7 +44,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws01_problem_actors_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS1_Problem_Actors.md',
+    path: `${KNOWLEDGE_ROOT}\\WS1_Problem_Actors.md`,
     type: 'wharton_worksheet',
     title: 'WS01 — Problem & Actors',
     description: 'Customer journey, pain points, information flows, why-how ladder.',
@@ -51,7 +54,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws02_connected_loop_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS02_Connected_Loop_Flywheel.md',
+    path: `${KNOWLEDGE_ROOT}\\WS02_Connected_Loop_Flywheel.md`,
     type: 'wharton_worksheet',
     title: 'WS02 — Connected Loop & Flywheel',
     description: 'Learning loops, personalization, flywheel dynamics.',
@@ -61,7 +64,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws03_switching_costs_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS03_Switching_Costs_Moat.md',
+    path: `${KNOWLEDGE_ROOT}\\WS03_Switching_Costs_Moat.md`,
     type: 'wharton_worksheet',
     title: 'WS03 — Switching Costs & Moat',
     description: 'Data lock-in, habit formation, integration depth, network effects.',
@@ -71,7 +74,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws04_mvp_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS04_MVP_12m_Integrate_vs_Build.md',
+    path: `${KNOWLEDGE_ROOT}\\WS04_MVP_12m_Integrate_vs_Build.md`,
     type: 'wharton_worksheet',
     title: 'WS04 — MVP & Integrate vs Build',
     description: '12-month MVP scoping and build vs. integrate decisions.',
@@ -81,7 +84,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws05_canonical_data_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS05_Canonical_Data_Model.md',
+    path: `${KNOWLEDGE_ROOT}\\WS05_Canonical_Data_Model.md`,
     type: 'wharton_worksheet',
     title: 'WS05 — Canonical Data Model',
     description: 'Canonical data entities, instrumentation gaps, MITx rigor standard.',
@@ -91,7 +94,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws06_closed_loop_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS06_Closed_Loop_Orchestration.md',
+    path: `${KNOWLEDGE_ROOT}\\WS06_Closed_Loop_Orchestration.md`,
     type: 'wharton_worksheet',
     title: 'WS06 — Closed Loop Orchestration',
     description: 'Response type mapping per journey and pain point.',
@@ -101,7 +104,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws07_agent_design_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS07_Agent_Design_Guardrails.md',
+    path: `${KNOWLEDGE_ROOT}\\WS07_Agent_Design_Guardrails.md`,
     type: 'wharton_worksheet',
     title: 'WS07 — Agent Design & Guardrails',
     description: 'Agent roster, permission matrix, loop prevention, audit trail.',
@@ -111,7 +114,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws08_dashboards_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS08_Institutional_Dashboards_KPIs.md',
+    path: `${KNOWLEDGE_ROOT}\\WS08_Institutional_Dashboards_KPIs.md`,
     type: 'wharton_worksheet',
     title: 'WS08 — Institutional Dashboards & KPIs',
     description: 'KPI definitions, adoption metrics, health signals.',
@@ -121,7 +124,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws09_compliance_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS09_Compliance_Audit_Evidence.md',
+    path: `${KNOWLEDGE_ROOT}\\WS09_Compliance_Audit_Evidence.md`,
     type: 'wharton_worksheet',
     title: 'WS09 — Compliance, Audit & Evidence',
     description: 'Risk policy, approval matrix, audit trail coverage.',
@@ -131,7 +134,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws10_competitive_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS10_Competitive_Positioning.md',
+    path: `${KNOWLEDGE_ROOT}\\WS10_Competitive_Positioning.md`,
     type: 'wharton_worksheet',
     title: 'WS10 — Competitive Positioning',
     description: 'Internal/external/dynamic fit, differentiation, convergence risks.',
@@ -141,7 +144,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
   },
   {
     id: 'ws11_gtm_src',
-    path: 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton\\WS11_GTM_Pricing_Packaging.md',
+    path: `${KNOWLEDGE_ROOT}\\WS11_GTM_Pricing_Packaging.md`,
     type: 'wharton_worksheet',
     title: 'WS11 — GTM, Pricing & Packaging',
     description: 'Revenue model, pricing strategy, packaging, GTM narrative.',
@@ -155,7 +158,7 @@ export const WHARTON_SOURCES: KnowledgeSource[] = [
 export const LOCAL_SOURCES: KnowledgeSource[] = [
   {
     id: 'local_module_design',
-    path: 'C:\\dev\\Connected_Strategy\\Connected Strategy Module Design_primer acercamiento.txt',
+    path: `${WORKSPACE_ROOT}\\Connected_Strategy\\Connected Strategy Module Design_primer acercamiento.txt`,
     type: 'module_design',
     title: 'Connected Strategy Module Design — Primer',
     description:

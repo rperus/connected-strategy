@@ -75,7 +75,7 @@ export function PortfolioPage() {
       const r = await fetch(api.projectScan, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanPath: 'C:\\dev' }),
+        body: JSON.stringify({}),
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const body = await r.json() as { ok: boolean; data: { projects: Project[] } };
@@ -158,7 +158,7 @@ export function PortfolioPage() {
           onClick={handleScan}
           disabled={scanning}
         >
-          {scanning ? 'Escaneando…' : '+ Escanear C:\\dev'}
+          {scanning ? 'Escaneando…' : '+ Escanear Workspace'}
         </button>
         <button className="btn btn-secondary btn-sm">Importar</button>
       </div>
@@ -218,7 +218,7 @@ export function PortfolioPage() {
         {projects.length === 0 && apiState !== 'loading' && (
           <div className="card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 48 }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>📂</div>
-            <div>No hay proyectos. Haz clic en «Escanear C:\dev» para descubrir proyectos.</div>
+            <div>No hay proyectos. Haz clic en «Escanear Workspace» para descubrir proyectos.</div>
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@
  * Mount at: /api/pipeline
  *
  * POST /api/pipeline/run-full
- *   Scans projects in C:\dev → auto-fills worksheets with scoring keys →
+ *   Scans projects in workspace → auto-fills worksheets with scoring keys →
  *   runs all 6 analysts + proposal composer → generates prompt packets for Antigravity.
  *   Returns everything in one response.
  */
@@ -49,14 +49,14 @@ export function getCachedResults() { return cachedResults; }
  *
  * Full pipeline: scan → auto-fill → analyze → prompts.
  * Body (optional): { scanPath?: string, useGemini?: boolean }
- * Default scanPath: C:\dev
+ * Default scanPath: CS_WORKSPACE_ROOT
  * Default useGemini: true (uses Gemini API if key is available)
  * Set useGemini: false for zero-cost deterministic-only mode
  */
 router.post('/run-full', async (req: Request, res: Response) => {
   const startTime = Date.now();
   const body = req.body as { scanPath?: string; useGemini?: boolean };
-  const scanPath = body.scanPath ?? 'C:\\dev';
+  const scanPath = body.scanPath || process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
   const useGemini = body.useGemini !== false; // default true
 
   // If useGemini is false, temporarily disable the LLM provider

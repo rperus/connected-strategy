@@ -1,7 +1,7 @@
 /**
  * @cs/agents — portfolio-scanner.ts
  *
- * Discovers and classifies projects under a root directory (default: C:\dev).
+ * Discovers and classifies projects under a root directory (default: process.env.CS_WORKSPACE_ROOT).
  * This is a deterministic filesystem scan — no LLM required.
  * 
  * Loop phase: Sense (detecting what exists in the portfolio)
@@ -173,7 +173,7 @@ export async function runPortfolioScanner(
   context: AgentContext,
 ): Promise<AgentResult<PortfolioScanResult>> {
   const startMs = Date.now();
-  const scanPath = input.scanPath ?? 'C:\\dev';
+  const scanPath = input.scanPath || process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
 
   try {
     const projects = scanDirectory(scanPath);

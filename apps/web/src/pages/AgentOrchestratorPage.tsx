@@ -7,7 +7,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ProjectBanner } from '../components/ProjectBanner';
 import { useProject } from '../context/ProjectContext';
 
-const API_BASE_URL = 'http://127.0.0.1:4311';
+import { API_BASE_URL } from '../config';
 
 type Tier = 'supervisor' | 'crew-lead' | 'specialist';
 type Crew = 'recon' | 'analysis' | 'action' | 'cross-cutting' | 'none';
@@ -59,7 +59,7 @@ const AGENTS: AgentNode[] = [
 
   // ── Level 2: Recon Crew ───────────────────────────────────────
   { id:'portfolio-scanner', name:'Portfolio Scanner', emoji:'📡', phase:'Sense', tier:'specialist', crew:'recon',
-    role:'Descubre y clasifica proyectos en C:\\dev. Detecta stack, madurez y tags.',
+    role:'Descubre y clasifica proyectos en el Workspace. Detecta stack, madurez y tags.',
     input:['scanPath?'], output:['PortfolioScanResult[]'],
     memory:'Stateless — re-escanea cada run.', llm:false, dependsOn:['recon-lead'], autonomous:false },
   { id:'competitive-intel-agent', name:'Competitive Intel', emoji:'📊', phase:'Sense', tier:'specialist', crew:'recon',

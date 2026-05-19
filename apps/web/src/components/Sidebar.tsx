@@ -121,7 +121,7 @@ export function Sidebar() {
               overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}>
-              {activeProject.path.replace('C:/dev/', '')}
+              {activeProject.path.split(/[/\\]/).pop()}
             </div>
           </div>
           <span style={{ color: 'var(--cs-text-muted)', fontSize: 10, flexShrink: 0 }}>

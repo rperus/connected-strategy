@@ -160,7 +160,7 @@ export function HomePage() {
       const r = await fetch(api.pipelineRunFull, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanPath: 'C:\\dev', useGemini }),
+        body: JSON.stringify({ useGemini }),
       });
       const body = await r.json() as { ok: boolean; data?: { mode: string; elapsed: string; projectsScanned: number; promptPackets: Array<{ projectName: string; promptForAntigravity: string }>; log: string[] }; error?: string };
       if (!r.ok || !body.ok) {
@@ -245,7 +245,7 @@ export function HomePage() {
             <strong>Pipeline ejecutándose…</strong>
           </div>
           <div style={{ fontSize: 11, color: 'var(--cs-text-muted)' }}>
-            Escaneando C:\dev → Llenando worksheets → Analizando → Generando prompts
+            Escaneando Workspace → Llenando worksheets → Analizando → Generando prompts
           </div>
         </div>
       )}

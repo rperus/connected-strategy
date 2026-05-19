@@ -36,7 +36,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'balam-licitaciones',
     name: 'BALAM Licitaciones',
-    path: 'C:/dev/antigravity-tenders-platform',
+    path: '/workspace/antigravity-tenders-platform',
     stack: ['React', 'FastAPI', 'PostgreSQL', 'Python', 'ML'],
     maturity: 'developing',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -61,7 +61,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'connected-strategy',
     name: 'Connected Strategy',
-    path: 'C:/dev/Connected_Strategy',
+    path: '/workspace/Connected_Strategy',
     stack: ['React', 'Node.js', 'TypeScript', 'SQLite'],
     maturity: 'developing',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -81,7 +81,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'rodrigo-os',
     name: 'Rodrigo OS',
-    path: 'C:/dev/rodrigo-os',
+    path: '/workspace/rodrigo-os',
     stack: ['Python', 'GCP', 'PostgreSQL'],
     maturity: 'nascent',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -97,7 +97,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'rodrigo-os-health',
     name: 'Health Dashboard',
-    path: 'C:/dev/rodrigo-os-health',
+    path: '/workspace/rodrigo-os-health',
     stack: ['Python', 'HTML', 'PostgreSQL', 'GCP', 'n8n'],
     maturity: 'nascent',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -129,7 +129,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'youtube-cashcow',
     name: 'YouTube CashCow',
-    path: 'C:/dev/youtube-cashcow',
+    path: '/workspace/youtube-cashcow',
     stack: ['Python', 'n8n', 'JavaScript', 'AI', 'ML'],
     maturity: 'nascent',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -150,7 +150,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'balam-demo',
     name: 'BALAM Demo',
-    path: 'C:/dev/balam-demo-v2',
+    path: '/workspace/balam-demo-v2',
     stack: ['React', 'TypeScript', 'Node.js', 'Python'],
     maturity: 'developing',
     lastScanned: '2026-04-27T09:08:00Z',
@@ -166,7 +166,7 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: 'grant-navigator',
     name: 'Grant Navigator',
-    path: 'C:/dev/Grant-Navigator',
+    path: '/workspace/Grant-Navigator',
     stack: ['Python', 'AI', 'Docs'],
     maturity: 'nascent',
     lastScanned: '2026-04-27T09:08:00Z',
