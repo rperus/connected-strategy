@@ -9,6 +9,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
 import { broadcastEvent } from '../../services/telemetry.js';
+import { getRegisteredAgent } from '@cs/agents';
 
 const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
@@ -158,6 +159,77 @@ router.put('/v3-state/:projectId/auto-mode', (req, res) => {
   res.json({ ok: true, runsAutonomously: state.runsAutonomously });
 });
 
+router.get('/v3-proposals', (req, res) => {
+  const projects = listProjects();
+  let allProposals: import('@cs/domain').ImprovementProposal[] = [];
+  
+  for (const p of projects) {
+    const state = store.load(p.id);
+    if (!state?.synthesis?.topPriorities) continue;
+    
+    for (const priority of state.synthesis.topPriorities) {
+      allProposals.push({
+        id: priority.priorityId || Math.random().toString(36).substring(7),
+        projectId: p.id,
+        title: priority.title,
+        context: priority.summary || '',
+        evidence: [],
+        expectedImpact: '',
+        risk: '',
+        riskLevel: 'medium',
+        acceptanceCriteria: [],
+        changeType: 'architecture',
+        affectedComponents: [],
+        strategicMapping: {
+          raisesWTP: true,
+          reducesCost: false,
+          increasesSwitchingCosts: false,
+          improvesActivitySystem: true,
+          strengthensBusinessModel: false,
+          senseTransmitPhase: 'Analyze',
+          recognizeRequestPhase: 'Respond'
+        },
+        status: state.userContext?.completedPriorities?.includes(priority.priorityId) ? 'implemented' :
+               state.userContext?.dismissedPriorities?.includes(priority.priorityId) ? 'rejected' : 'draft',
+        requiresHumanApproval: true,
+        createdAt: state.lastRunAt || new Date().toISOString(),
+        updatedAt: state.lastRunAt || new Date().toISOString(),
+      });
+    }
+  }
+  
+  res.json({ ok: true, data: allProposals });
+});
+
+router.get('/v3-findings', (req, res) => {
+  const projects = listProjects();
+  let allFindings: Array<{ projectId: string; projectName: string; finding: any; agentId: string }> = [];
+  
+  for (const p of projects) {
+    const state = store.load(p.id);
+    if (!state?.swarm?.findings) continue;
+    
+    for (const f of state.swarm.findings) {
+      allFindings.push({
+        projectId: p.id,
+        projectName: p.name,
+        finding: {
+          id: Math.random().toString(36).substring(7),
+          title: (f as any).finding || f.title,
+          description: (f as any).rationale || (f as any).finding || f.description || '',
+          severity: f.severity === 'critical' ? 'high' : f.severity === 'high' ? 'medium' : 'low',
+          confidence: (f as any).confidence || 0.8,
+          category: f.category || 'architecture',
+          recommendedAction: (f as any).proposedAction || (f as any).remediation || ''
+        },
+        agentId: (f as any).agent || f.category
+      });
+    }
+  }
+  
+  res.json({ ok: true, data: allFindings });
+});
+
 router.get('/v3-history/:projectId', (req, res) => {
   try {
     const runs = getHistoricalRuns(req.params.projectId);
@@ -259,6 +331,33 @@ router.get('/v3-prompts', async (req, res) => {
   }
 
   res.json({ ok: true, data: allPrompts });
+});
+
+router.post('/v3-auto-execute/:projectId/:moveId', async (req, res) => {
+  const { projectId, moveId } = req.params;
+  const project = listProjects().find(p => p.id === projectId);
+  if (!project) return res.status(404).json({ ok: false, error: 'Project not found' });
+
+  const ctx = {
+    jobId: `auto-${moveId}-${Date.now()}`,
+    projectId,
+    startedAt: new Date().toISOString()
+  };
+
+  try {
+    const agent = getRegisteredAgent('autonomous-executor');
+    if (!agent) throw new Error('Autonomous Executor agent not found');
+
+    const result = await agent.run({ projectId, projectPath: project.path, moveId }, {
+      jobId: `auto-${moveId}-${Date.now()}`,
+      projectId,
+      startedAt: new Date().toISOString()
+    } as any);
+
+    res.json({ ok: true, data: result.data });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err) });
+  }
 });
 
 export default router;

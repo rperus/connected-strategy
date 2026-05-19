@@ -37,7 +37,8 @@ export type AgentId =
   | 'temporal-analyst'
   | 'validation-agent'
   | 'anomaly-detector'
-  | 'causal-mapper';
+  | 'causal-mapper'
+  | 'autonomous-executor';
 
 /**
  * Tier in the 3-level swarm hierarchy:

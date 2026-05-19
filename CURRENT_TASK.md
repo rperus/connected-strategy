@@ -32,5 +32,5 @@ Opciones para la mesa:
    Un chat en la UI que actúe como un clon de Rodrigo: puede consultar SQLite, el `SharedFindingsStore` y leer el estado en vivo de los proyectos para responder preguntas cruzadas (Ej: "Cuáles son los 3 proyectos con mayor riesgo arquitectónico?").
 2. **[ ] Reporting Automatizado en Batch**
    Un agente que consolide el estado del portfolio cada semana y genere un reporte "Board-ready" combinando gráficas y narrativas estratégicas (en markdown o docx).
-3. **[ ] Autonomous Execution (Git Auto-PRs)**
-   Llevar el `action-lead` al límite: en lugar de generar prompt packets para copiar/pegar, el agente lee el `manifest.json`, realiza los cambios directamente en un repositorio clonado temporal y abre un Pull Request en GitHub o GitLab automáticamente.
+3. **[x] Autonomous Execution (Git Auto-PRs)**
+   Llevar el `action-lead` al límite: en lugar de generar prompt packets para copiar/pegar, el agente lee el `manifest.json`, realiza los cambios directamente en un repositorio clonado temporal, valida el typecheck y hace git push remoto. (Completado en auditoría v2.6.0).

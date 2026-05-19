@@ -1,11 +1,11 @@
 # Current State
 
-> Date: 2026-05-18
-> Version: 2.5.0 "Wave 9 Complete"
+> Date: 2026-05-19
+> Version: 2.6.0 "Autonomous Execution"
 > Coordinator: Cerebro
-> Active Wave: Wave 10 Planning
+> Active Wave: Wave 10
 
-## Platform Status — v2.5.0
+## Platform Status — v2.6.0
 
 | Check | Result |
 |---|---|
@@ -17,12 +17,18 @@
 | pnpm --filter @cs/agents typecheck | ✅ 0 errors |
 | pnpm --filter @cs/web typecheck | ✅ 0 errors |
 | Worksheets | ✅ 15 worksheets (WS01-WS15) |
-| Agents | ✅ 20 agents registered (3-tier swarm) |
+| Agents | ✅ 21 agents registered (3-tier swarm) |
 | Interactive Pages | ✅ 29 pages |
-| Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (16) |
+| Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (17) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
 
-## What Changed: v2.3.2 → v2.5.0
+## What Changed: v2.5.0 → v2.6.0
+
+### v2.6.0 — Autonomous Execution & V3 Connection (Wave 10)
+- **Gemini Live**: Pipeline V3 Orchestrator now uses real Gemini LLM calls instead of static mocks.
+- **Autonomous Executor**: The execution agent now runs `pnpm typecheck`, captures the diff, and automatically executes `git push` to a remote branch for PR creation.
+- **V3 UI Data Binding**: Pages (`/proposals`, `/reports`) now read real proposals and findings from the V3 `state.json` instead of hardcoded mock data.
+- **Test Integrity**: Vitest aliases correctly restored and pathing updated to `vitest run`.
 
 ### v2.5.0 — Handoff & Auto-Generation (Wave 9)
 - **Executive Briefing PDF**: Native high-fidelity `@media print` CSS for 1-click boardroom reports.

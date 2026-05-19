@@ -12,6 +12,12 @@
 - **CORS Config**: Replaced hardcoded localhost array with dynamic `process.env.CS_CORS_ORIGINS`.
 - **Circular Dependencies**: Extracted `KnowledgeSource` and related domain types to `packages/knowledge/src/types.ts`. Resolved import cycles (`index.ts` ↔ `sources.ts`). Verified with `madge` (0 cycles).
 
+## [2.6.0] - 2026-05-19 (Wave 10)
+### Added
+- **Gemini Live Provider**: V3 Pipeline Orchestrator is now fully wired to use the real Gemini LLM.
+- **Autonomous Execution**: Finished the `autonomous-executor` to capture git diffs, run `typecheck` validation, and automatically create a new branch and `git push` to origin.
+- **V3 UI Data Binding**: Replaced static UI mock endpoints (`/api/pipeline/proposals` and `/api/pipeline/findings`) with endpoints that parse directly from `state.json` via `/v3-proposals` and `/v3-findings`.
+
 ## [2.4.0] - 2026-05-18 (Wave 7)
 ### Added
 - **Real-Time Telemetry Bus (SSE)**: Global event stream decoupling UI from local run state.

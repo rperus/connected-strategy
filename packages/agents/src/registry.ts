@@ -35,6 +35,7 @@ import { runTemporalAnalyst } from './agents/temporal-analyst.js';
 import { runValidationAgent } from './agents/validation-agent.js';
 import { runAnomalyDetector } from './agents/anomaly-detector.js';
 import { runCausalMapper } from './agents/causal-mapper.js';
+import { runAutonomousExecutor } from './agents/autonomous-executor.js';
 
 // ── Level 1: Crew Leads ────────────────────────────────────────────────────────
 import { runReconLead } from './agents/recon-lead.js';
@@ -343,6 +344,20 @@ export const AGENT_DEFINITIONS: Record<AgentId, AgentDefinition> = {
     canDelegate: false,
     runsAutonomously: false,
   },
+
+  'autonomous-executor': {
+    id: 'autonomous-executor',
+    name: 'Autonomous Executor',
+    description: 'Reads generated manifest and prompt packets, clones the target repository, uses LLM to implement changes autonomously, and commits them via Git.',
+    version: '1.0.0',
+    inputContract: ['projectId', 'projectPath', 'moveId'],
+    outputContract: ['success', 'branch', 'tmpDir'],
+    loopPhase: 'React',
+    tier: 'specialist',
+    crew: 'action',
+    canDelegate: false,
+    runsAutonomously: true,
+  },
 };
 
 // ─── Registry (definition + runner bound) ────────────────────────────────────
@@ -372,6 +387,7 @@ export const AGENT_REGISTRY: RegisteredAgent[] = [
   { definition: AGENT_DEFINITIONS['validation-agent'],  run: runValidationAgent  as unknown as RegisteredAgent['run'] },
   { definition: AGENT_DEFINITIONS['anomaly-detector'],  run: runAnomalyDetector  as unknown as RegisteredAgent['run'] },
   { definition: AGENT_DEFINITIONS['causal-mapper'],     run: runCausalMapper     as unknown as RegisteredAgent['run'] },
+  { definition: AGENT_DEFINITIONS['autonomous-executor'], run: runAutonomousExecutor as unknown as RegisteredAgent['run'] },
 ];
 
 // ─── Lookup helpers ───────────────────────────────────────────────────────────

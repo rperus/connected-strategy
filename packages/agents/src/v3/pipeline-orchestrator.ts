@@ -1,5 +1,7 @@
 import { ProjectStateStore } from './state-store.js';
 import type { ProjectStateV3 } from './state-store.js';
+import { getGeminiProvider } from '../llm-provider.js';
+import { FileReader } from './file-reader.js';
 import { runCustomerJourneyMapper } from './agents/customer-journey-mapper.js';
 import { runInfoFlowAnalyzer } from './agents/info-flow-analyzer.js';
 import { runDeeperNeedsLaddering } from './agents/deeper-needs-laddering.js';
@@ -64,9 +66,9 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     projectId: project.id,
     projectPath: project.path,
     startedAt: new Date().toISOString(),
-    llm: { generate: async () => ({ text: '' }), generateStructured: async () => null, model: 'mock', available: true },
+    llm: options.useGemini ? getGeminiProvider() : { generate: async () => ({ text: '' }), generateStructured: async () => null, model: 'mock', available: true },
     store,
-    fileReader: { read: () => '', grep: () => '', getReadFilesList: () => [] } as any,
+    fileReader: new FileReader(project.path),
     log: (msg: string) => {
       console.log(`[${runId}] ${msg}`);
       options.onProgress?.('general', msg);

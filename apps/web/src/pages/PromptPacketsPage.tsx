@@ -62,6 +62,8 @@ Make minimal, focused changes. Run typecheck before completing.
 }
 
 interface PipelinePrompt {
+  projectId: string;
+  moveId: string;
   projectName: string;
   promptForAntigravity: string;
 }
@@ -94,6 +96,24 @@ export function PromptPacketsPage() {
       setToast('Copiado al clipboard ✓');
       setTimeout(() => setToast(''), 2000);
     });
+  }
+
+  async function autoExecute(projectId: string, moveId: string) {
+    if (!confirm(`¿Seguro que quieres auto-ejecutar el move ${moveId} en el proyecto ${projectId}?\n\nEsto clonará el repo y usará un agente autónomo para aplicar los cambios y hacer un commit.`)) return;
+    
+    setToast('🚀 Iniciando ejecución autónoma...');
+    try {
+      const res = await fetch(`${api.health.replace('/health', '')}/pipeline/v3-auto-execute/${projectId}/${moveId}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        setToast(`✅ Ejecución exitosa. Branch: ${data.data?.branch}. Revisa: ${data.data?.tmpDir}`);
+      } else {
+        setToast(`❌ Error: ${data.error}`);
+      }
+    } catch (e) {
+      setToast(`❌ Error de conexión: ${String(e)}`);
+    }
+    setTimeout(() => setToast(''), 8000);
   }
 
   function toggle(id: string, type: 'codex' | 'antigravity') {
@@ -132,13 +152,24 @@ export function PromptPacketsPage() {
                   }}>
                     {pkt.promptForAntigravity}
                   </pre>
-                  <button
-                    className="btn btn-sm btn-secondary"
-                    style={{ position: 'absolute', top: 6, right: 6, fontSize: 10 }}
-                    onClick={() => copy(pkt.promptForAntigravity)}
-                  >
-                    📋 Copiar
-                  </button>
+                  <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', gap: 6 }}>
+                    {(pkt as any).moveId && (
+                      <button
+                        className="btn btn-sm btn-violet"
+                        style={{ fontSize: 10 }}
+                        onClick={() => autoExecute(pkt.projectId, (pkt as any).moveId)}
+                      >
+                        ⚡ Auto-Fix
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      style={{ fontSize: 10 }}
+                      onClick={() => copy(pkt.promptForAntigravity)}
+                    >
+                      📋 Copiar
+                    </button>
+                  </div>
                 </div>
               </details>
             </div>

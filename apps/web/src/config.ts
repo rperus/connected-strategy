@@ -39,9 +39,9 @@ export const api = {
 
   // Full pipeline (scan → auto-fill → analyze → prompts)
   pipelineRunFull: `${API_BASE_URL}/api/pipeline/run-full`,
-  pipelineProposals: `${API_BASE_URL}/api/pipeline/proposals`,
-  pipelineFindings: `${API_BASE_URL}/api/pipeline/findings`,
-  pipelinePrompts: `${API_BASE_URL}/api/pipeline/prompts`,
+  pipelineProposals: `${API_BASE_URL}/api/pipeline/v3-proposals`,
+  pipelineFindings: `${API_BASE_URL}/api/pipeline/v3-findings`,
+  pipelinePrompts: `${API_BASE_URL}/api/pipeline/v3-prompts`,
   pipelineLastRun: `${API_BASE_URL}/api/pipeline/last-run`,
   pipelineHistory: `${API_BASE_URL}/api/pipeline/history`,
 
