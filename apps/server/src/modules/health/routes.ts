@@ -22,18 +22,6 @@ import type { AgentContext, AnalystReport, AnalystFinding } from '@cs/agents';
 
 const router: Router = express.Router();
 
-// Store last pipeline run in memory (persisted per server session)
-let lastPipelineRun: {
-  timestamp: string;
-  elapsed: string;
-  projectsScanned: number;
-  totalFindings: number;
-  totalProposals: number;
-} | null = null;
-
-export function recordPipelineRun(data: typeof lastPipelineRun) {
-  lastPipelineRun = data;
-}
 
 interface ProjectHealth {
   projectId: string;
@@ -209,7 +197,6 @@ router.get('/', async (_req: Request, res: Response) => {
           totalProposals,
           gradeDistribution,
           queueStats: getQueueStats(),
-          lastPipelineRun,
         },
         projects: projectHealths,
         generatedAt: new Date().toISOString(),

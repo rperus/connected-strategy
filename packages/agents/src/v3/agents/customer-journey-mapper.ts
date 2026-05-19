@@ -3,14 +3,14 @@ import type { WS01_JourneyMap } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface CustomerJourneyMapperInput {
+interface CustomerJourneyMapperInput {
   projectName: string;
   customerSegment: string;
   useCase: string;
   competitorNames: string[];
 }
 
-export interface CustomerJourneyMapperOutput {
+interface CustomerJourneyMapperOutput {
   ws01: WS01_JourneyMap;
 }
 

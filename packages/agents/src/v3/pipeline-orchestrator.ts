@@ -107,6 +107,12 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
       const ws05ws07ws08 = await runConnectedExperienceMatrix({ ws01Output: ws01.data!.ws01, ws04Output: ws04ws06.data!.ws04, competitorNames: competitors }, ctx);
       const ws09ws10ws11 = await runTechStackMapper({ packageJson: {}, fileDiscovery: { byCategory: {} } }, ctx);
 
+      const revenue = await runRevenueModelArchitect({
+        ws07Output: ws05ws07ws08.data!.ws07,
+        ws08Output: ws05ws07ws08.data!.ws08,
+        competitorPricing: competitors
+      }, ctx);
+
       state.wharton = {
         ws01: ws01.data?.ws01,
         ws03: ws03.data?.ws03,
@@ -118,6 +124,7 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
         ws09: ws09ws10ws11.data?.ws09,
         ws10: ws09ws10ws11.data?.ws10,
         ws11: ws09ws10ws11.data?.ws11,
+        revenueModel: revenue.data,
       };
       phasesCompleted.push('B');
       store.save(state);

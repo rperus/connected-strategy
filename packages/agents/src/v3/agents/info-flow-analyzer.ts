@@ -3,11 +3,11 @@ import type { WS01_JourneyMap, WS03_InfoFlow } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface InfoFlowAnalyzerInput {
+interface InfoFlowAnalyzerInput {
   ws01Output: WS01_JourneyMap;
 }
 
-export interface InfoFlowAnalyzerOutput {
+interface InfoFlowAnalyzerOutput {
   ws03: WS03_InfoFlow;
 }
 

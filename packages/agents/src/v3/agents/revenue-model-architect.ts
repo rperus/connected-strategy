@@ -3,13 +3,13 @@ import type { WS07_ExistingMatrix, WS08_NewIdeasMatrix } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface RevenueModelArchitectInput {
+interface RevenueModelArchitectInput {
   ws07Output: WS07_ExistingMatrix;
   ws08Output: WS08_NewIdeasMatrix;
   competitorPricing: string[];
 }
 
-export interface RevenueModelArchitectOutput {
+interface RevenueModelArchitectOutput {
   connectionArchitecture: string;
   revenueModel: {
     what: string;

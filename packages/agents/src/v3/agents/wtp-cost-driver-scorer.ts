@@ -4,13 +4,13 @@ import type { WS01_JourneyMap, DriverScore } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface WtpCostDriverScorerInput {
+interface WtpCostDriverScorerInput {
   ws01Output: WS01_JourneyMap;
   ws02Output?: any; 
   competitors: string[];
 }
 
-export interface WtpCostDriverScorerOutput {
+interface WtpCostDriverScorerOutput {
   wtpDrivers: DriverScore[];
   costDrivers: DriverScore[];
 }

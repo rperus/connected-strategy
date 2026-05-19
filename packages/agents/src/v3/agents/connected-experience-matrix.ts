@@ -4,13 +4,13 @@ import type { WS01_JourneyMap, WS04_WhyHowLadder, WS05_ResponseMatrix, WS07_Exis
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface ConnectedExperienceMatrixInput {
+interface ConnectedExperienceMatrixInput {
   ws01Output: WS01_JourneyMap;
   ws04Output: WS04_WhyHowLadder;
   competitorNames: string[];
 }
 
-export interface ConnectedExperienceMatrixOutput {
+interface ConnectedExperienceMatrixOutput {
   ws05: WS05_ResponseMatrix;
   ws07: WS07_ExistingMatrix;
   ws08: WS08_NewIdeasMatrix;

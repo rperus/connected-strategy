@@ -4,13 +4,13 @@ import type { FiveForcesAnalysis, ScenarioAnalysis } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface IndustryStructureAnalystInput {
+interface IndustryStructureAnalystInput {
   projectName: string;
   sector: string;
   segment: string;
 }
 
-export interface IndustryStructureAnalystOutput {
+interface IndustryStructureAnalystOutput {
   fiveForces: FiveForcesAnalysis;
   scenarios: ScenarioAnalysis;
 }

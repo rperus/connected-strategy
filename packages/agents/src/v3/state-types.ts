@@ -19,6 +19,7 @@ import type {
   synthesisSchema
 } from '@cs/domain';
 import type { z } from 'zod';
+import type { RevenueModelArchitectOutput } from './agents/revenue-model-architect.js';
 
 export interface DiscoveryResult {
   // placeholder
@@ -56,6 +57,7 @@ export interface ProjectStateV3 {
     ws09?: WS09_SubfunctionGrid;
     ws10?: WS10_TechSolutions;
     ws11?: WS11_EmergingTech;
+    revenueModel?: RevenueModelArchitectOutput;
   };
   competitive?: {
     fiveForces?: FiveForcesAnalysis;

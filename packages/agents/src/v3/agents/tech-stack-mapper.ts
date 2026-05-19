@@ -5,12 +5,12 @@ import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 import type { DiscoveredFile } from '../code-discovery.js';
 
-export interface TechStackMapperInput {
+interface TechStackMapperInput {
   packageJson: any;
   fileDiscovery: { byCategory: Record<string, DiscoveredFile[]> };
 }
 
-export interface TechStackMapperOutput {
+interface TechStackMapperOutput {
   ws09: WS09_SubfunctionGrid;
   ws10: WS10_TechSolutions;
   ws11: WS11_EmergingTech;

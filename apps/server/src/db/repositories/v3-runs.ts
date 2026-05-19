@@ -1,6 +1,6 @@
 import { getDb } from '../index.js';
 
-export interface V3Run {
+interface V3Run {
   run_id: string;
   project_id: string;
   started_at: string;
@@ -44,18 +44,6 @@ export function updateRunStatus(runId: string, status: 'done' | 'failed', extra:
   db.prepare(sql).run(params);
 }
 
-export function listRuns(projectId: string, limit: number = 20): V3Run[] {
-  const db = getDb();
-  const stmt = db.prepare('SELECT * FROM v3_runs WHERE project_id = ? ORDER BY started_at DESC LIMIT ?');
-  return stmt.all(projectId, limit) as V3Run[];
-}
-
-export function getLatestRun(projectId: string): V3Run | null {
-  const db = getDb();
-  const stmt = db.prepare('SELECT * FROM v3_runs WHERE project_id = ? ORDER BY started_at DESC LIMIT 1');
-  const result = stmt.get(projectId);
-  return (result as V3Run) || null;
-}
 
 export function getRunById(runId: string): V3Run | null {
   const db = getDb();

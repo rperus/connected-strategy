@@ -42,7 +42,6 @@ interface PipelineResults {
 }
 let cachedResults: PipelineResults | null = null;
 
-export function getCachedResults() { return cachedResults; }
 
 /**
  * POST /api/pipeline/run-full

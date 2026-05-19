@@ -4,7 +4,7 @@ import type { WS01_JourneyMap, WS07_ExistingMatrix, WS08_NewIdeasMatrix, Activit
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface ActivitySystemMapperInput {
+interface ActivitySystemMapperInput {
   ws01Output: WS01_JourneyMap;
   ws07Output: WS07_ExistingMatrix;
   ws08Output: WS08_NewIdeasMatrix;

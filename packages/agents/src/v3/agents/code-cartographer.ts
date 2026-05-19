@@ -1,11 +1,11 @@
 import { discoverProjectFiles } from '../code-discovery.js';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 
-export interface CodeCartographerInput {
+interface CodeCartographerInput {
   projectPath: string;
 }
 
-export interface CodeCartographerOutput {
+interface CodeCartographerOutput {
   fileDiscovery: any;
   gitStats: any;
   dependencyGraph: any;

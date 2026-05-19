@@ -3,7 +3,7 @@ import type { AgentV3Context, AgentV3Result } from '../../types.js';
 import { callLLMValidated } from '../../llm-validated.js';
 import { swarmOutputSchema, SWARM_PROMPT_APPENDIX, SwarmOutput } from './schema.js';
 
-export interface SecurityAuditorInput {
+interface SecurityAuditorInput {
   files: DiscoveredFile[];
 }
 

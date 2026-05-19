@@ -4,14 +4,14 @@ import type { CompetitorProfile } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface CompetitorIntelligenceInput {
+interface CompetitorIntelligenceInput {
   projectName: string;
   sector: string;
   projectDescription: string;
   knownCompetitors?: string[];
 }
 
-export interface CompetitorIntelligenceOutput {
+interface CompetitorIntelligenceOutput {
   competitors: CompetitorProfile[];
 }
 

@@ -4,7 +4,7 @@
 
 import { getDb } from '../index.js';
 
-export interface PipelineRunRow {
+interface PipelineRunRow {
   id: number;
   timestamp: string;
   elapsed: string;
@@ -37,8 +37,3 @@ export function listPipelineRuns(limit = 20): PipelineRunRow[] {
   return db.prepare('SELECT * FROM pipeline_runs ORDER BY id DESC LIMIT ?').all(limit) as PipelineRunRow[];
 }
 
-export function countPipelineRuns(): number {
-  const db = getDb();
-  const row = db.prepare('SELECT COUNT(*) as cnt FROM pipeline_runs').get() as { cnt: number };
-  return row.cnt;
-}

@@ -114,6 +114,66 @@ export {
   getScoringQuestions,
 } from './worksheets.js';
 
-export * from './v3/worksheets-canonical.js';
-export * from './v3/competitive-canonical.js';
-export * from './v3/schemas.js';
+export type {
+  JourneyStage,
+  ConnectedMode,
+  StarDimension,
+  Subfunction,
+  WS01_JourneyMap,
+  WS03_InfoFlow,
+  WS04_WhyHowLadder,
+  WS05_ResponseMatrix,
+  WS06_RepeatLearning,
+  WS07_ExistingMatrix,
+  WS08_NewIdeasMatrix,
+  WS09_SubfunctionGrid,
+  WS10_TechSolutions,
+  WS11_EmergingTech,
+} from './v3/worksheets-canonical.js';
+
+export {
+  JOURNEY_STAGES,
+  CONNECTED_MODES,
+  CONNECTION_ARCHITECTURES,
+  STAR_DIMENSIONS,
+  SUBFUNCTIONS_4R9,
+  REPEAT_LEVELS
+} from './v3/worksheets-canonical.js';
+
+export type {
+  FiveForcesAnalysis,
+  ForceAnalysis,
+  ScenarioAnalysis,
+  CompetitorProfile,
+  DriverScore,
+  ActivitySystemMap,
+  ThreeFitsAssessment,
+  FrontierAnalysis
+} from './v3/competitive-canonical.js';
+
+export {
+  journeyStageEnum,
+  connectedModeEnum,
+  connectionArchitectureEnum,
+  starDimensionEnum,
+  subfunctionEnum,
+  ws01Schema,
+  ws03Schema,
+  ws04Schema,
+  ws05Schema,
+  ws06Schema,
+  ws07Schema,
+  ws08Schema,
+  ws09Schema,
+  ws10Schema,
+  ws11Schema,
+  fiveForcesSchema,
+  scenarioAnalysisSchema,
+  competitorProfileSchema,
+  driverScoreSchema,
+  activitySystemMapSchema,
+  threeFitsAssessmentSchema,
+  frontierAnalysisSchema,
+  synthesisSchema,
+  manifestSchema
+} from './v3/schemas.js';

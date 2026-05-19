@@ -4,12 +4,12 @@ import type { WS01_JourneyMap, WS04_WhyHowLadder, WS06_RepeatLearning } from '@c
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
-export interface DeeperNeedsLadderingInput {
+interface DeeperNeedsLadderingInput {
   ws01Output: WS01_JourneyMap;
   projectName: string;
 }
 
-export interface DeeperNeedsLadderingOutput {
+interface DeeperNeedsLadderingOutput {
   ws04: WS04_WhyHowLadder;
   ws06: WS06_RepeatLearning;
 }
