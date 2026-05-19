@@ -19,6 +19,7 @@ import type { AgentContext, ScanEntry } from '@cs/agents';
 import type { Project } from '@cs/domain';
 import { upsertProject, getProject, listProjects, deleteProject, countProjects } from '../../db/repositories/projects.js';
 import { insertJob, updateJob } from '../../db/repositories/jobs.js';
+import { broadcastEvent } from '../../services/telemetry.js';
 
 
 const router: Router = express.Router();
@@ -96,13 +97,14 @@ router.post('/scan', async (req: Request, res: Response) => {
 
     const scanResult = result.data as import('@cs/agents').PortfolioScanResult;
 
-    // Persist all discovered projects to SQLite
+    // Emit telemetry for each newly discovered project (TTV start marker)
     let newCount = 0;
     for (const entry of scanResult.projects) {
       const project = scanEntryToProject(entry);
       const existing = getProject(project.id);
       if (!existing) newCount++;
       upsertProject(project);
+      broadcastEvent('project:scanned', { projectId: project.id, name: project.name, stack: project.stack }, project.id);
     }
 
     res.json({

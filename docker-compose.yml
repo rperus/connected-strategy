@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    ports:
+      - "4311:4311"
+    environment:
+      - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - CS_CORS_ORIGINS=http://localhost:4310
+    volumes:
+      - cs_data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4311/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    ports:
+      - "4310:4310"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  cs_data:
+    driver: local

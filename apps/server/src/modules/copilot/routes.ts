@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { ProjectStateStore, getGeminiProvider } from '@cs/agents';
 import { listProjects } from '../../db/repositories/projects.js';
+import { broadcastEvent } from '../../services/telemetry.js';
 
 const router: Router = Router();
 const store = new ProjectStateStore();
@@ -40,7 +41,13 @@ You analyze project state and answer user questions in Markdown.
     const prompt = `${systemContext}\n\nUSER MESSAGE:\n${message}`;
 
     const response = await llm.generate(prompt);
-    
+
+    // Track copilot query + TTV marker
+    broadcastEvent('copilot:query', { projectId: projectId ?? 'portfolio', messageLength: message.length }, projectId);
+    if (projectId) {
+      broadcastEvent('user:first_value', { source: 'copilot', projectId }, projectId);
+    }
+
     res.json({ ok: true, text: response.text });
   } catch (err: any) {
     console.error('[Copilot] Error:', err);

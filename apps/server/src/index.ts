@@ -17,6 +17,7 @@ import rateLimit from 'express-rate-limit';
 import { resolvePort, getProjectRoot } from '@cs/runtime';
 import { getDb, closeDb } from './db/index.js';
 import { startScheduler, stopScheduler } from './scheduler.js';
+import { initTelemetryDb, broadcastEvent } from './services/telemetry.js';
 
 // ─── Load .env before anything else ────────────────────────────────────────
 try {
@@ -69,7 +70,10 @@ app.use(cors({
 app.use(express.json({ limit: '5mb' }));
 
 // ─── Initialize SQLite on startup ───────────────────────────────
-getDb();
+const database = getDb();
+
+// Wire telemetry persistence
+initTelemetryDb(database);
 
 // Run maintenance to clean orphan records
 import { cleanOrphanWorksheetAnswers, cleanDuplicateProjects } from './db/maintenance.js';

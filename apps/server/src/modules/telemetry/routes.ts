@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Request, Response, Router } from 'express';
-import { telemetryBus } from '../../services/telemetry.js';
+import { telemetryBus, getTelemetryStats } from '../../services/telemetry.js';
+import { getDb } from '../../db/index.js';
 
 const router: Router = express.Router();
 
@@ -28,6 +29,20 @@ router.get('/stream', (req: Request, res: Response) => {
   req.on('close', () => {
     telemetryBus.off('broadcast', onBroadcast);
   });
+});
+
+/**
+ * GET /api/telemetry/stats
+ * Returns aggregated SaaS metrics (event counts, TTV, 7-day activity).
+ */
+router.get('/stats', (_req: Request, res: Response) => {
+  try {
+    const db = getDb();
+    const stats = getTelemetryStats(db);
+    res.json({ ok: true, data: stats });
+  } catch (err: any) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 export default router;

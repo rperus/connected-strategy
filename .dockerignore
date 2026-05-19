@@ -1,0 +1,16 @@
+# Connected Strategy — .dockerignore
+node_modules
+**/node_modules
+**/.git
+**/.env
+**/dist
+**/coverage
+**/*.log
+data/
+*.db
+.DS_Store
+apps/desktop/
+scratch/
+test-data/
+super_audit_report.md
+vitest.config.ts.bak
