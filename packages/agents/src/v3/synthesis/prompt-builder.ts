@@ -1,6 +1,7 @@
 import type { ProjectStateV3 } from '../state-store.js';
+import type { SwarmFinding } from '../agents/swarm/schema.js';
 
-export function buildChiefStrategistPrompt(state: ProjectStateV3): string {
+export function buildChiefStrategistPrompt(state: ProjectStateV3, liveFindings?: SwarmFinding[]): string {
   const formatWS07 = (ws07: any) => {
     if (!ws07) return 'N/A';
     const lines: string[] = [];
@@ -50,6 +51,12 @@ ${JSON.stringify(state.competitive?.fiveForces, null, 2)?.slice(0, 3000)}
 
 ### Swarm findings (critical + high only)
 ${(state.swarm?.findings ?? []).filter(f => f.severity === 'critical' || f.severity === 'high').slice(0, 20).map(f => `- [${f.severity}] ${f.title}`).join('\n') || 'N/A'}
+
+${liveFindings && liveFindings.length > 0 ? `### LIVE cross-agent findings from this run (SharedFindingsStore)
+⚡ These findings were discovered IN REAL TIME during this pipeline run by specialist agents:
+${liveFindings.slice(0, 15).map(f => `- [${f.severity ?? 'medium'}] [${(f as any).agent ?? f.category}] ${f.title}: ${f.description ?? ''}`).join('\n')}
+Use these to make your synthesis MORE grounded and specific.
+` : ''}
 
 ### Competitors
 ${(state.competitive?.competitors ?? []).map(c => `- ${c.name} — ${c.positioning}`).join('\n') || 'N/A'}

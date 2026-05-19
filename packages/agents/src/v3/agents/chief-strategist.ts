@@ -1,16 +1,17 @@
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import type { ProjectStateV3 } from '../state-store.js';
+import type { SwarmFinding } from '../agents/swarm/schema.js';
 import { buildChiefStrategistPrompt } from '../synthesis/prompt-builder.js';
 import { runToolLoop } from '../synthesis/tool-loop.js';
 import { computeHealthScoreWithCI } from '../synthesis/health-score.js';
 import { synthesisSchema } from '@cs/domain';
 
 export async function runChiefStrategist(
-  input: { state: ProjectStateV3 },
+  input: { state: ProjectStateV3; liveFindings?: SwarmFinding[] },
   ctx: AgentV3Context & { priorRunId?: string }
 ): Promise<AgentV3Result<ProjectStateV3['synthesis']>> {
   const start = Date.now();
-  const prompt = buildChiefStrategistPrompt(input.state);
+  const prompt = buildChiefStrategistPrompt(input.state, input.liveFindings);
 
   let toolCallCount = 0;
   let iterations = 0;

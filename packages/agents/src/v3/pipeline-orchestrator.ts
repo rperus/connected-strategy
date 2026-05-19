@@ -207,7 +207,8 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   if (!skip.has('F')) {
     options.onProgress?.('F', 'Starting Chief Strategist (Synthesis)...');
     try {
-      const synth = await runChiefStrategist({ state }, ctx);
+      const liveFindings = sharedFindings.getAll();
+      const synth = await runChiefStrategist({ state, liveFindings }, ctx);
       state.synthesis = synth.data;
       phasesCompleted.push('F');
       store.save(state);

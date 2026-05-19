@@ -3,18 +3,15 @@ import { useProject } from '../context/ProjectContext';
 import { API_BASE_URL } from '../config';
 
 const NODE_POSITIONS: Record<string, { x: number; y: number; label: string }> = {
-  architectureResilience: { x: 100, y: 150, label: 'Arch. Resilience' },
-  costReductionPotential: { x: 100, y: 350, label: 'Cost Reduction' },
-  connectedExperienceScore: { x: 100, y: 550, label: 'Connected Exp.' },
-
-  dataScienceReadiness: { x: 400, y: 150, label: 'Data Science' },
-  closedLoopMaturity: { x: 400, y: 350, label: 'Closed Loop' },
-
-  wtpUpliftIndex: { x: 700, y: 250, label: 'WTP Uplift' },
-  switchingCostIndex: { x: 700, y: 450, label: 'Switching Costs' },
-
-  competitivePositioningIndex: { x: 1000, y: 250, label: 'Comp. Positioning' },
-  businessModelStrength: { x: 1000, y: 450, label: 'Business Model' },
+  architectureResilience:     { x: 100,  y: 150, label: 'Arch. Resilience' },
+  costReductionPotential:     { x: 100,  y: 350, label: 'Cost Reduction' },
+  connectedExperienceScore:   { x: 100,  y: 550, label: 'Connected Exp.' },
+  dataScienceReadiness:       { x: 400,  y: 150, label: 'Data Science' },
+  closedLoopMaturity:         { x: 400,  y: 350, label: 'Closed Loop' },
+  wtpUpliftIndex:             { x: 700,  y: 250, label: 'WTP Uplift' },
+  switchingCostIndex:         { x: 700,  y: 450, label: 'Switching Costs' },
+  competitivePositioningIndex:{ x: 1000, y: 250, label: 'Comp. Positioning' },
+  businessModelStrength:      { x: 1000, y: 450, label: 'Business Model' },
 };
 
 export function CausalDagPage() {
@@ -29,10 +26,7 @@ export function CausalDagPage() {
     setLoading(true);
     fetch(`${API_BASE_URL}/api/pipeline/v3-causal/${activeProject.id}`)
       .then(r => r.json())
-      .then(res => {
-        if (res.ok) setData(res.causal);
-        setLoading(false);
-      })
+      .then(res => { if (res.ok) setData(res.causal); setLoading(false); })
       .catch(() => setLoading(false));
   }, [activeProject?.id]);
 
@@ -82,19 +76,17 @@ export function CausalDagPage() {
             const p1 = NODE_POSITIONS[edge.from];
             const p2 = NODE_POSITIONS[edge.to];
             if (!p1 || !p2) return null;
-            
+
             const isHovered = hoveredNode === edge.from || hoveredNode === edge.to || hoveredEdge === edge;
             const opacity = hoveredNode ? (isHovered ? 1 : 0.1) : 0.4;
             const stroke = isHovered ? 'var(--cs-accent)' : 'rgba(148, 163, 184, 0.4)';
             const marker = isHovered ? 'url(#arrowhead-highlight)' : 'url(#arrowhead)';
-
-            // Bezier curve
-            const path = \`M \${p1.x} \${p1.y} C \${p1.x + 150} \${p1.y}, \${p2.x - 150} \${p2.y}, \${p2.x} \${p2.y}\`;
+            const bezier = `M ${p1.x} ${p1.y} C ${p1.x + 150} ${p1.y}, ${p2.x - 150} ${p2.y}, ${p2.x} ${p2.y}`;
 
             return (
               <g key={i} onMouseEnter={() => setHoveredEdge(edge)} onMouseLeave={() => setHoveredEdge(null)} style={{ cursor: 'pointer' }}>
-                <path d={path} fill="none" stroke="transparent" strokeWidth="20" /> {/* Hit area */}
-                <path d={path} fill="none" stroke={stroke} strokeWidth={isHovered ? 3 : 2} opacity={opacity} markerEnd={marker} style={{ transition: 'all 0.3s' }} filter={isHovered ? 'url(#glow)' : 'none'} />
+                <path d={bezier} fill="none" stroke="transparent" strokeWidth="20" />
+                <path d={bezier} fill="none" stroke={stroke} strokeWidth={isHovered ? 3 : 2} opacity={opacity} markerEnd={marker} style={{ transition: 'all 0.3s' }} filter={isHovered ? 'url(#glow)' : 'none'} />
               </g>
             );
           })}
@@ -106,32 +98,26 @@ export function CausalDagPage() {
 
             const isHovered = hoveredNode === dim.dimension;
             const opacity = hoveredNode ? (isHovered ? 1 : 0.2) : 1;
-            const scoreColor = dim.causalScore >= 80 ? '#22c55e' : dim.causalScore >= 50 ? '#eab308' : '#ef4444';
+            const tx = `translate(${pos.x}, ${pos.y})`;
 
             return (
-              <g key={i} transform={\`translate(\${pos.x}, \${pos.y})\`} onMouseEnter={() => setHoveredNode(dim.dimension)} onMouseLeave={() => setHoveredNode(null)} style={{ transition: 'opacity 0.3s', opacity, cursor: 'pointer' }}>
+              <g key={i} transform={tx} onMouseEnter={() => setHoveredNode(dim.dimension)} onMouseLeave={() => setHoveredNode(null)} style={{ transition: 'opacity 0.3s', opacity, cursor: 'pointer' }}>
                 <circle r="35" fill="var(--cs-surface-1)" stroke={isHovered ? 'var(--cs-accent)' : 'var(--cs-border)'} strokeWidth="2" filter={isHovered ? 'url(#glow)' : 'none'} />
-                
-                {/* Score */}
                 <text x="0" y="5" textAnchor="middle" fill="white" fontSize="18" fontWeight="800" style={{ fontFamily: 'Outfit, sans-serif' }}>{Math.round(dim.causalScore)}</text>
-                
-                {/* Boost indicator */}
                 {dim.causalBoost !== 0 && (
                   <text x="0" y="22" textAnchor="middle" fill={dim.causalBoost > 0 ? '#22c55e' : '#ef4444'} fontSize="10" fontWeight="bold">
                     {dim.causalBoost > 0 ? '+' : ''}{dim.causalBoost.toFixed(1)}
                   </text>
                 )}
-
-                {/* Label */}
                 <text x="0" y="-45" textAnchor="middle" fill="var(--cs-text-muted)" fontSize="12" fontWeight="600">{pos.label}</text>
               </g>
             );
           })}
         </svg>
 
-        {/* Hover Panel */}
+        {/* Hover Panel — Edge */}
         {hoveredEdge && (
-          <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(10, 13, 20, 0.9)', backdropFilter: 'blur(10px)', padding: 16, borderRadius: 12, border: '1px solid var(--cs-accent)', width: 400, color: 'white', zIndex: 10 }}>
+          <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(10,13,20,0.9)', backdropFilter: 'blur(10px)', padding: 16, borderRadius: 12, border: '1px solid var(--cs-accent)', width: 400, color: 'white', zIndex: 10 }}>
             <div style={{ fontSize: 12, color: 'var(--cs-accent)', fontWeight: 700, marginBottom: 4 }}>RELACIÓN CAUSAL</div>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{NODE_POSITIONS[hoveredEdge.from]?.label} ➔ {NODE_POSITIONS[hoveredEdge.to]?.label}</div>
             <div style={{ fontSize: 12, color: 'var(--cs-text-muted)' }}>{hoveredEdge.explanation}</div>
@@ -141,20 +127,24 @@ export function CausalDagPage() {
           </div>
         )}
 
-        {hoveredNode && !hoveredEdge && (
-          <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(10, 13, 20, 0.9)', backdropFilter: 'blur(10px)', padding: 16, borderRadius: 12, border: '1px solid var(--cs-border)', width: 400, color: 'white', zIndex: 10 }}>
-            <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', fontWeight: 700, marginBottom: 4 }}>DIMENSIÓN</div>
-            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{NODE_POSITIONS[hoveredNode]?.label}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
-              <div><div style={{fontSize: 10, color: '#6b7280'}}>Raw Score</div><div style={{fontSize: 14, fontWeight: 'bold'}}>{data.dimensions.find((d: any) => d.dimension === hoveredNode)?.rawScore}</div></div>
-              <div><div style={{fontSize: 10, color: '#6b7280'}}>Causal Score</div><div style={{fontSize: 14, fontWeight: 'bold', color: 'var(--cs-accent)'}}>{data.dimensions.find((d: any) => d.dimension === hoveredNode)?.causalScore}</div></div>
-              <div><div style={{fontSize: 10, color: '#6b7280'}}>Boost</div><div style={{fontSize: 14, fontWeight: 'bold', color: data.dimensions.find((d: any) => d.dimension === hoveredNode)?.causalBoost > 0 ? '#22c55e' : '#ef4444'}}>{data.dimensions.find((d: any) => d.dimension === hoveredNode)?.causalBoost.toFixed(1)}</div></div>
+        {/* Hover Panel — Node */}
+        {hoveredNode && !hoveredEdge && (() => {
+          const dim = data.dimensions.find((d: any) => d.dimension === hoveredNode);
+          return dim ? (
+            <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(10,13,20,0.9)', backdropFilter: 'blur(10px)', padding: 16, borderRadius: 12, border: '1px solid var(--cs-border)', width: 400, color: 'white', zIndex: 10 }}>
+              <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', fontWeight: 700, marginBottom: 4 }}>DIMENSIÓN</div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{NODE_POSITIONS[hoveredNode]?.label}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+                <div><div style={{ fontSize: 10, color: '#6b7280' }}>Raw Score</div><div style={{ fontSize: 14, fontWeight: 'bold' }}>{dim.rawScore}</div></div>
+                <div><div style={{ fontSize: 10, color: '#6b7280' }}>Causal Score</div><div style={{ fontSize: 14, fontWeight: 'bold', color: 'var(--cs-accent)' }}>{dim.causalScore}</div></div>
+                <div><div style={{ fontSize: 10, color: '#6b7280' }}>Boost</div><div style={{ fontSize: 14, fontWeight: 'bold', color: dim.causalBoost > 0 ? '#22c55e' : '#ef4444' }}>{dim.causalBoost.toFixed(1)}</div></div>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--cs-text-muted)' }}>{dim.explanation}</div>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--cs-text-muted)' }}>{data.dimensions.find((d: any) => d.dimension === hoveredNode)?.explanation}</div>
-          </div>
-        )}
+          ) : null;
+        })()}
       </div>
-      
+
       <div style={{ marginTop: 20, padding: 16, background: 'var(--cs-surface-2)', borderRadius: 12, border: '1px solid var(--cs-border)', color: 'var(--cs-text)' }}>
         <h3 style={{ fontSize: 14, marginBottom: 8 }}>Insight Causal</h3>
         <p style={{ fontSize: 13, color: 'var(--cs-text-muted)', lineHeight: 1.6 }}>{data.insight}</p>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../config';
+import { api, API_BASE_URL } from '../config';
 
 interface ProjectHealth {
   projectId: string;
@@ -83,6 +83,30 @@ export function HealthDashboardPage() {
   const [data, setData] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liveEvents, setLiveEvents] = useState<{ msg: string; ts: string; type: string }[]>([]);
+  const liveRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Connect to global SSE telemetry stream
+    const es = new EventSource(`${API_BASE_URL}/api/telemetry/stream`);
+    es.onmessage = (e) => {
+      try {
+        const ev = JSON.parse(e.data);
+        if (ev.message) {
+          setLiveEvents(prev => {
+            const next = [{ msg: ev.message, ts: ev.timestamp ?? new Date().toISOString(), type: ev.type ?? 'info' }, ...prev].slice(0, 50);
+            return next;
+          });
+        }
+      } catch {}
+    };
+    return () => es.close();
+  }, []);
+
+  // Auto-scroll live feed
+  useEffect(() => {
+    if (liveRef.current) liveRef.current.scrollTop = 0;
+  }, [liveEvents]);
 
   const fetchHealth = () => {
     setLoading(true);
@@ -150,6 +174,38 @@ export function HealthDashboardPage() {
             {loading ? '⟳ Actualizando...' : '↻ Refrescar'}
           </button>
         </p>
+      </div>
+
+      {/* ─── Live SSE Ticker ─────────────────────────────────── */}
+      <div style={{
+        background: 'rgba(10,13,20,0.8)',
+        border: '1px solid rgba(99,102,241,0.3)',
+        borderRadius: 10,
+        padding: '10px 16px',
+        marginBottom: 20,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        overflow: 'hidden',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', animation: 'pulse 2s infinite' }} />
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Live Swarm</span>
+        </div>
+        <div ref={liveRef} style={{ flex: 1, overflow: 'hidden', maxHeight: 20 }}>
+          {liveEvents.length > 0 ? (
+            <span style={{ fontSize: 11, color: 'var(--cs-text-muted)', whiteSpace: 'nowrap', animation: 'ticker 0.3s ease' }}>
+              {liveEvents[0].msg}
+            </span>
+          ) : (
+            <span style={{ fontSize: 11, color: '#4b5563' }}>Esperando eventos del enjambre...</span>
+          )}
+        </div>
+        {liveEvents.length > 0 && (
+          <span style={{ fontSize: 10, color: '#4b5563', flexShrink: 0 }}>
+            {new Date(liveEvents[0].ts).toLocaleTimeString('es-MX')}
+          </span>
+        )}
       </div>
 
       {/* ─── Portfolio Summary Cards ─────────────────────────────────── */}
