@@ -209,9 +209,39 @@ export function PortfolioPage() {
           );
         })}
         {projects.length === 0 && apiState !== 'loading' && (
-          <div className="card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 48 }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>📂</div>
-            <div>No hay proyectos. Haz clic en «Escanear Workspace» para descubrir proyectos.</div>
+          <div className="card" style={{ 
+            gridColumn: '1 / -1', 
+            textAlign: 'center', 
+            padding: '64px 32px',
+            background: 'linear-gradient(180deg, var(--cs-surface) 0%, rgba(0,0,0,0) 100%)',
+            borderStyle: 'dashed'
+          }}>
+            <div style={{ 
+              fontSize: 48, 
+              marginBottom: 16,
+              animation: 'float 3s ease-in-out infinite' 
+            }}>
+              🛰️
+            </div>
+            <h3 style={{ marginBottom: 8, color: 'var(--cs-text)' }}>Tu Control Tower está vacío</h3>
+            <p style={{ color: 'var(--cs-text-muted)', maxWidth: 400, margin: '0 auto 24px auto', lineHeight: 1.5 }}>
+              No detectamos proyectos analizados. Haz clic en <strong>Escanear Workspace</strong> para descubrir directorios locales y auto-generar perfiles estratégicos con la IA.
+            </p>
+            <button
+              className="btn btn-primary"
+              onClick={handleScan}
+              disabled={scanning}
+              style={{ padding: '10px 24px', fontSize: 14 }}
+            >
+              {scanning ? 'Escaneando disco...' : '+ Escanear C:\\dev ahora'}
+            </button>
+            <style>{`
+              @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+              }
+            `}</style>
           </div>
         )}
       </div>

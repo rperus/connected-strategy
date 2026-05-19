@@ -94,8 +94,7 @@ app.get('/api/health', (_req, res) => {
 import runtimeRoutes from './modules/runtime/routes.js';
 app.use('/api/runtime', runtimeRoutes);
 
-import analysisRoutes from './modules/analysis/routes.js';
-app.use('/api/analysis', analysisRoutes);
+// Legacy V2 analysis routes removed
 
 import projectsRoutes from './modules/projects/routes.js';
 app.use('/api/projects', projectsRoutes);

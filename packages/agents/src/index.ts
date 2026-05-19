@@ -26,37 +26,7 @@ export type {
   AnalystReport,
 } from './types.js';
 
-// ─── Registry ─────────────────────────────────────────────────────────────────
-export {
-  AGENT_REGISTRY,
-  AGENT_DEFINITIONS,
-  getRegisteredAgent,
-  listAgentDefinitions,
-} from './registry.js';
-
-// ─── Job Queue ────────────────────────────────────────────────────────────────
-export {
-  createJob,
-  getJob,
-  listJobs,
-  listJobsByStatus,
-  markRunning,
-  markDone,
-  markFailed,
-  clearJobs,
-  getQueueStats,
-} from './job-queue.js';
-
-// ─── Specialist agents (direct export for testing / programmatic use) ─────────
-export { runPortfolioScanner } from './agents/portfolio-scanner.js';
-export { runWorksheetSynthesizer } from './agents/worksheet-synthesizer.js';
-export { runConnectedStrategyAnalyst } from './agents/connected-strategy-analyst.js';
-export { runCompetitiveAdvantageAnalyst } from './agents/competitive-advantage-analyst.js';
-export { runBusinessModelAnalyst } from './agents/business-model-analyst.js';
-export { runDataScienceOpportunityAnalyst } from './agents/data-science-opportunity-analyst.js';
-export { runArchitectureImprovementAnalyst } from './agents/architecture-improvement-analyst.js';
-export { runAIFrontierAnalyst } from './agents/ai-frontier-analyst.js';
-export { runProposalComposer } from './agents/proposal-composer.js';
+// Legacy V2 endpoints removed
 
 // ─── LLM Provider (opt-in enrichment) ─────────────────────────────────────────
 export { createGeminiProvider, getGeminiProvider } from './llm-provider.js';

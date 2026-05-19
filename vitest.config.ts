@@ -1,17 +1,14 @@
 import { defineConfig } from 'vitest/config';
-import { resolve } from 'path';
+
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
-    include: ['tests/**/*.test.ts', 'apps/**/src/**/*.test.ts', 'packages/**/src/**/*.test.ts'],
+    include: ['packages/**/*.test.ts', 'apps/**/*.test.ts', 'tests/**/*.test.ts'],
     globals: true,
   },
-  resolve: {
-    alias: {
-      '@cs/domain': resolve(__dirname, 'packages/domain'),
-      '@cs/agents': resolve(__dirname, 'packages/agents'),
-      '@cs/knowledge': resolve(__dirname, 'packages/knowledge'),
-      '@cs/runtime': resolve(__dirname, 'packages/runtime'),
-    },
-  },
+  esbuild: {
+    target: 'node20'
+  }
 });
