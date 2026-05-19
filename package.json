@@ -2,7 +2,7 @@
   "name": "connected-strategy",
   "version": "2.3.0",
   "private": true,
-  "description": "Connected Strategy — Local-first strategic control tower for multi-project analysis, launcher, prompt packets, and continuous improvement.",
+  "description": "Connected Strategy \u2014 Local-first strategic control tower for multi-project analysis, launcher, prompt packets, and continuous improvement.",
   "scripts": {
     "dev": "pnpm --filter @cs/web dev & pnpm --filter @cs/server dev",
     "dev:web": "pnpm --filter @cs/web dev",
@@ -11,7 +11,7 @@
     "build": "pnpm -r build",
     "build:web": "pnpm --filter @cs/web build",
     "build:server": "pnpm --filter @cs/server build",
-    "test": "vitest run",
+    "test": "pnpm -r test",
     "test:watch": "vitest",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
@@ -22,6 +22,7 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
+    "expect": "^30.4.1",
     "png-to-ico": "^3.0.1",
     "sharp": "^0.34.5",
     "vite-tsconfig-paths": "^6.1.1",

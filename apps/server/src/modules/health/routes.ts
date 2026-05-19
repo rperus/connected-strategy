@@ -17,7 +17,6 @@ import { listProjects } from '../../db/repositories/projects.js';
 import { listAnswers } from '../../db/repositories/worksheets.js';
 import { computeStrategicMetrics, defaultScoringWeights, ALL_WORKSHEETS } from '@cs/domain';
 import type { WorksheetAnswer, StrategicMetrics } from '@cs/domain';
-import { getQueueStats, getRegisteredAgent } from '@cs/agents';
 import type { AgentContext, AnalystReport, AnalystFinding } from '@cs/agents';
 
 const router: Router = express.Router();
@@ -113,28 +112,8 @@ router.get('/', async (_req: Request, res: Response) => {
       const allFindings: AnalystFinding[] = [];
       let totalProposals = 0;
 
-      for (const agentId of analystIds) {
-        const agent = getRegisteredAgent(agentId);
-        if (!agent) continue;
-
-        const ctx: AgentContext = {
-          jobId: `health-${project.id}-${agentId}`,
-          projectId: project.id,
-          startedAt: new Date().toISOString(),
-        };
-
-        try {
-          const result = await agent.run(
-            { projectId: project.id, answers: mergedAnswers, projectPath: project.path },
-            ctx,
-          );
-          if (result.success && result.data) {
-            const report = result.data as AnalystReport;
-            allFindings.push(...(report.findings ?? []));
-            totalProposals += report.recommendedProposals?.length ?? 0;
-          }
-        } catch (e) { console.warn('[CS-Health] Agent run failed:', e); }
-      }
+      // Inline analysts execution removed: Health route now only computes scores
+      // Findings and proposals should be loaded from the DB instead
 
       // Count by severity
       const findingsBySeverity = {
@@ -196,7 +175,7 @@ router.get('/', async (_req: Request, res: Response) => {
           totalFindings,
           totalProposals,
           gradeDistribution,
-          queueStats: getQueueStats(),
+          queueStats: { pending: 0, running: 0, completed: 0, failed: 0 },
         },
         projects: projectHealths,
         generatedAt: new Date().toISOString(),

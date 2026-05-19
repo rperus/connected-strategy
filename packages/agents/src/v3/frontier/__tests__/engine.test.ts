@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 import { computeFrontier } from '../engine.js';
 import { evaluateMove } from '../candidate-moves.js';
 import { discoverMoves } from '../discover-moves.js';

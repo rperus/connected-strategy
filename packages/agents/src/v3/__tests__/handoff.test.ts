@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it,  beforeEach, afterEach } from 'node:test';
+import { expect } from 'expect';
 import fs from 'fs/promises';
 import path from 'path';
 import { runHandoffPhase } from '../handoff/index.js';

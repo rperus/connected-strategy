@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run --dir src",
+    "test": "tsc --noEmit && node --test \"dist/**/*.test.js\"",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist"
   },

@@ -4,7 +4,8 @@
  * Tests for domain scoring, pipeline normalization, and API contracts.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 import { computeStrategicMetrics, defaultScoringWeights, ALL_WORKSHEETS } from '@cs/domain';
 import type { WorksheetAnswer } from '@cs/domain';
 

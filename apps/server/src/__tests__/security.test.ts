@@ -4,7 +4,8 @@
  * P2-4a/4b/4c: Basic tests for critical endpoints.
  * Run: pnpm --filter @cs/server test
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 
 // These tests validate server configuration and route contracts.
 // They run as unit tests (no live server required) by importing route definitions.

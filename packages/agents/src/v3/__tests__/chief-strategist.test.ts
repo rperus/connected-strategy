@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 import { computeHealthScoreWithCI } from '../synthesis/health-score.js';
 import { buildChiefStrategistPrompt } from '../synthesis/prompt-builder.js';
 import { runChiefStrategist } from '../agents/chief-strategist.js';

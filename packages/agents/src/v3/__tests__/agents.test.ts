@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 import { runCustomerJourneyMapper } from '../agents/customer-journey-mapper.js';
 import { runCodeCartographer } from '../agents/code-cartographer.js';
 import { FileReader } from '../file-reader.js';

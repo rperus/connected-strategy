@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'expect';
 import fs from 'fs';
 import path from 'path';
 import { ProjectStateStore, ProjectStateV3 } from '../state-store.js';

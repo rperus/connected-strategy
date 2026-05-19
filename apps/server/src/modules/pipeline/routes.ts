@@ -9,7 +9,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
 import { broadcastEvent } from '../../services/telemetry.js';
-import { getRegisteredAgent } from '@cs/agents';
+// Removed getRegisteredAgent
 
 const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
@@ -367,10 +367,9 @@ router.post('/auto-execute/:projectId/:moveId', async (req, res) => {
   };
 
   try {
-    const agent = getRegisteredAgent('autonomous-executor');
-    if (!agent) throw new Error('Autonomous Executor agent not found');
-
-    const result = await agent.run({ projectId, projectPath: project.path, moveId }, {
+    const { runAutonomousExecutor } = await import('@cs/agents/dist/agents/autonomous-executor.js');
+    
+    const result = await runAutonomousExecutor({ projectId, projectPath: project.path, moveId }, {
       jobId: `auto-${moveId}-${Date.now()}`,
       projectId,
       startedAt: new Date().toISOString()

@@ -9,3 +9,4 @@
 {"runId":"r1","startedAt":"t1","endedAt":"t2","phasesCompleted":["A"],"delta":{"newPriorities":1,"resolvedPriorities":0,"healthScoreDelta":0},"errors":[]}
 {"runId":"r1","startedAt":"t1","endedAt":"t2","phasesCompleted":["A"],"delta":{"newPriorities":1,"resolvedPriorities":0,"healthScoreDelta":0},"errors":[]}
 {"runId":"r1","startedAt":"t1","endedAt":"t2","phasesCompleted":["A"],"delta":{"newPriorities":1,"resolvedPriorities":0,"healthScoreDelta":0},"errors":[]}
+{"runId":"r1","startedAt":"t1","endedAt":"t2","phasesCompleted":["A"],"delta":{"newPriorities":1,"resolvedPriorities":0,"healthScoreDelta":0},"errors":[]}

@@ -8,14 +8,7 @@
 import express from 'express';
 import type { Request, Response, Router } from 'express';
 import { spawn } from 'child_process';
-import {
-  createJob,
-  markRunning,
-  markDone,
-  markFailed,
-  getRegisteredAgent,
-} from '@cs/agents';
-import type { AgentContext, ScanEntry } from '@cs/agents';
+import type { AgentContext, ScanEntry, AnalysisJob } from '@cs/agents';
 import type { Project } from '@cs/domain';
 import { upsertProject, getProject, listProjects, deleteProject, countProjects } from '../../db/repositories/projects.js';
 import { insertJob, updateJob } from '../../db/repositories/jobs.js';
@@ -65,15 +58,19 @@ router.get('/:id', (req: Request, res: Response) => {
 router.post('/scan', async (req: Request, res: Response) => {
   const { scanPath } = req.body as { scanPath?: string };
 
-  const scannerAgent = getRegisteredAgent('portfolio-scanner');
-  if (!scannerAgent) {
-    res.status(500).json({ ok: false, error: 'portfolio-scanner agent not found in registry' });
-    return;
-  }
+  const { runPortfolioScanner } = await import('@cs/agents/dist/agents/portfolio-scanner.js');
 
-  const job = createJob('system', 'portfolio-scanner', { scanPath });
+  const jobId = `job-${Date.now()}`;
+  const job: AnalysisJob = {
+    id: jobId,
+    projectId: 'system',
+    agentId: 'portfolio-scanner',
+    status: 'running',
+    input: { scanPath },
+    createdAt: new Date().toISOString(),
+    startedAt: new Date().toISOString()
+  };
   insertJob(job);
-  markRunning(job.id);
 
   const context: AgentContext = {
     jobId: job.id,
@@ -82,9 +79,12 @@ router.post('/scan', async (req: Request, res: Response) => {
   };
 
   try {
-    const result = await scannerAgent.run({ scanPath }, context);
-    const doneJob = markDone(job.id, result);
-    if (doneJob) updateJob(doneJob);
+    const result = await runPortfolioScanner({ scanPath }, context);
+    job.status = result.success ? 'done' : 'failed';
+    job.completedAt = new Date().toISOString();
+    job.result = result;
+    if (!result.success) job.errorMessage = result.errorMessage;
+    updateJob(job);
 
     if (!result.success || !result.data) {
       res.status(500).json({
@@ -119,8 +119,10 @@ router.post('/scan', async (req: Request, res: Response) => {
       },
     });
   } catch (err) {
-    const failedJob = markFailed(job.id, String(err));
-    if (failedJob) updateJob(failedJob);
+    job.status = 'failed';
+    job.completedAt = new Date().toISOString();
+    job.errorMessage = String(err);
+    updateJob(job);
     res.status(500).json({ ok: false, error: String(err), jobId: job.id });
   }
 });
