@@ -12,6 +12,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@cs/agents": "workspace:*",
     "@cs/domain": "workspace:*",
     "@cs/prompt-packets": "workspace:*",

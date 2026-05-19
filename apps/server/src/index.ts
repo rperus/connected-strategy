@@ -97,6 +97,9 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ─── Module route mounts ────────────────────────────────────────
+import { requireAuth } from './middleware/auth.js';
+app.use('/api', requireAuth);
+
 import runtimeRoutes from './modules/runtime/routes.js';
 app.use('/api/runtime', runtimeRoutes);
 

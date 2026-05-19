@@ -11,6 +11,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.3",
     "@cs/domain": "workspace:*",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",

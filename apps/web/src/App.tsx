@@ -4,6 +4,7 @@
  * React Router v6 + sidebar navigation + lazy-loaded pages for bundle optimization
  */
 import React, { Suspense } from 'react';
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProjectProvider } from './context/ProjectContext';
 import { Sidebar } from './components/Sidebar';
@@ -54,7 +55,27 @@ function PageLoader() {
   );
 }
 
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 export function App() {
+  if (!clerkPubKey) {
+    // Local dev fallback
+    return <InnerApp />;
+  }
+
+  return (
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <SignedIn>
+        <InnerApp />
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </ClerkProvider>
+  );
+}
+
+function InnerApp() {
   return (
     <ProjectProvider>
       <BrowserRouter>
