@@ -15,6 +15,7 @@ import { runTemporalAnalyst } from './agents/temporal-analyst.js';
 import { mergeSwarmResults, runDbArchitect, runSecurityAuditor, runApiDesignCritic, runPerformanceEngineer, runMlReadiness, runFrontendPerf, runObservability } from './agents/swarm/index.js';
 import { runFrontierPhase } from './frontier/index.js';
 import { runChiefStrategist } from './agents/chief-strategist.js';
+import { SharedFindingsStore } from './shared-findings.js';
 import { runHandoffPhase } from './handoff/index.js';
 import { saveHistoricalRun } from './db/index.js';
 import EventEmitter from 'events';
@@ -38,6 +39,8 @@ export interface RunV3Opts {
 export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   const { runId, project, store, options, emitter } = opts;
   const skip = new Set(options.skipPhases);
+
+  const sharedFindings = new SharedFindingsStore();
 
   let state = store.load(project.id) || {
     schemaVersion: '3.0.0',
@@ -81,6 +84,15 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
       }
     }
   };
+
+  // Wire up cross-agent message bus telemetry
+  sharedFindings.subscribe(finding => {
+    ctx.emitTelemetry({
+      type: 'finding_yielded',
+      message: `Hallazgo detectado: ${finding.title}`,
+      data: finding
+    });
+  });
 
   const phasesCompleted: string[] = [];
   const errors: Array<{ phase: string; message: string }> = [];

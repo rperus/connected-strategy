@@ -1,7 +1,7 @@
 # Current Task
 
 **Date:** 2026-05-18
-**Status:** in_progress
+**Status:** done
 **Version:** 2.4.0 (Wave 7)
 
 ## Completado Esta Sesión
@@ -39,4 +39,4 @@ scripts\start.bat
 2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales (Backend parcial listo, falta analista).
 3. [x] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
 4. [x] **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
-5. [ ] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run
+5. [x] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run

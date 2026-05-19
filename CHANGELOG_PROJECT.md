@@ -12,7 +12,15 @@
 - **CORS Config**: Replaced hardcoded localhost array with dynamic `process.env.CS_CORS_ORIGINS`.
 - **Circular Dependencies**: Extracted `KnowledgeSource` and related domain types to `packages/knowledge/src/types.ts`. Resolved import cycles (`index.ts` ↔ `sources.ts`). Verified with `madge` (0 cycles).
 
-## 2026-05-11: Super Audit Remediation — P0/P1/P2 Fixes
+## [2.4.0] - 2026-05-18 (Wave 7)
+### Added
+- **Real-Time Telemetry Bus (SSE)**: Global event stream decoupling UI from local run state.
+- **SQLite Historical Memory**: `temporal-analyst` agent parses past runs via `telemetry.sqlite` to compute velocity trends.
+- **Strategist Auto-mode**: Node interval daemon that awakens the Swarm autonomously every 6h.
+- **Causal DAG UI (Judea Pearl)**: New `/causal` page leveraging dynamic SVG to visualize causality vs flat SAC.
+- **Cross-Agent Message Bus**: `SharedFindingsStore` implemented across all Swarm agents to stream findings mid-run.
+
+## [2.3.0] - 2026-05-11 (Wave 6) Super Audit Remediation — P0/P1/P2 Fixes
 
 ### P0: Security — Electron CVE Remediation
 - Bumped `electron` from `^30.0.0` to `^39.0.0` in `apps/desktop/package.json`

@@ -31,6 +31,10 @@ ${filesContent}
 
     const result = await callLLMValidated(ctx.llm, prompt, swarmOutputSchema, { temperature: 0.2, maxOutputTokens: 8000 });
 
+    if (ctx.sharedFindings && result.findings) {
+      result.findings.forEach(f => ctx.sharedFindings!.publish(f));
+    }
+
     return {
       success: true,
       data: result,
