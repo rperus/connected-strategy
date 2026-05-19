@@ -1,31 +1,22 @@
 # Current Task
 
 **Date:** 2026-05-18
-**Status:** done
-**Version:** 2.4.0 (Wave 7)
+**Status:** planning
+**Version:** 2.5.0 (Wave 9)
 
-## Completado Esta Sesión
+## Completado: Wave 8 & Wave 9
 
-### Wave 6: SaaS Platform Super Audit Remediation (v2.3.2)
-- [x] Ejecutar escaneos de diagnóstico (madge, depcheck, pnpm audit, ts-prune)
-- [x] Generar `super_audit_report.md` (14-pillar framework)
-- [x] **P0**: Actualizar `electron` y `electron-builder` para mitigar 26 CVEs
-- [x] **P1**: Resolver dependencia circular `state-store.ts` > `migrators.ts` aislando los tipos
-- [x] **P1**: Migrar 8 suites de prueba rotas desde `node:test` hacia `vitest` globals (100% passing)
-- [x] **P2**: Implementar code-splitting (`React.lazy` + `Suspense`) en `App.tsx`, reduciendo el bundle inicial en un 55% (531kB -> 240kB)
-- [x] **P2**: Instalar dependencias de script faltantes (`sharp`, `png-to-ico`)
-- [x] **P2**: Reemplazar mock data estático en `fixtures.ts` con la data real del caso de estudio "Sun King"
-- [x] Validar construcción de UI (`pnpm --filter @cs/web build`) y 0 errores de TypeScript
+- **Wave 8 (Telemetry & Concurrency):**
+  - Implementado `SharedFindingsStore` para comunicación en tiempo real del enjambre al Strategist.
+  - Creado Ticker de Salud en vivo vía SSE en el Dashboard.
+  - Implementado Throttling paralelo (max 2) en `scheduler.ts` con eventos asíncronos.
+  - Habilitado `temporal-analyst.ts` usando el historial de SQLite.
+  - Causal DAG UI corregido.
 
-### v2.1.0 — Platform Elevation
-- [x] CoachPanel.tsx: 18 alertas proactivas Wharton en HomePage
-- [x] PortfolioMatrixPage.tsx: gráfico 2×2 WTP×SCI con cuadrantes
-- [x] BriefingPage.tsx: ranking + export clipboard Antigravity
-- [x] mockData.ts: recalibración evidence-based (BALAM SAC 66→76)
-- [x] Sidebar: nueva sección "Inteligencia"
-- [x] Fix: eliminar duplicate 'connected-strategy' key en mockData
-- [x] Typecheck ✅ 0 errores
-- [x] Browser verification ✅
+- **Wave 9 (Handoff & Presentation):**
+  - PDF Export del Briefing Ejecutivo (`@media print`).
+  - Swarm Comparator UI para cruzar debilidades entre proyectos.
+  - Auto-generación de *Prompt Packets* (Antigravity Moves) en disco durante el pipeline V3.
 
 ## Arrancar
 
@@ -33,10 +24,13 @@
 scripts\start.bat
 ```
 
-## Próximo Wave (Wave 7 — Phase 2: Telemetry & Memory)
+## Próximo Wave (Wave 10 — Portfolio Expansion)
 
-1. [x] **Telemetría en tiempo real**: conectar eventos del backend vía global SSE (`/api/telemetry/stream`) a los nodos de agentes para visualización live (sin depender de lanzar el run desde la UI).
-2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales (Backend parcial listo, falta analista).
-3. [x] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
-4. [x] **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
-5. [x] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run
+Opciones para la mesa:
+
+1. **[ ] Interactive Strategy Copilot (Chat)**
+   Un chat en la UI que actúe como un clon de Rodrigo: puede consultar SQLite, el `SharedFindingsStore` y leer el estado en vivo de los proyectos para responder preguntas cruzadas (Ej: "Cuáles son los 3 proyectos con mayor riesgo arquitectónico?").
+2. **[ ] Reporting Automatizado en Batch**
+   Un agente que consolide el estado del portfolio cada semana y genere un reporte "Board-ready" combinando gráficas y narrativas estratégicas (en markdown o docx).
+3. **[ ] Autonomous Execution (Git Auto-PRs)**
+   Llevar el `action-lead` al límite: en lugar de generar prompt packets para copiar/pegar, el agente lee el `manifest.json`, realiza los cambios directamente en un repositorio clonado temporal y abre un Pull Request en GitHub o GitLab automáticamente.

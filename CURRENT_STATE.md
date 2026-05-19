@@ -1,12 +1,11 @@
 # Current State
 
 > Date: 2026-05-18
-> Status: operational
-> Version: 2.4.0 "Wave 7 Complete"
+> Version: 2.5.0 "Wave 9 Complete"
 > Coordinator: Cerebro
-> Active Wave: Wave 8 Planning
+> Active Wave: Wave 10 Planning
 
-## Platform Status — v2.4.0
+## Platform Status — v2.5.0
 
 | Check | Result |
 |---|---|
@@ -19,11 +18,22 @@
 | pnpm --filter @cs/web typecheck | ✅ 0 errors |
 | Worksheets | ✅ 15 worksheets (WS01-WS15) |
 | Agents | ✅ 20 agents registered (3-tier swarm) |
-| Interactive Pages | ✅ 27 pages |
+| Interactive Pages | ✅ 29 pages |
 | Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (16) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
 
-## What Changed: v2.0.0 → v2.3.2
+## What Changed: v2.3.2 → v2.5.0
+
+### v2.5.0 — Handoff & Auto-Generation (Wave 9)
+- **Executive Briefing PDF**: Native high-fidelity `@media print` CSS for 1-click boardroom reports.
+- **Swarm Comparator**: Side-by-side visual analysis of findings across two different projects.
+- **Prompt Packet Auto-Gen**: Handoff phase now writes `prompt.md`, `strategy.md`, and `manifest.json` directly to disk, fully connected to the UI.
+
+### v2.4.0 — Telemetry & Concurrency (Wave 8)
+- **Real-Time Telemetry**: Global SSE event bus (`/api/telemetry/stream`) powering a live dashboard ticker.
+- **Shared Findings Store**: In-memory findings bus allowing the Swarm to inform the Strategist live.
+- **Autonomous Scheduler**: Concurrency-aware throttling (limit=2) for parallel multi-project execution.
+
 
 ### v2.3.2 — Super Audit Remediation (Wave 6)
 - **Security Patch**: Upgraded `electron` and `electron-builder` to close 26 CVEs.
