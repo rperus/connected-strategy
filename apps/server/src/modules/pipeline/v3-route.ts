@@ -5,6 +5,8 @@ import { runCausalMapper } from '@cs/agents/dist/agents/causal-mapper.js';
 import { listProjects } from '../../db/repositories/projects.js';
 import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
 import fs from 'fs';
+import fsp from 'fs/promises';
+import path from 'path';
 import { EventEmitter } from 'events';
 import { broadcastEvent } from '../../services/telemetry.js';
 
@@ -223,6 +225,40 @@ router.get('/v3-swarm-comparator', (req, res) => {
     },
     comparison
   });
+});
+
+router.get('/v3-prompts', async (req, res) => {
+  const projects = listProjects();
+  const allPrompts = [];
+
+  for (const p of projects) {
+    const baseDir = path.join('data', 'projects', p.id, 'antigravity');
+    try {
+      const stats = await fsp.stat(baseDir);
+      if (!stats.isDirectory()) continue;
+      
+      const entries = await fsp.readdir(baseDir, { withFileTypes: true });
+      const moves = entries.filter(e => e.isDirectory() && e.name.startsWith('move-')).map(e => e.name);
+      
+      for (const move of moves) {
+        try {
+          const promptContent = await fsp.readFile(path.join(baseDir, move, 'prompt.md'), 'utf-8');
+          allPrompts.push({
+            projectId: p.id,
+            projectName: p.name,
+            moveId: move,
+            promptForAntigravity: promptContent
+          });
+        } catch (err) {
+          // Ignore missing prompt.md
+        }
+      }
+    } catch (err) {
+      // Directory doesn't exist
+    }
+  }
+
+  res.json({ ok: true, data: allPrompts });
 });
 
 export default router;

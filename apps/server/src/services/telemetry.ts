@@ -7,9 +7,11 @@ export const telemetryBus = new EventEmitter();
 export type TelemetryEventName = 
   | 'pipeline:started'
   | 'pipeline:completed'
+  | 'pipeline:throttled'
   | 'agent:started'
   | 'agent:completed'
   | 'agent:failed'
+  | 'agent:activity'
   | 'project:score_updated';
 
 /**

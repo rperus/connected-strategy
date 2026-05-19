@@ -74,24 +74,19 @@ export function PromptPacketsPage() {
   const [source, setSource] = useState<'loading' | 'api' | 'mock'>('loading');
 
   useEffect(() => {
-    Promise.all([
-      fetch(api.pipelineProposals).then(r => r.json()).catch(() => ({ ok: false })),
-      fetch(api.pipelinePrompts).then(r => r.json()).catch(() => ({ ok: false })),
-    ]).then(([propResp, promptResp]) => {
-      const propData = (propResp as { ok: boolean; data?: ImprovementProposal[] });
-      const promptData = (promptResp as { ok: boolean; data?: PipelinePrompt[] });
-
-      if (propData.ok && propData.data && propData.data.length > 0) {
-        setProposals(propData.data);
-        setSource('api');
-      } else {
-        setSource('mock');
-      }
-
-      if (promptData.ok && promptData.data) {
-        setPipelinePrompts(promptData.data);
-      }
-    });
+    // Fetch v3 generated prompts
+    fetch(`${api.health.replace('/health', '')}/pipeline/v3-prompts`)
+      .then(r => r.json())
+      .catch(() => ({ ok: false }))
+      .then(promptResp => {
+        const promptData = (promptResp as { ok: boolean; data?: PipelinePrompt[] });
+        if (promptData.ok && promptData.data) {
+          setPipelinePrompts(promptData.data);
+          setSource('api');
+        } else {
+          setSource('mock');
+        }
+      });
   }, []);
 
   function copy(text: string) {
@@ -126,13 +121,13 @@ export function PromptPacketsPage() {
             <div key={i} className="prompt-packet-card" style={{ marginBottom: 8 }}>
               <details>
                 <summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: 13, color: 'var(--cs-accent)' }}>
-                  {pkt.projectName}
+                  {pkt.projectName} <span style={{ color: 'var(--cs-text-dim)', fontSize: 11, marginLeft: 8 }}>({(pkt as any).moveId || 'manual'})</span>
                 </summary>
                 <div style={{ position: 'relative', marginTop: 8 }}>
                   <pre style={{
                     background: 'var(--cs-bg-secondary)', padding: 12, borderRadius: 6,
                     fontSize: 11, lineHeight: 1.5, whiteSpace: 'pre-wrap',
-                    border: '1px solid var(--cs-border)', maxHeight: 300, overflow: 'auto',
+                    border: '1px solid var(--cs-border)', maxHeight: 400, overflow: 'auto',
                     color: 'var(--cs-text)',
                   }}>
                     {pkt.promptForAntigravity}
