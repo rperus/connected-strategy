@@ -145,6 +145,16 @@ router.post('/v3-context/:projectId', (req, res) => {
   res.json({ ok: true });
 });
 
+router.put('/v3-state/:projectId/auto-mode', (req, res) => {
+  const { enabled } = req.body as { enabled: boolean };
+  const state = store.load(req.params.projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  
+  state.runsAutonomously = !!enabled;
+  store.save(state);
+  res.json({ ok: true, runsAutonomously: state.runsAutonomously });
+});
+
 router.get('/v3-history/:projectId', (req, res) => {
   try {
     const runs = getHistoricalRuns(req.params.projectId);

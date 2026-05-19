@@ -141,6 +141,21 @@ export function AgentOrchestratorPage() {
   const [status, setStatus] = useState<'idle'|'running'|'done'|'failed'>('idle');
   const [logs, setLogs] = useState<{phase?: string, msg?: string, message?: string, type?: string, agentId?: string}[]>([]);
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null);
+  const [autoMode, setAutoMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Fetch initial state to see if auto-mode is enabled
+    if (activeProject?.id) {
+      fetch(`${API_BASE_URL}/api/pipeline/v3-state/${activeProject.id}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.state) {
+            setAutoMode(!!data.state.runsAutonomously);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [activeProject?.id]);
 
   useEffect(() => {
     // Wave 7: Global real-time telemetry stream
@@ -195,6 +210,22 @@ export function AgentOrchestratorPage() {
     } catch (e) {
       console.error(e);
       setStatus('failed');
+    }
+  };
+
+  const toggleAutoMode = async () => {
+    if (!activeProject?.id) return;
+    const nextState = !autoMode;
+    setAutoMode(nextState);
+    try {
+      await fetch(`${API_BASE_URL}/api/pipeline/v3-state/${activeProject.id}/auto-mode`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: nextState })
+      });
+    } catch (e) {
+      console.error(e);
+      setAutoMode(!nextState); // rollback on error
     }
   };
 
@@ -262,12 +293,25 @@ export function AgentOrchestratorPage() {
                 {status === 'running' ? 'Pipeline ejecutándose...' : status === 'done' ? 'Ejecución completada.' : 'Pipeline en espera.'}
               </div>
             </div>
-            <button onClick={runPipeline} disabled={status === 'running'} style={{
-              padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: status === 'running' ? 'not-allowed' : 'pointer',
-              background: status === 'running' ? '#4b5563' : '#6366f1', color: 'white', border: 'none'
-            }}>
-              {status === 'running' ? '⏳ Ejecutando...' : '🚀 Iniciar V3 Swarm'}
-            </button>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <button onClick={toggleAutoMode} style={{
+                padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                background: autoMode ? 'rgba(34, 197, 94, 0.15)' : 'transparent',
+                color: autoMode ? '#22c55e' : 'var(--cs-text-muted)',
+                border: `1px solid ${autoMode ? '#22c55e' : 'rgba(255,255,255,0.1)'}`,
+                display: 'flex', alignItems: 'center', gap: 6
+              }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: autoMode ? '#22c55e' : '#4b5563', animation: autoMode ? 'pulse 2s infinite' : 'none' }} />
+                Auto-Mode: {autoMode ? 'ON' : 'OFF'}
+              </button>
+              <button onClick={runPipeline} disabled={status === 'running'} style={{
+                padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: status === 'running' ? 'not-allowed' : 'pointer',
+                background: status === 'running' ? '#4b5563' : 'linear-gradient(135deg, var(--cs-accent), var(--cs-violet))', color: 'white', border: 'none',
+                boxShadow: status === 'running' ? 'none' : '0 4px 14px rgba(99,102,241,0.3)'
+              }}>
+                {status === 'running' ? '⏳ Ejecutando...' : '🚀 Iniciar V3 Swarm'}
+              </button>
+            </div>
           </div>
           {logs.length > 0 && (
             <div style={{ padding: 12, background: '#0a0d14', border: '1px solid #1f2937', borderRadius: 8, maxHeight: 150, overflowY: 'auto', fontFamily: 'monospace', fontSize: 10 }}>

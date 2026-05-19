@@ -37,6 +37,6 @@ scripts\start.bat
 
 1. [x] **Telemetría en tiempo real**: conectar eventos del backend vía global SSE (`/api/telemetry/stream`) a los nodos de agentes para visualización live (sin depender de lanzar el run desde la UI).
 2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales (Backend parcial listo, falta analista).
-3. [ ] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
+3. [x] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
 4. [ ] **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
 5. [ ] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run
