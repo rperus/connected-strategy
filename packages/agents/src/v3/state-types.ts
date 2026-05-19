@@ -20,6 +20,7 @@ import type {
 } from '@cs/domain';
 import type { z } from 'zod';
 import type { RevenueModelArchitectOutput } from './agents/revenue-model-architect.js';
+import type { TemporalAnalystOutput } from './agents/temporal-analyst.js';
 
 export interface DiscoveryResult {
   // placeholder
@@ -71,6 +72,7 @@ export interface ProjectStateV3 {
     findings: SwarmFinding[];
     perSpecialist: Record<string, { count: number; durationMs: number }>;
   };
+  temporal?: TemporalAnalystOutput;
   frontier?: FrontierAnalysis;
   synthesis?: z.infer<typeof synthesisSchema>;
   userContext: {

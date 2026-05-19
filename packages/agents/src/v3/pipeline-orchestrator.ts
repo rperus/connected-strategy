@@ -11,6 +11,7 @@ import { runCompetitorIntelligence } from './agents/competitor-intelligence.js';
 import { runWtpCostDriverScorer } from './agents/wtp-cost-driver-scorer.js';
 import { runActivitySystemMapper } from './agents/activity-system-mapper.js';
 import { runCodeCartographer } from './agents/code-cartographer.js';
+import { runTemporalAnalyst } from './agents/temporal-analyst.js';
 import { mergeSwarmResults, runDbArchitect, runSecurityAuditor, runApiDesignCritic, runPerformanceEngineer, runMlReadiness, runFrontendPerf, runObservability } from './agents/swarm/index.js';
 import { runFrontierPhase } from './frontier/index.js';
 import { runChiefStrategist } from './agents/chief-strategist.js';
@@ -171,6 +172,10 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
         runObservability({ files }, ctx)
       ]);
       state.swarm = mergeSwarmResults(swarmResults);
+      
+      const temporalResult = await runTemporalAnalyst(ctx);
+      state.temporal = temporalResult.data;
+
       phasesCompleted.push('D');
       store.save(state);
       options.onProgress?.('D', 'Swarm Phase Complete.');

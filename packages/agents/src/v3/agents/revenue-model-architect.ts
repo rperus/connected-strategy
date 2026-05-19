@@ -9,7 +9,7 @@ interface RevenueModelArchitectInput {
   competitorPricing: string[];
 }
 
-interface RevenueModelArchitectOutput {
+export interface RevenueModelArchitectOutput {
   connectionArchitecture: string;
   revenueModel: {
     what: string;
