@@ -36,7 +36,7 @@ export async function discoverProjectFiles(projectPath: string): Promise<{
 
   const pkgPath = path.join(projectPath, 'package.json');
   if (fs.existsSync(pkgPath)) {
-    try { result.packageJson = JSON.parse(fs.readFileSync(pkgPath, 'utf-8')); } catch {}
+    try { result.packageJson = JSON.parse(fs.readFileSync(pkgPath, 'utf-8')); } catch (err) { console.warn('Failed to parse package.json', err); }
   }
   if ((result.packageJson as any)?.workspaces || fs.existsSync(path.join(projectPath, 'pnpm-workspace.yaml'))) {
     result.hasMonorepo = true;

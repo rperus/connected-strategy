@@ -24,14 +24,14 @@ export function insertRun(record: V3Run): void {
       @health_score, @total_tokens, @estimated_cost_usd, @error_message, @state_snapshot_path
     )
   `);
-  stmt.run(record as any);
+  stmt.run(record as unknown as Record<string, unknown>);
 }
 
 export function updateRunStatus(runId: string, status: 'done' | 'failed', extra: Partial<V3Run>): void {
   const db = getDb();
   
   const setClauses: string[] = ['status = @status'];
-  const params: Record<string, any> = { run_id: runId, status };
+  const params: Record<string, unknown> = { run_id: runId, status };
 
   if (extra.ended_at !== undefined) { setClauses.push('ended_at = @ended_at'); params.ended_at = extra.ended_at; }
   if (extra.health_score !== undefined) { setClauses.push('health_score = @health_score'); params.health_score = extra.health_score; }

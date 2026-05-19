@@ -28,7 +28,7 @@ router.post('/run-v3', async (req: Request, res: Response) => {
   };
 
   const runId = `v3-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-  const projects = listProjects().filter((p: any) => !body.projectIds || body.projectIds.includes(p.id));
+  const projects = listProjects().filter((p: { id: string }) => !body.projectIds || body.projectIds.includes(p.id));
 
   if (projects.length === 0) {
     return res.status(400).json({ ok: false, error: 'No projects matched' });
@@ -82,7 +82,7 @@ router.get('/v3-stream/:runId', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  const listener = (data: any) => {
+  const listener = (data: unknown) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   };
 
@@ -106,7 +106,7 @@ router.get('/v3-moves/:projectId', (req, res) => {
   const indexPath = `data/projects/${req.params.projectId}/antigravity/INDEX.md`;
   res.json({
     ok: true,
-    moves: state.synthesis.topPriorities.map((p: any, i: number) => ({
+    moves: state.synthesis.topPriorities.map((p: { title: string; summary: string; estimatedImpact: string; estimatedEffort: string }, i: number) => ({
       moveId: `move-${i + 1}`,
       title: p.title,
       summary: p.summary,

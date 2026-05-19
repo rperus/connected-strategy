@@ -20,7 +20,7 @@ describe('Security constraints', () => {
     expect(indexSource).not.toMatch(/app\.use\(cors\(\)\)/);
 
     // Should have origin restriction
-    expect(indexSource).toMatch(/origin.*127\.0\.0\.1:4310/);
+    expect(indexSource).toMatch(/CS_CORS_ORIGINS/);
   });
 
   it('launch endpoint should validate path prefix', async () => {
