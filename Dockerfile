@@ -1,9 +1,9 @@
 ### Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 # Copy only package manifests for caching
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
@@ -17,11 +17,12 @@ COPY packages/reporting/package.json ./packages/reporting/
 COPY packages/prompt-packets/package.json ./packages/prompt-packets/
 
 # Install all deps (including devDeps needed for build)
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 ### Stage 2: Build
 FROM deps AS builder
 WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 COPY . .
 
@@ -36,10 +37,10 @@ RUN pnpm --filter @cs/server build
 RUN pnpm --filter @cs/web build
 
 ### Stage 3: Production API Server
-FROM node:20-alpine AS server
+FROM node:22-alpine AS server
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 # Copy only production dependencies and built artifacts
 COPY --from=builder /app/package.json .
@@ -51,7 +52,7 @@ COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/config ./config
 
 # Install only production deps
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --prod
 
 # Ensure data directory exists for SQLite
 RUN mkdir -p /app/data /app/data/projects

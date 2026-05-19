@@ -1,11 +1,11 @@
 steps:
-  # 1. Build the multi-stage Docker image
+  # 1. Build the multi-stage Docker image (targetting the server stage)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/connected-strategy:$COMMIT_SHA', '.']
+    args: ['build', '--target', 'server', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/connected-strategy/api:latest', '.']
 
-  # 2. Push the Docker image to Container Registry
+  # 2. Push the Docker image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/connected-strategy:$COMMIT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/connected-strategy/api:latest']
 
   # 3. Deploy the image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -15,20 +15,20 @@ steps:
       - 'deploy'
       - 'connected-strategy-api'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/connected-strategy:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/connected-strategy/api:latest'
       - '--region'
       - 'us-central1'
       - '--allow-unauthenticated'
       - '--port'
       - '4311' # The backend API port exposed by the docker container
       - '--set-env-vars'
-      - 'NODE_ENV=production,PORT=4311'
+      - 'NODE_ENV=production'
       # To add Secrets: 
       # - '--set-secrets'
       # - 'GEMINI_API_KEY=GEMINI_API_KEY:latest'
 
 images:
-  - 'gcr.io/$PROJECT_ID/connected-strategy:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/connected-strategy/api:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY

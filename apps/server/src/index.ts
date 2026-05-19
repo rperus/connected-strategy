@@ -133,9 +133,9 @@ app.use('/api/copilot', copilotRoutes);
 // ─── Start ──────────────────────────────────────────────────────
 const PORT = resolvePort('connected_strategy_api', 4311);
 
-const server = app.listen(PORT, '127.0.0.1', () => {
-  console.log(`[CS-API] Connected Strategy API running on http://127.0.0.1:${PORT}`);
-  console.log(`[CS-API] Health: http://127.0.0.1:${PORT}/api/health`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[CS-API] Connected Strategy API running on http://0.0.0.0:${PORT}`);
+  console.log(`[CS-API] Health: http://0.0.0.0:${PORT}/api/health`);
   console.log(`[CS-API] Persistence: SQLite (data/connected_strategy.db)`);
 });
 
