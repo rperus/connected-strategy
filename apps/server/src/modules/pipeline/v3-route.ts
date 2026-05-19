@@ -189,4 +189,40 @@ router.get('/v3-causal/:projectId', async (req, res) => {
   res.json({ ok: true, causal: result.data });
 });
 
+router.get('/v3-swarm-comparator', (req, res) => {
+  const p1Id = req.query.p1 as string;
+  const p2Id = req.query.p2 as string;
+
+  if (!p1Id || !p2Id) return res.status(400).json({ ok: false, error: 'Requires p1 and p2 query params' });
+
+  const state1 = store.load(p1Id);
+  const state2 = store.load(p2Id);
+
+  if (!state1 || !state2) return res.status(404).json({ ok: false, error: 'One or both projects not found' });
+
+  // Extract and group findings
+  const findings1 = state1.swarm?.findings || [];
+  const findings2 = state2.swarm?.findings || [];
+
+  const agents = Array.from(new Set([
+    ...findings1.map(f => (f as any).agent ?? f.category),
+    ...findings2.map(f => (f as any).agent ?? f.category)
+  ]));
+
+  const comparison = agents.map(agent => ({
+    agent,
+    project1: findings1.filter(f => ((f as any).agent ?? f.category) === agent),
+    project2: findings2.filter(f => ((f as any).agent ?? f.category) === agent)
+  }));
+
+  res.json({
+    ok: true,
+    projects: {
+      p1: { id: p1Id, name: state1.projectName },
+      p2: { id: p2Id, name: state2.projectName }
+    },
+    comparison
+  });
+});
+
 export default router;

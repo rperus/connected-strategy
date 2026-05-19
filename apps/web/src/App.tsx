@@ -42,6 +42,7 @@ const BriefingPage = React.lazy(() => import('./pages/BriefingPage').then(m => (
 const PlatformIntelPage = React.lazy(() => import('./pages/PlatformIntelPage').then(m => ({ default: m.PlatformIntelPage })));
 const StrategicImprovePage = React.lazy(() => import('./pages/StrategicImprovePage').then(m => ({ default: m.StrategicImprovePage })));
 const CausalDagPage = React.lazy(() => import('./pages/CausalDagPage').then(m => ({ default: m.CausalDagPage })));
+const SwarmComparatorPage = React.lazy(() => import('./pages/SwarmComparatorPage').then(m => ({ default: m.SwarmComparatorPage })));
 
 // ─── Loading fallback ────────────────────────────────────────────────────────
 function PageLoader() {
@@ -90,6 +91,7 @@ function App() {
                   <Route path="/intel" element={<PlatformIntelPage />} />
                   <Route path="/improve" element={<StrategicImprovePage />} />
                   <Route path="/causal" element={<CausalDagPage />} />
+                  <Route path="/swarm-comparator" element={<SwarmComparatorPage />} />
                   <Route path="/v3" element={<V3Dashboard />} />
                   <Route path="/v3/moves" element={<V3Moves />} />
                 </Routes>

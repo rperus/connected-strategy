@@ -92,13 +92,33 @@ export function BriefingPage() {
     });
   }
 
+  function handlePrint() {
+    window.print();
+  }
+
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h1>📋 Briefing Ejecutivo</h1>
-        <p className="page-subtitle">
-          Inteligencia estratégica del portfolio · Export listo para Antigravity · Wharton Connected Strategy
-        </p>
+    <div className="page-container briefing-page">
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>📋 Briefing Ejecutivo</h1>
+          <p className="page-subtitle">
+            Inteligencia estratégica del portfolio · Export listo para Antigravity · Wharton Connected Strategy
+          </p>
+        </div>
+        <button
+          onClick={handlePrint}
+          className="no-print"
+          style={{
+            padding: '10px 16px', borderRadius: 8,
+            background: 'var(--cs-surface-2)',
+            border: '1px solid var(--cs-border)',
+            color: 'var(--cs-text)',
+            fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 8
+          }}
+        >
+          📄 Exportar PDF
+        </button>
       </div>
       <ProjectBanner context="Executive Briefing" />
 

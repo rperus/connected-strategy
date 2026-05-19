@@ -36,6 +36,7 @@ const NAV = [
     { to: '/briefing', label: 'Briefing Ejecutivo', icon: '📋' },
     { to: '/intel', label: 'Skills & Workflows', icon: '🔌' },
     { to: '/improve', label: 'Mejoras Estratégicas', icon: '🚀' },
+    { to: '/swarm-comparator', label: 'Swarm Comparator', icon: '⚖️' },
   ]},
   { section: 'Acción', items: [
     { to: '/agents', label: 'Agentes', icon: '🤖' },
