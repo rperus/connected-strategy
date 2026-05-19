@@ -143,30 +143,40 @@ export function AgentOrchestratorPage() {
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (runId) {
-      const eventSource = new EventSource(`${API_BASE_URL}/api/pipeline/v3-stream/${runId}`);
-      eventSource.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        setLogs(prev => [...prev, data]);
-        
-        // Track active agent
-        if (data.type === 'telemetry' && data.agentId) {
-          if (data.message.includes('started') || data.message.includes('Starting')) {
-            setActiveAgentId(data.agentId);
-          }
-        } else if (data.phase && data.phase !== 'general') {
-           // Approximate active agent by phase if needed
-        }
+    // Wave 7: Global real-time telemetry stream
+    const eventSource = new EventSource(`${API_BASE_URL}/api/telemetry/stream`);
+    
+    eventSource.onmessage = (e) => {
+      const payloadWrapper = JSON.parse(e.data);
+      if (payloadWrapper.event === 'connected') return;
 
-        if (data.phase === 'DONE' || data.phase === 'FAILED') {
-          eventSource.close();
-          setStatus(data.phase === 'DONE' ? 'done' : 'failed');
-          setActiveAgentId(null);
+      const { event, data } = payloadWrapper;
+
+      if (event === 'pipeline:started') {
+        setStatus('running');
+        setRunId(data.runId);
+        setLogs(prev => [...prev, { type: 'system', message: `Pipeline arrancado (Run: ${data.runId})` }]);
+        setActiveAgentId(null);
+      } 
+      else if (event === 'pipeline:completed') {
+        setStatus(data.status === 'done' ? 'done' : 'failed');
+        setLogs(prev => [...prev, { type: 'system', message: `Pipeline completado (${data.status})` }]);
+        setActiveAgentId(null);
+      } 
+      else if (event === 'agent:started') {
+        setLogs(prev => [...prev, { phase: data.phase, message: data.message, type: 'info' }]);
+      } 
+      else if (event === 'agent:activity') {
+        // Detailed telemetry event from Agent Swarm
+        setLogs(prev => [...prev, data]);
+        if (data.agentId && (data.message?.includes('started') || data.message?.includes('Starting'))) {
+          setActiveAgentId(data.agentId);
         }
-      };
-      return () => eventSource.close();
-    }
-  }, [runId]);
+      }
+    };
+
+    return () => eventSource.close();
+  }, []);
 
   const runPipeline = async () => {
     if (!activeProject?.id) return alert('Selecciona un proyecto primero.');
@@ -180,8 +190,8 @@ export function AgentOrchestratorPage() {
         body: JSON.stringify({ projectIds: [activeProject.id], useGemini: true })
       });
       const data = await res.json();
-      if (data.ok) setRunId(data.runId);
-      else setStatus('failed');
+      if (!data.ok) setStatus('failed');
+      // We don't setRunId here anymore; the SSE 'pipeline:started' event will catch it globally!
     } catch (e) {
       console.error(e);
       setStatus('failed');
@@ -262,7 +272,7 @@ export function AgentOrchestratorPage() {
           {logs.length > 0 && (
             <div style={{ padding: 12, background: '#0a0d14', border: '1px solid #1f2937', borderRadius: 8, maxHeight: 150, overflowY: 'auto', fontFamily: 'monospace', fontSize: 10 }}>
               {logs.map((l, i) => (
-                <div key={i} style={{ color: l.type === 'telemetry' ? '#a855f7' : '#10b981', marginBottom: 4 }}>
+                <div key={i} style={{ color: l.type === 'telemetry' ? '#a855f7' : l.type === 'system' ? '#06b6d4' : '#10b981', marginBottom: 4 }}>
                   <span style={{ color: '#6b7280' }}>[{new Date().toLocaleTimeString()}]</span> {l.agentId ? `<${l.agentId}> ` : ''}{l.msg || l.message}
                 </div>
               ))}

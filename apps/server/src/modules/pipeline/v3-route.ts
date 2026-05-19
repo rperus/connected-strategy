@@ -5,6 +5,7 @@ import { listProjects } from '../../db/repositories/projects.js';
 import { insertRun, updateRunStatus, getRunById } from '../../db/repositories/v3-runs.js';
 import fs from 'fs';
 import { EventEmitter } from 'events';
+import { broadcastEvent } from '../../services/telemetry.js';
 
 const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
@@ -37,6 +38,15 @@ router.post('/run-v3', async (req: Request, res: Response) => {
   // Fire-and-track: long-running, return runId immediately
   const startedAt = new Date().toISOString();
   insertRun({ run_id: runId, project_id: projects[0].id, started_at: startedAt, status: 'running', state_snapshot_path: '', ended_at: null, health_score: null, total_tokens: null, estimated_cost_usd: null, error_message: null });
+  broadcastEvent('pipeline:started', { runId, projectId: projects[0].id, startedAt });
+
+  // Forward internal events to the global telemetry bus
+  const telemetryForwarder = (data: any) => {
+    if (data.type === 'telemetry') {
+      broadcastEvent('agent:activity', data);
+    }
+  };
+  pipelineEvents.on(`v3-${runId}`, telemetryForwarder);
 
   // Run async (don't await — let HTTP return)
   (async () => {
@@ -54,6 +64,7 @@ router.post('/run-v3', async (req: Request, res: Response) => {
             customerSegment: body.customerSegment,
             onProgress: (phase: string, msg: string) => {
               pipelineEvents.emit(`v3-${runId}`, { phase, msg });
+              broadcastEvent('agent:started', { runId, phase, message: msg });
             }
           },
           emitter: pipelineEvents,
@@ -61,9 +72,13 @@ router.post('/run-v3', async (req: Request, res: Response) => {
       }
       updateRunStatus(runId, 'done', { ended_at: new Date().toISOString() });
       pipelineEvents.emit(`v3-${runId}`, { phase: 'DONE', msg: 'Pipeline Finished successfully' });
+      broadcastEvent('pipeline:completed', { runId, status: 'done' });
     } catch (err) {
       updateRunStatus(runId, 'failed', { ended_at: new Date().toISOString(), error_message: String(err) });
       pipelineEvents.emit(`v3-${runId}`, { phase: 'FAILED', msg: String(err) });
+      broadcastEvent('pipeline:completed', { runId, status: 'failed', error: String(err) });
+    } finally {
+      pipelineEvents.off(`v3-${runId}`, telemetryForwarder);
     }
   })();
 

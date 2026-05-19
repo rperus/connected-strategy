@@ -116,6 +116,9 @@ app.use('/api/pipeline', v3PipelineRoutes);
 import healthDashboardRoutes from './modules/health/routes.js';
 app.use('/api/health-dashboard', healthDashboardRoutes);
 
+import telemetryRoutes from './modules/telemetry/routes.js';
+app.use('/api/telemetry', telemetryRoutes);
+
 // ─── Start ──────────────────────────────────────────────────────
 const PORT = resolvePort('connected_strategy_api', 4311);
 

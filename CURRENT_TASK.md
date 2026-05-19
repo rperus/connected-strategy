@@ -1,8 +1,8 @@
 # Current Task
 
-**Date:** 2026-05-11
-**Status:** planning
-**Version:** 2.4.0 (Targeting Wave 7)
+**Date:** 2026-05-18
+**Status:** in_progress
+**Version:** 2.4.0 (Wave 7)
 
 ## Completado Esta Sesión
 
@@ -35,8 +35,8 @@ scripts\start.bat
 
 ## Próximo Wave (Wave 7 — Phase 2: Telemetry & Memory)
 
-1. [ ] **Telemetría en tiempo real**: conectar eventos del backend (`POST /api/pipeline/run-full`) a los nodos de agentes para visualización live
-2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales
+1. [x] **Telemetría en tiempo real**: conectar eventos del backend vía global SSE (`/api/telemetry/stream`) a los nodos de agentes para visualización live (sin depender de lanzar el run desde la UI).
+2. [ ] **Memoria temporal**: persistir historical runs en SQLite para que temporal-analyst tenga datos reales (Backend parcial listo, falta analista).
 3. [ ] **Strategist auto-mode**: permitir que el Strategist se auto-ejecute cada N horas (runsAutonomously=true)
 4. [ ] **Causal DAG UI**: nueva página `/causal` para visualizar el DAG de Pearl con scores ajustados
 5. [ ] **Cross-agent message bus**: implementar SharedFindingsStore para que Analysis Lead propague hallazgos mid-run
