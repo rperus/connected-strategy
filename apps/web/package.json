@@ -14,7 +14,8 @@
     "@cs/domain": "workspace:*",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "react-router-dom": "^6.23.0"
+    "react-router-dom": "^6.23.0",
+    "swr": "^2.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",

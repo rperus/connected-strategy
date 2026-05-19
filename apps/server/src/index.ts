@@ -11,6 +11,7 @@ import { resolve } from 'path';
 import express from 'express';
 import type { Express } from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { resolvePort, getProjectRoot } from '@cs/runtime';
@@ -44,7 +45,8 @@ try {
 
 const app: Express = express();
 
-// Security middleware
+// Security and compression middleware
+app.use(compression());
 app.use(helmet());
 
 const limiter = rateLimit({

@@ -13,6 +13,11 @@ export type {
 } from './state-types.js';
 
 import type { ProjectStateV3, RunRecord, Citation } from './state-types.js';
+import { LRUCache } from 'lru-cache';
+
+const stateCache = new LRUCache<string, ProjectStateV3>({
+  max: 50, // Keep up to 50 project states in memory
+});
 
 export class ProjectStateStore {
   constructor(private rootDir: string = 'data/projects') {
@@ -34,11 +39,16 @@ export class ProjectStateStore {
   }
 
   load(projectId: string): ProjectStateV3 | null {
+    const cached = stateCache.get(projectId);
+    if (cached) return cached;
+
     const p = path.join(this.getProjectPath(projectId), 'state.json');
     if (!fs.existsSync(p)) return null;
     try {
       const raw = JSON.parse(fs.readFileSync(p, 'utf-8'));
-      return migrateState(raw);
+      const state = migrateState(raw);
+      if (state) stateCache.set(projectId, state);
+      return state;
     } catch (e) {
       console.error(`Failed to load state for ${projectId}`, e);
       return null;
@@ -46,6 +56,7 @@ export class ProjectStateStore {
   }
 
   save(state: ProjectStateV3): void {
+    stateCache.set(state.projectId, state);
     const dir = this.ensureProjectDir(state.projectId);
     const tmp = path.join(dir, 'state.json.tmp');
     const dest = path.join(dir, 'state.json');

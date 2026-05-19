@@ -3,6 +3,7 @@ import { MOCK_PROJECTS } from '../mockData';
 import { ProjectCard } from '../components/ProjectCard';
 import { api } from '../config';
 import { usePolling } from '../hooks/usePolling';
+import useSWR from 'swr';
 import type { Project } from '@cs/domain';
 
 type ApiState = 'loading' | 'live' | 'fallback';
@@ -42,32 +43,24 @@ export function PortfolioPage() {
   // Poll analysis stats every 5s to show queue status
   const { data: stats } = usePolling<AnalysisStats>(api.analysisStats, 5000);
 
+  const fetcher = (url: string) => fetch(url).then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  });
+
+  const { data: projectsData, error: projectsError, isLoading: projectsLoading } = useSWR<{ ok: boolean; data: Project[] }>(api.projects, fetcher, { fallbackData: { ok: true, data: projects } });
+
   useEffect(() => {
-    let cancelled = false;
-    fetch(api.projects)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json() as Promise<{ ok: boolean; data: Project[] }>;
-      })
-      .then((body) => {
-        if (cancelled) return;
-        const liveProjects = body.data ?? [];
-        if (liveProjects.length > 0) {
-          setProjects(liveProjects);
-          setApiState('live');
-        } else {
-          setProjects(MOCK_PROJECTS);
-          setApiState('fallback');
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setProjects(MOCK_PROJECTS);
-          setApiState('fallback');
-        }
-      });
-    return () => { cancelled = true; };
-  }, []);
+    if (projectsLoading) {
+      setApiState('loading');
+    } else if (projectsData?.data && projectsData.data.length > 0) {
+      setProjects(projectsData.data);
+      setApiState('live');
+    } else if (projectsError || (projectsData?.data && projectsData.data.length === 0)) {
+      setProjects(MOCK_PROJECTS);
+      setApiState('fallback');
+    }
+  }, [projectsData, projectsError, projectsLoading]);
 
   const handleScan = async () => {
     setScanning(true);

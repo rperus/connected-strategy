@@ -27,6 +27,19 @@ export interface LLMProvider {
  * Creates a Gemini LLM provider.
  * Returns a provider that gracefully degrades if GEMINI_API_KEY is not set.
  */
+import { LRUCache } from 'lru-cache';
+import crypto from 'crypto';
+
+const llmCache = new LRUCache<string, LLMResponse>({
+  max: 500, // Maximum number of prompts to cache
+  ttl: 1000 * 60 * 60 * 24, // 24 hour TTL
+});
+
+function hashPrompt(prompt: string, opts?: { temperature?: number; maxTokens?: number }): string {
+  const data = JSON.stringify({ prompt, opts });
+  return crypto.createHash('sha256').update(data).digest('hex');
+}
+
 export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvider {
   const apiKey = process.env.GEMINI_API_KEY ?? '';
   const forceOffline = process.env._CS_FORCE_OFFLINE === '1';
@@ -45,6 +58,13 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
         return { text: '', model: modelName, finishReason: 'no_api_key', tokenCount: 0 };
       }
 
+      const cacheKey = hashPrompt(prompt, opts);
+      const cached = llmCache.get(cacheKey);
+      if (cached) {
+        console.log('[LLM Cache] ⚡️ Cache hit for prompt hash:', cacheKey.substring(0, 8));
+        return cached;
+      }
+
       const { GoogleGenerativeAI } = await import('@google/generative-ai');
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({
@@ -59,12 +79,15 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
       const response = result.response;
       const text = response.text();
 
-      return {
+      const out = {
         text,
         model: modelName,
         finishReason: response.candidates?.[0]?.finishReason ?? 'unknown',
         tokenCount: response.usageMetadata?.totalTokenCount,
       };
+
+      llmCache.set(cacheKey, out);
+      return out;
     },
 
     async generateStructured<T>(prompt: string, schema: string, opts?: { temperature?: number }): Promise<T | null> {
