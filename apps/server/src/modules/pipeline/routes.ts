@@ -9,6 +9,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
 import { broadcastEvent } from '../../services/telemetry.js';
+import { AppError } from '../../middleware/error-handler.js';
 // Removed getRegisteredAgent
 
 const pipelineEvents = new EventEmitter();
@@ -36,7 +37,7 @@ router.post('/run-full', async (req: Request, res: Response) => {
   const projects = listProjects().filter((p: { id: string }) => !body.projectIds || body.projectIds.includes(p.id));
 
   if (projects.length === 0) {
-    return res.status(400).json({ ok: false, error: 'No projects matched' });
+    throw new AppError('No projects matched', 400, 'NO_PROJECTS_FOUND');
   }
 
   // Fire-and-track: long-running, return runId immediately
@@ -89,9 +90,9 @@ router.post('/run-full', async (req: Request, res: Response) => {
   res.json({ ok: true, runId, projectsQueued: projects.length, statusEndpoint: `/api/pipeline/v3-status/${runId}` });
 });
 
-router.get('/status/:runId', (req, res) => {
+router.get('/status/:runId', (req, res, next) => {
   const run = getRunById(req.params.runId);   // from db/repositories/v3-runs
-  if (!run) return res.status(404).json({ ok: false });
+  if (!run) return next(new AppError('Run not found', 404, 'NOT_FOUND'));
   res.json({ ok: true, run });
 });
 
@@ -112,9 +113,9 @@ router.get('/stream/:runId', (req, res) => {
   });
 });
 
-router.get('/state/:projectId', (req, res) => {
+router.get('/state/:projectId', (req, res, next) => {
   const state = store.load(req.params.projectId);
-  if (!state) return res.status(404).json({ ok: false, error: 'No v3 state for this project' });
+  if (!state) return next(new AppError('No v3 state for this project', 404, 'NOT_FOUND'));
   res.json({ ok: true, state });
 });
 
@@ -190,6 +191,8 @@ router.get('/proposals', (req, res) => {
           recognizeRequestPhase: 'Respond'
         },
         status: state.userContext?.completedPriorities?.includes(priority.priorityId) ? 'implemented' :
+               state.userContext?.inProgressPriorities?.includes(priority.priorityId) ? 'in-progress' :
+               state.userContext?.approvedPriorities?.includes(priority.priorityId) ? 'approved' :
                state.userContext?.dismissedPriorities?.includes(priority.priorityId) ? 'rejected' : 'draft',
         requiresHumanApproval: true,
         createdAt: state.lastRunAt || new Date().toISOString(),
@@ -199,6 +202,33 @@ router.get('/proposals', (req, res) => {
   }
   
   res.json({ ok: true, data: allProposals });
+});
+
+router.put('/proposals/:projectId/:proposalId/status', (req, res) => {
+  const { projectId, proposalId } = req.params;
+  const { status } = req.body; 
+  
+  const state = store.load(projectId);
+  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  
+  if (!state.userContext) state.userContext = { naturalLanguageUpdates: [], dismissedPriorities: [], completedPriorities: [], approvedPriorities: [], inProgressPriorities: [] };
+  
+  state.userContext.dismissedPriorities = state.userContext.dismissedPriorities?.filter(id => id !== proposalId) || [];
+  state.userContext.completedPriorities = state.userContext.completedPriorities?.filter(id => id !== proposalId) || [];
+  state.userContext.approvedPriorities = state.userContext.approvedPriorities?.filter(id => id !== proposalId) || [];
+  state.userContext.inProgressPriorities = state.userContext.inProgressPriorities?.filter(id => id !== proposalId) || [];
+
+  if (status === 'rejected') state.userContext.dismissedPriorities.push(proposalId);
+  else if (status === 'implemented') state.userContext.completedPriorities.push(proposalId);
+  else if (status === 'approved') state.userContext.approvedPriorities.push(proposalId);
+  else if (status === 'in-progress') state.userContext.inProgressPriorities.push(proposalId);
+  
+  store.save(state);
+  
+  // Broadcast to all connected SSE clients
+  broadcastEvent('proposal:updated', { projectId, proposalId, status }, projectId);
+  
+  res.json({ ok: true });
 });
 
 router.get('/findings', (req, res) => {
@@ -235,18 +265,18 @@ router.get('/history/:projectId', (req, res) => {
   try {
     const runs = getHistoricalRuns(req.params.projectId);
     const paginated = runs.slice(-limit);
-    res.json({ ok: true, runs: paginated });
+    res.json({ ok: true, data: paginated, meta: { total: runs.length, limit } });
   } catch (err) {
     // Fallback to legacy JSONL if DB not initialized or errored
     const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
     const paginated = lines.slice(-limit);
-    res.json({ ok: true, runs: paginated });
+    res.json({ ok: true, data: paginated, meta: { total: lines.length, limit } });
   }
 });
 
-router.get('/causal/:projectId', async (req, res) => {
+router.get('/causal/:projectId', async (req, res, next) => {
   const state = store.load(req.params.projectId);
-  if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
+  if (!state) return next(new AppError('State not found', 404, 'NOT_FOUND'));
   
   // Extract scores or default to 50
   const scores: Record<string, number> = {
@@ -376,6 +406,33 @@ router.post('/auto-execute/:projectId/:moveId', async (req, res) => {
     } as any);
 
     res.json({ ok: true, data: result.data });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err) });
+  }
+});
+
+router.post('/market-intel/:projectId', async (req, res) => {
+  const { projectId } = req.params;
+  const project = listProjects().find(p => p.id === projectId);
+  if (!project) return res.status(404).json({ ok: false, error: 'Project not found' });
+
+  try {
+    const { runMarketIntelAgent } = await import('@cs/agents/dist/agents/market-intel-agent.js');
+    
+    // Ejecutar agente (usa Search Grounding)
+    const findings = await runMarketIntelAgent(projectId);
+    
+    if (findings.length > 0) {
+      // Guardar hallazgos en el estado
+      const state = store.load(projectId);
+      if (state) {
+        if (!state.swarm) state.swarm = { findings: [], perSpecialist: {} };
+        state.swarm.findings.push(...findings);
+        store.save(state);
+      }
+    }
+
+    res.json({ ok: true, findings });
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err) });
   }

@@ -155,7 +155,7 @@ export function BriefingPage() {
                     <span style={{ fontSize: 12, fontWeight: 800, color: scoreColor(sac) }}>{sac}/100</span>
                   </div>
                   <div style={{ height: 4, borderRadius: 2, background: 'var(--cs-surface-2)', marginBottom: 4 }}>
-                    <div style={{ height: '100%', width: `${sac}%`, borderRadius: 2, background: scoreColor(sac), transition: 'width 0.4s' }} />
+                    <div style={{ height: '100%', transform: `scaleX(${sac / 100})`, borderRadius: 2, background: scoreColor(sac), transition: 'width 0.4s' }} />
                   </div>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <span style={{ fontSize: 9, color: 'var(--cs-text-muted)' }}>WTP {m.wtpUpliftIndex} · SCI {m.switchingCostIndex}</span>

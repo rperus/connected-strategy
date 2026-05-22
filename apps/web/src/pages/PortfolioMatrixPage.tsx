@@ -6,7 +6,7 @@
  * Shows trajectory arrows toward optimal position.
  */
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MOCK_METRICS, MOCK_PROJECTS } from '../mockData';
 import { ProjectBanner } from '../components/ProjectBanner';
 
@@ -181,7 +181,7 @@ export function PortfolioMatrixPage() {
                       <span style={{ fontSize: 10, fontWeight: 700, color: row.color }}>{row.value}</span>
                     </div>
                     <div style={{ height: 4, borderRadius: 2, background: 'var(--cs-surface-2)' }}>
-                      <div style={{ height: '100%', borderRadius: 2, width: `${row.value}%`, background: row.color, transition: 'width 0.4s' }} />
+                      <div style={{ height: '100%', borderRadius: 2, transform: `scaleX(${row.value / 100})`, background: row.color, transition: 'width 0.4s' }} />
                     </div>
                   </div>
                 ))}
@@ -192,16 +192,17 @@ export function PortfolioMatrixPage() {
                 {selectedMetrics.strategicAdvantageBreakdown.rationale}
               </div>
 
-              <button
-                onClick={() => navigate('/proposals')}
+              <Link
+                to="/proposals"
                 style={{
+                  display: 'block', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box',
                   width: '100%', padding: '8px', borderRadius: 8,
                   background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)',
                   color: '#6366f1', fontSize: 11, fontWeight: 700, cursor: 'pointer',
                 }}
               >
                 Ver Propuestas →
-              </button>
+              </Link>
             </div>
           ) : (
             <div className="card" style={{ textAlign: 'center', padding: 24 }}>

@@ -90,13 +90,13 @@ export function ValueChainPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 8, color: '#ef4444' }}>Costo: {a.costShare}%</div>
                   <div className="score-bar" style={{ height: 4, marginTop: 2 }}>
-                    <div className="score-fill" style={{ width: `${a.costShare}%`, background: '#ef4444' }} />
+                    <div className="score-fill" style={{ transform: `scaleX(${a.costShare / 100})`, background: '#ef4444' }} />
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 8, color: '#22c55e' }}>Valor: {a.valueAdd}%</div>
                   <div className="score-bar" style={{ height: 4, marginTop: 2 }}>
-                    <div className="score-fill" style={{ width: `${a.valueAdd}%`, background: '#22c55e' }} />
+                    <div className="score-fill" style={{ transform: `scaleX(${a.valueAdd / 100})`, background: '#22c55e' }} />
                   </div>
                 </div>
               </div>
@@ -138,13 +138,13 @@ export function ValueChainPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 8, color: '#ef4444' }}>Costo</div>
                   <div className="score-bar" style={{ height: 4, marginTop: 2 }}>
-                    <div className="score-fill" style={{ width: `${a.costShare}%`, background: '#ef4444' }} />
+                    <div className="score-fill" style={{ transform: `scaleX(${a.costShare / 100})`, background: '#ef4444' }} />
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 8, color: '#22c55e' }}>Valor</div>
                   <div className="score-bar" style={{ height: 4, marginTop: 2 }}>
-                    <div className="score-fill" style={{ width: `${a.valueAdd}%`, background: '#22c55e' }} />
+                    <div className="score-fill" style={{ transform: `scaleX(${a.valueAdd / 100})`, background: '#22c55e' }} />
                   </div>
                 </div>
               </div>

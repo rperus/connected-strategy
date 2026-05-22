@@ -11,8 +11,7 @@ import { Sidebar } from './components/Sidebar';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { StrategyCopilot } from './components/StrategyCopilot';
 
-// ─── Eager: HomePage loads immediately (landing page) ────────────────────────
-import { HomePage } from './pages/HomePage';
+const HomePage = React.lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })));
 
 // ─── Lazy-loaded pages for code-splitting ────────────────────────────────────
 const PortfolioPage = React.lazy(() => import('./pages/PortfolioPage').then(m => ({ default: m.PortfolioPage })));
@@ -45,11 +44,13 @@ const PlatformIntelPage = React.lazy(() => import('./pages/PlatformIntelPage').t
 const StrategicImprovePage = React.lazy(() => import('./pages/StrategicImprovePage').then(m => ({ default: m.StrategicImprovePage })));
 const CausalDagPage = React.lazy(() => import('./pages/CausalDagPage').then(m => ({ default: m.CausalDagPage })));
 const SwarmComparatorPage = React.lazy(() => import('./pages/SwarmComparatorPage').then(m => ({ default: m.SwarmComparatorPage })));
+const SettingsPage = React.lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const QuickStartPage = React.lazy(() => import('./pages/QuickStartPage').then(m => ({ default: m.QuickStartPage })));
 
 // ─── Loading fallback ────────────────────────────────────────────────────────
 function PageLoader() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', opacity: 0.5 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', minWidth: '100%', opacity: 0.5 }}>
       <span style={{ fontSize: 18 }}>Cargando…</span>
     </div>
   );
@@ -86,8 +87,10 @@ function InnerApp() {
             <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
+                  {/* Root routes */}
                   <Route path="/" element={<HomePage />} />
                   <Route path="/health" element={<HealthDashboardPage />} />
+                  <Route path="/quick-start" element={<QuickStartPage />} />
                   <Route path="/portfolio" element={<PortfolioPage />} />
                   <Route path="/project/:id" element={<ProjectDetailPage />} />
                   <Route path="/worksheets" element={<WorksheetsPage />} />
@@ -117,6 +120,7 @@ function InnerApp() {
                   <Route path="/swarm-comparator" element={<SwarmComparatorPage />} />
                   <Route path="/v3" element={<V3Dashboard />} />
                   <Route path="/v3/moves" element={<V3Moves />} />
+                  <Route path="/settings" element={<SettingsPage />} />
                 </Routes>
               </Suspense>
             </ErrorBoundary>

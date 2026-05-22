@@ -1,5 +1,24 @@
 # Project Changelog
 
+## [2.7.0] - 2026-05-22 (Wave 11)
+### Added
+- **Market Intelligence**: New `/api/pipeline/market-intel/:projectId` endpoint using Google Search Grounding to generate external competitive landscape reports.
+- **Strategic Kanban**: Completely rewrote `/proposals` as a 4-column drag-and-drop Kanban board with a new `in-progress` state.
+- **Multiplayer (SSE)**: Synchronized Kanban state across multiple clients in real-time using Server-Sent Events via `/api/telemetry/stream`.
+- **Copilot Function Calling**: Empowered the Gemini Copilot to perform native system actions. Users can now ask the chat to move Kanban cards, and the Copilot will execute the action using `update_proposal_status` tools.
+
+## 2026-05-20: Launch Readiness v2.6.0 — Quick Start & Empty States
+
+### P0: Architecture & Initialization
+- **Persistencia de Configuración**: Implementado repositorio SQLite para la tabla `settings` (soporte dinámico de API Keys en caliente desde UI).
+- **Blank Slate (Empty States)**: UI rediseñada para manejo de arranques sin proyectos (Zero-state). Creado `QuickStartPage` y refactorizado `HomePage`.
+- **Limpieza de Demo Data**: Nuevo endpoint `DELETE /api/projects/demo-data` para borrar los fixtures quemados y dejar la plataforma productiva limpia.
+
+### P1: Security & Type Safety
+- **Strict Local Binding**: Servidor forzado a `127.0.0.1` para prevenir exposición accidental en interfaces públicas al ejecutarse como *local-tower*.
+- **Cierre de Contratos (TypeScript)**: Unificados los tipos en `@cs/domain` (`health_score`, `last_execution_date`). Aplicados y re-compilados en toda la cadena (API y UI). 
+- **Tests Completos**: Aprobadas todas las suites (`security.test.ts`, `api-contracts.test.ts`), con 100% verde en frontend y backend.
+
 ## 2026-05-18: Super Audit v2 Remediation — Zero Vulnerabilities
 
 ### P0: Security
@@ -11,6 +30,12 @@
 - **Express Hardening**: Added `helmet` and `express-rate-limit` middleware to the API server to protect against common web vulnerabilities and brute force.
 - **CORS Config**: Replaced hardcoded localhost array with dynamic `process.env.CS_CORS_ORIGINS`.
 - **Circular Dependencies**: Extracted `KnowledgeSource` and related domain types to `packages/knowledge/src/types.ts`. Resolved import cycles (`index.ts` ↔ `sources.ts`). Verified with `madge` (0 cycles).
+
+### P2/P3: Frontend UX & Rendimiento Visual
+- **Bundle Splitting**: Added `manualChunks` in `vite.config.ts` to isolate `vendor_react` and `vendor_clerk`, eliminating TTI bottlenecks and dropping chunk size below Vite warning thresholds.
+- **Layout Thrashing**: Refactored CSS animations in `index.css` to use GPU-accelerated `transform: scaleX` instead of CPU-blocking `width` transitions. Applied via script to 17 TSX components.
+- **SPA Anti-pattern**: Replaced blind `onClick={() => navigate()}` invocations with native semantic `<Link>` components across all major UI cards and layouts for proper SEO and standard browser routing logic.
+- **Empty States Premium**: Created and implemented `<EmptyState />` glassmorphism component across `ProjectDetailPage` avoiding broken layout screens.
 
 ## [2.6.0] - 2026-05-19 (Wave 10)
 ### Added

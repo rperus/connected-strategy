@@ -50,3 +50,5 @@ export * from './v3/shared-findings.js';
 
 // New Agents
 export * from './agents/batch-reporter.js';
+export * from './agents/synthetic-consultant.js';
+export * from './agents/market-intel-agent.js';

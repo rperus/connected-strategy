@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    image: connected-strategy-enterprise:latest
+    ports:
+      - "4311:4311"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4311
+    networks:
+      - vpc_network
+
+networks:
+  vpc_network:
+    driver: bridge
+    internal: true # No external access unless explicitly routed through a proxy

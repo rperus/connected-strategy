@@ -198,7 +198,7 @@ export function FiveForcesPage() {
                     <div
                       className="score-fill"
                       style={{
-                        width: `${f.score}%`,
+                        transform: `scaleX(${f.score / 100})`,
                         background: f.score > 65 ? '#ef4444' : f.score > 35 ? '#f59e0b' : '#22c55e',
                       }}
                     />

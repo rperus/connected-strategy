@@ -285,7 +285,8 @@ body {
   border-radius: 4px;
   background: linear-gradient(90deg, var(--cs-accent), var(--cs-violet));
   box-shadow: 0 0 10px var(--cs-accent);
-  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Score Gauge ── */
@@ -346,7 +347,8 @@ body {
   border-radius: 4px;
   background: linear-gradient(90deg, var(--cs-cyan), var(--cs-accent));
   box-shadow: 0 0 8px var(--cs-cyan);
-  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+  transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Tabs ── */

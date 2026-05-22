@@ -42,6 +42,10 @@ export function updateRunStatus(runId: string, status: 'done' | 'failed', extra:
 
   const sql = `UPDATE v3_runs SET ${setClauses.join(', ')} WHERE run_id = @run_id`;
   db.prepare(sql).run(params);
+
+  if (status === 'done') {
+    db.prepare(`UPDATE projects SET last_execution_date = datetime('now') WHERE id = (SELECT project_id FROM v3_runs WHERE run_id = ?)`).run(runId);
+  }
 }
 
 

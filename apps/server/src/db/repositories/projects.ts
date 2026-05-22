@@ -15,6 +15,8 @@ interface ProjectRow {
   maturity: string;
   tags: string;        // JSON array
   last_scanned: string | null;
+  health_score: number | null;
+  last_execution_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -28,6 +30,8 @@ function rowToProject(row: ProjectRow): Project {
     maturity: row.maturity as Project['maturity'],
     tags: JSON.parse(row.tags),
     lastScanned: row.last_scanned ?? undefined,
+    health_score: row.health_score ?? undefined,
+    last_execution_date: row.last_execution_date ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -40,8 +44,8 @@ export function upsertProject(project: Project): Project {
   const now = new Date().toISOString();
 
   db.prepare(`
-    INSERT INTO projects (id, name, path, stack, maturity, tags, last_scanned, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (id, name, path, stack, maturity, tags, last_scanned, health_score, last_execution_date, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       name = excluded.name,
       path = excluded.path,
@@ -49,6 +53,8 @@ export function upsertProject(project: Project): Project {
       maturity = excluded.maturity,
       tags = excluded.tags,
       last_scanned = excluded.last_scanned,
+      health_score = excluded.health_score,
+      last_execution_date = excluded.last_execution_date,
       updated_at = excluded.updated_at
   `).run(
     project.id,
@@ -58,6 +64,8 @@ export function upsertProject(project: Project): Project {
     project.maturity,
     JSON.stringify(project.tags),
     project.lastScanned ?? null,
+    project.health_score ?? null,
+    project.last_execution_date ?? null,
     project.createdAt ?? now,
     now,
   );

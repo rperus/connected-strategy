@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { MOCK_PROJECTS, MOCK_METRICS } from '../mockData';
 import { ScoreGrid } from '../components/ScoreGrid';
 import { RadarChart } from '../components/RadarChart';
 import { StatusBadge } from '../components/Badges';
+import { EmptyState } from '../components/EmptyState';
 import { api } from '../config';
 import type { Project } from '@cs/domain';
 
@@ -49,6 +50,7 @@ export function ProjectDetailPage() {
   const [metrics, setMetrics] = useState<MetricsData | undefined>();
   const [findings, setFindings] = useState<Finding[]>([]);
   const [source, setSource] = useState<'loading' | 'api' | 'mock'>('loading');
+  const [runningIntel, setRunningIntel] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -94,10 +96,12 @@ export function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="page-container">
-        <div className="empty-state">
-          <div className="empty-state-icon">⚠</div>
-          <div className="empty-state-msg">Proyecto no encontrado. <button className="btn btn-ghost" onClick={() => nav('/portfolio')}>← Volver</button></div>
-        </div>
+        <EmptyState 
+          icon="⚠" 
+          title="Proyecto no encontrado" 
+          description="El proyecto que buscas no existe o ha sido eliminado." 
+          action={{ label: '← Volver', to: '/portfolio' }} 
+        />
       </div>
     );
   }
@@ -116,16 +120,40 @@ export function ProjectDetailPage() {
   return (
     <div className="page-container">
       <div style={{ marginBottom: 8 }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => nav('/portfolio')}>← Portfolio</button>
+        <Link className="btn btn-ghost btn-sm" to="/portfolio" style={{ textDecoration: 'none', display: 'inline-block' }}>← Portfolio</Link>
         {source === 'api' && <span className="badge badge-success" style={{ marginLeft: 10, fontSize: 10 }}>API ✓</span>}
       </div>
       <div className="page-header">
         <h1 className="page-title">{project.name}</h1>
         <p className="page-subtitle">{project.description ?? project.path}</p>
-        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           <StatusBadge status={project.maturity} />
           {project.stack.map(s => <span key={s} className="badge badge-stack">{s}</span>)}
           {project.tags.map(t => <span key={t} className="badge badge-neutral">#{t}</span>)}
+          
+          <button 
+            className="btn btn-primary btn-sm" 
+            style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}
+            disabled={runningIntel}
+            onClick={async () => {
+              setRunningIntel(true);
+              try {
+                const res = await fetch(`/api/pipeline/market-intel/${project.id}`, { method: 'POST' });
+                const json = await res.json();
+                if (json.ok && json.findings?.length > 0) {
+                  alert(`¡Market Intel completado! Encontrados ${json.findings.length} hallazgos nuevos.`);
+                  window.location.reload();
+                } else {
+                  alert('No se encontraron nuevos hallazgos.');
+                }
+              } catch (e) {
+                alert('Error al ejecutar Market Intel');
+              }
+              setRunningIntel(false);
+            }}
+          >
+            {runningIntel ? 'Buscando en la web...' : '🌍 Run Market Intel'}
+          </button>
         </div>
       </div>
 
@@ -170,30 +198,30 @@ export function ProjectDetailPage() {
       )}
 
       {tab === 'Resumen' && !metrics && (
-        <div className="empty-state">
-          <div className="empty-state-icon">📊</div>
-          <div className="empty-state-msg">Sin métricas. Corre el pipeline desde Inicio.</div>
-        </div>
+        <EmptyState 
+          icon="📊" 
+          title="Sin métricas calculadas" 
+          description="Corre el pipeline desde Inicio para generar el análisis base de este proyecto." 
+        />
       )}
 
       {tab === 'Worksheets' && (
-        <div className="empty-state">
-          <div className="empty-state-icon">✎</div>
-          <div className="empty-state-msg">
-            <button className="btn btn-primary" onClick={() => nav(`/worksheets?project=${project.id}`)}>
-              Abrir editor de Worksheets →
-            </button>
-          </div>
-        </div>
+        <EmptyState 
+          icon="✎" 
+          title="Worksheets" 
+          description="Gestiona las dimensiones estratégicas para este proyecto." 
+          action={{ label: 'Abrir editor de Worksheets →', to: `/worksheets?project=${project.id}`, primary: true }} 
+        />
       )}
 
       {tab === 'Findings' && (
         <div>
           {findings.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state-icon">🔍</div>
-              <div className="empty-state-msg">Sin hallazgos. Corre el pipeline primero.</div>
-            </div>
+            <EmptyState 
+              icon="🔍" 
+              title="Sin hallazgos detectados" 
+              description="Aún no se han detectado problemas estratégicos. Corre el pipeline para analizar." 
+            />
           ) : (
             <>
               {/* Summary */}
@@ -254,12 +282,12 @@ export function ProjectDetailPage() {
       )}
 
       {tab === 'Proposals' && (
-        <div className="empty-state">
-          <div className="empty-state-icon">◉</div>
-          <div className="empty-state-msg">
-            <button className="btn btn-primary" onClick={() => nav('/proposals')}>Ver Proposals →</button>
-          </div>
-        </div>
+        <EmptyState 
+          icon="◉" 
+          title="Sin Propuestas" 
+          description="No hay propuestas estratégicas generadas aún." 
+          action={{ label: 'Ver Proposals →', to: '/proposals', primary: true }} 
+        />
       )}
     </div>
   );

@@ -68,6 +68,8 @@ async function runProjectAutonomously(p: { id: string; name: string; path: strin
   }
 }
 
+import { checkChurnRisks } from './services/churnPredictor.js';
+
 export function startScheduler() {
   if (intervalId) return;
 
@@ -75,6 +77,8 @@ export function startScheduler() {
 
   intervalId = setInterval(async () => {
     try {
+      checkChurnRisks();
+      
       const projects = listProjects();
       const candidates = projects.filter(p => {
         const state = store.load(p.id);

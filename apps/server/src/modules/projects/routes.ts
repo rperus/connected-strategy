@@ -158,6 +158,12 @@ router.post('/', (req: Request, res: Response) => {
  * DELETE /api/projects/:id
  */
 router.delete('/:id', (req: Request, res: Response) => {
+  if (req.params.id === 'demo-data') {
+    const { getDb } = require('../../db/index.js');
+    getDb().prepare("DELETE FROM projects WHERE tags LIKE '%demo%' OR id IN ('balam-licitaciones', 'connected-strategy', 'rodrigo-os', 'rodrigo-os-health', 'youtube-cashcow', 'balam-demo', 'grant-navigator')").run();
+    return res.json({ ok: true, message: 'Demo data cleared' });
+  }
+
   const deleted = deleteProject(req.params.id);
   if (!deleted) {
     res.status(404).json({ ok: false, error: `Project ${req.params.id} not found` });
@@ -172,6 +178,7 @@ router.delete('/:id', (req: Request, res: Response) => {
  */
 router.post('/:id/launch', (req: Request, res: Response) => {
   const { id } = req.params;
+  console.log(`[LAUNCH] Requested launch for project ${id}`);
 
   const WORKSPACE = process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
   

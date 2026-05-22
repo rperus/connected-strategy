@@ -32,7 +32,7 @@ export function ScoreGrid({ metrics }: Props) {
             <div className="score-value" style={{ color }}>{val}</div>
             <div className="score-label">{label}</div>
             <div className="score-bar">
-              <div className="score-fill" style={{ width: `${val}%`, background: color }} />
+              <div className="score-fill" style={{ transform: `scaleX(${val / 100})`, background: color }} />
             </div>
           </div>
         );

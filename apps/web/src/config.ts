@@ -45,4 +45,11 @@ export const api = {
 
   // Health dashboard
   healthDashboard: `${API_BASE_URL}/api/health-dashboard`,
+  
+  // Telemetry
+  telemetryStream: `${API_BASE_URL}/api/telemetry/stream`,
+  
+  // Settings
+  settings: `${API_BASE_URL}/api/settings`,
+  settingsValidateKey: `${API_BASE_URL}/api/settings/validate-key`,
 };

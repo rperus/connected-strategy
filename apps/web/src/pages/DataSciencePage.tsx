@@ -31,7 +31,7 @@ export function DataSciencePage() {
           <div style={{ fontSize: 56, fontWeight: 800, color: score >= 70 ? '#22c55e' : score >= 50 ? '#f59e0b' : '#ef4444' }}>{score}</div>
           <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', marginTop: 4 }}>DS Readiness Score</div>
           <div className="score-bar" style={{ marginTop: 12 }}>
-            <div className="score-fill" style={{ width: `${score}%`, background: '#a855f7' }} />
+            <div className="score-fill" style={{ transform: `scaleX(${score / 100})`, background: '#a855f7' }} />
           </div>
         </div>
         <div className="card">
@@ -54,7 +54,7 @@ export function DataSciencePage() {
             </div>
             <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', marginBottom: 10 }}>{a.desc}</div>
             <div className="score-bar">
-              <div className="score-fill" style={{ width: `${a.score}%`, background: '#a855f7' }} />
+              <div className="score-fill" style={{ transform: `scaleX(${a.score / 100})`, background: '#a855f7' }} />
             </div>
           </div>
         ))}

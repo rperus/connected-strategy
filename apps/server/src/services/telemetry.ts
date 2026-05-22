@@ -40,7 +40,8 @@ export type TelemetryEventName =
   | 'copilot:query'
   | 'report:generated'
   | 'project:scanned'
-  | 'user:first_value'; // TTV marker
+  | 'user:first_value' // TTV marker
+  | 'proposal:updated';
 
 /**
  * Broadcasts an event to all connected SSE clients

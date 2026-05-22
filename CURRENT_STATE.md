@@ -1,11 +1,11 @@
 # Current State
 
-> Date: 2026-05-19
-> Version: 2.6.0 "Autonomous Execution"
+> Date: 2026-05-22
+> Version: 2.7.0 "Agentic Intelligence"
 > Coordinator: Cerebro
-> Active Wave: Wave 10
+> Active Wave: Wave 11
 
-## Platform Status — v2.6.0
+## Platform Status — v2.7.0
 
 | Check | Result |
 |---|---|
@@ -21,6 +21,14 @@
 | Interactive Pages | ✅ 29 pages |
 | Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (17) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
+
+## What Changed: v2.6.0 → v2.7.0
+
+### v2.7.0 — Agentic Intelligence & Multiplayer (Wave 11)
+- **Market Intel**: Agents now utilize Google Search to analyze the external environment dynamically.
+- **Kanban Board**: Full 4-state Proposal tracking UI with an added `in-progress` lifecycle stage.
+- **Multiplayer**: Live state synchronization via `Server-Sent Events` when any project state mutates.
+- **Agentic Copilot**: Cerebro now utilizes Gemini Function Calling to execute tasks (e.g. moving cards) on behalf of the user via chat.
 
 ## What Changed: v2.5.0 → v2.6.0
 
@@ -46,7 +54,8 @@
 - **Architecture Fix**: Resolved `packages/agents` circular dependency via standalone `state-types.ts`.
 - **Test Integrity**: Migrated all 8 failing test suites to `vitest`, achieving 100% pass rate (88 tests).
 - **Performance**: Implemented `React.lazy()` code-splitting in the web app router.
-- **Fixture Rigor**: Replaced static mock data with the real Sun King case study dataset.
+- **Fase Actual:** Launch Readiness (Tests Passed)
+- **Bloqueantes:** Ninguno para desarrollo/local (Empaquetado desktop requiere Developer Mode en Windows).
 
 ### v2.2.0 — Hierarchical Agent Swarm (previous)
 - **8 new agents**: Strategist Supervisor, 3 Crew Leads, Temporal Analyst, Validation Agent, Anomaly Detector, Causal Mapper

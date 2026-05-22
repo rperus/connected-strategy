@@ -6,6 +6,7 @@ import { useProject } from '../context/ProjectContext';
 const NAV = [
   { section: 'Inicio', items: [
     { to: '/', label: 'Inicio', icon: '⌂' },
+    { to: '/quick-start', label: 'Guía Rápida', icon: '📖' },
     { to: '/health', label: 'Salud', icon: '🏥' },
   ]},
   { section: 'Proyectos', items: [
@@ -43,6 +44,7 @@ const NAV = [
     { to: '/proposals', label: 'Proposals', icon: '◉' },
     { to: '/prompts', label: 'Prompt Packets', icon: '⟡' },
     { to: '/reports', label: 'Reportes', icon: '⎙' },
+    { to: '/settings', label: 'Configuración', icon: '⚙️' },
   ]},
   { section: 'Pipeline V3', items: [
     { to: '/v3', label: 'V3 Analysis', icon: '🚀' },

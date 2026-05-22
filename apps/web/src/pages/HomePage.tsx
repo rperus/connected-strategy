@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MOCK_PROJECTS, MOCK_METRICS } from '../mockData';
 import { ScoreGrid } from '../components/ScoreGrid';
 import { RadarChart } from '../components/RadarChart';
@@ -85,9 +85,9 @@ export function HomePage() {
   );
 
   const projects: Project[] =
-    projectsStatus === 'live' && projectsResp?.data?.length
+    projectsStatus === 'live' && projectsResp?.data
       ? projectsResp.data
-      : MOCK_PROJECTS;
+      : (projectsStatus === 'error' ? MOCK_PROJECTS : []);
 
   // Build metrics map — prefer real API data, fall back to mock
   const liveMetricsMap: Record<string, StrategicMetrics> = metricsMapResp?.data ?? {};
@@ -176,6 +176,27 @@ export function HomePage() {
     }
   }
 
+  if (projectsStatus !== 'loading' && projects.length === 0) {
+    return (
+      <div className="page-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center' }}>
+        <div style={{ fontSize: 64, marginBottom: 24 }}>🚀</div>
+        <h1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--cs-text)', marginBottom: 16 }}>
+          Bienvenido a Connected Strategy
+        </h1>
+        <p style={{ fontSize: 18, color: 'var(--cs-text-muted)', maxWidth: 600, marginBottom: 32, lineHeight: 1.6 }}>
+          Tu torre de control estratégico está lista. Parece que aún no has conectado ningún proyecto a tu portfolio.
+        </p>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => nav('/quick-start')}
+          style={{ fontSize: 16, padding: '12px 32px', borderRadius: 30, boxShadow: '0 8px 24px rgba(99,102,241,0.4)' }}
+        >
+          Iniciar Guía Rápida &rarr;
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -185,6 +206,7 @@ export function HomePage() {
           Recognize → Request → Respond → Repeat
           {projectsStatus === 'live' && <span className="badge badge-success" style={{ marginLeft: 10 }}>API live</span>}
           {projectsStatus === 'error' && <span className="badge badge-warning" style={{ marginLeft: 10 }}>Demo mode</span>}
+          {projectsStatus === 'live' && projects.length > 0 && <button className="btn btn-sm btn-ghost" style={{ marginLeft: 10, fontSize: 10, color: 'var(--cs-text-muted)' }} onClick={async () => { await fetch(api.projects + '/demo-data', { method: 'DELETE' }); window.location.reload(); }}>Limpiar Demo</button>}
           {projectsStatus === 'loading' && <span className="badge badge-cyan" style={{ marginLeft: 10 }}>Conectando…</span>}
           {hasLiveMetrics && <span className="badge badge-violet" style={{ marginLeft: 8 }}>Métricas reales ✓</span>}
           {stats && stats.total > 0 && (
@@ -201,9 +223,9 @@ export function HomePage() {
       {/* Project quick-select + Analyze button */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         {projects.map((p) => (
-          <button key={p.id} className="btn btn-secondary" onClick={() => nav(`/project/${p.id}`)}>
+          <Link key={p.id} className="btn btn-secondary" to={`/project/${p.id}`} style={{ textDecoration: 'none' }}>
             {p.name} →
-          </button>
+          </Link>
         ))}
         <button
           className="btn btn-primary"
@@ -353,11 +375,11 @@ export function HomePage() {
           <span>✓ Análisis + IA completado</span>
           <span><strong>{analysisResult.findings}</strong> hallazgos</span>
           <span><strong>{analysisResult.proposals}</strong> propuestas</span>
-          <button className="btn btn-ghost btn-sm"
-            style={{ padding: 0, textDecoration: 'underline', color: 'var(--cs-success)' }}
-            onClick={() => nav('/proposals')}>
+          <Link className="btn btn-ghost btn-sm"
+            style={{ padding: 0, textDecoration: 'underline', color: 'var(--cs-success)', display: 'inline-block' }}
+            to="/proposals">
             Ver propuestas →
-          </button>
+          </Link>
         </div>
       )}
 
@@ -404,7 +426,7 @@ export function HomePage() {
               </div>
               <div style={{ fontSize: 11, color: 'var(--cs-text-muted)', marginBottom: 4 }}>{desc}</div>
               <div className="score-bar">
-                <div className="score-fill" style={{ width: `${score}%`, background: 'var(--cs-accent)' }} />
+                <div className="score-fill" style={{ transform: `scaleX(${score / 100})`, background: 'var(--cs-accent)' }} />
               </div>
             </div>
           ))}
@@ -434,7 +456,7 @@ export function HomePage() {
                     <td>{m?.businessModelStrength?.toFixed(0) ?? '—'}</td>
                     <td>{m?.dataScienceReadiness?.toFixed(0) ?? '—'}</td>
                     <td><span className={`badge badge-${isReal ? 'success' : 'warning'}`} style={{ fontSize: 10 }}>{isReal ? 'real' : 'demo'}</span></td>
-                    <td><button className="btn btn-sm btn-secondary" onClick={() => nav(`/project/${p.id}`)}>Ver →</button></td>
+                    <td><Link className="btn btn-sm btn-secondary" to={`/project/${p.id}`} style={{ textDecoration: 'none' }}>Ver →</Link></td>
                   </tr>
                 );
               })}

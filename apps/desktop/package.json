@@ -1,6 +1,6 @@
 {
   "name": "@cs/desktop",
-  "version": "0.1.0",
+  "version": "2.6.0",
   "private": true,
   "description": "Connected Strategy — Electron desktop shell for Windows",
   "main": "src/main.js",

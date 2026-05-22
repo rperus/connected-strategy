@@ -22,6 +22,7 @@ import { runHandoffPhase } from './handoff/index.js';
 import { saveHistoricalRun } from './db/index.js';
 import EventEmitter from 'events';
 import type { TelemetryEvent } from './state-types.js';
+import { runSyntheticConsultant } from '../agents/synthetic-consultant.js';
 
 export interface RunV3Opts {
   runId: string;
@@ -99,6 +100,17 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   const phasesCompleted: string[] = [];
   const errors: Array<{ phase: string; message: string }> = [];
 
+  options.onProgress?.('0', 'Starting Pre-Flight Draft (SyntheticConsultant)...');
+  try {
+    const wsQuestions = ['What is the core business?', 'Who is the main customer?']; // Mock questions for WS01
+    const draft = await runSyntheticConsultant({ worksheetId: 'ws01', questions: wsQuestions }, ctx);
+    state.wharton = state.wharton || {};
+    state.wharton.ws01 = { ...state.wharton.ws01, ...((draft.data as any) || {}) };
+    phasesCompleted.push('0');
+    store.save(state);
+    options.onProgress?.('0', 'Pre-Flight Draft Complete.');
+  } catch (e) { errors.push({ phase: '0', message: String(e) }); }
+
   if (!skip.has('A')) {
     options.onProgress?.('A', 'Starting Discovery (Code Cartographer)...');
     try {
@@ -109,7 +121,7 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
       options.onProgress?.('A', 'Discovery Complete.');
     } catch (e) { errors.push({ phase: 'A', message: String(e) }); }
   }
-
+  
   if (!skip.has('B')) {
     options.onProgress?.('B', 'Starting Wharton Phase (Journey, Experience, Tech Stack)...');
     try {

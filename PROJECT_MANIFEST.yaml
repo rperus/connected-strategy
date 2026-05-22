@@ -2,9 +2,9 @@ project_name: "Connected Strategy"
 project_slug: "connected_strategy"
 project_root: "C:\\dev\\Connected_Strategy"
 project_type: "local-first strategic control tower"
-status: "scaffold-complete"
-version: "2.3.0"
-last_updated: "2026-04-22"
+version: "2.7.0"
+status: "release-candidate"
+last_updated: "2026-05-20"
 
 tech_stack:
   frontend: "Vite + React + TypeScript"

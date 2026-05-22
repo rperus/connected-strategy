@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { api, API_BASE_URL } from '../config';
 
 interface ProjectHealth {
@@ -60,7 +60,7 @@ function ProgressBar({ value, max, color }: { value: number; max: number; color:
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div style={{ background: 'var(--cs-surface)', borderRadius: 4, height: 8, width: '100%', overflow: 'hidden' }}>
-      <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 0.5s ease' }} />
+      <div style={{ transform: `scaleX(${pct / 100})`, height: '100%', background: color, borderRadius: 4, transition: 'width 0.5s ease' }} />
     </div>
   );
 }
@@ -71,7 +71,7 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, marginBottom: 4 }}>
       <span style={{ width: 110, color: 'var(--cs-text-muted)', flexShrink: 0 }}>{label}</span>
       <div style={{ flex: 1, background: 'var(--cs-surface)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-        <div style={{ width: `${score}%`, height: '100%', background: color, borderRadius: 4 }} />
+        <div style={{ transform: `scaleX(${score / 100})`, height: '100%', background: color, borderRadius: 4 }} />
       </div>
       <span style={{ width: 28, textAlign: 'right', fontWeight: 600, color }}>{score}</span>
     </div>
@@ -315,10 +315,9 @@ export function HealthDashboardPage() {
 
               {/* Name & meta */}
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, cursor: 'pointer', color: 'var(--cs-text)' }}
-                  onClick={() => nav(`/project/${p.projectId}`)}>
+                <Link to={`/project/${p.projectId}`} style={{ fontWeight: 700, fontSize: 14, textDecoration: 'none', color: 'var(--cs-text)', display: 'block' }}>
                   {p.projectName}
-                </div>
+                </Link>
                 <div style={{ fontSize: 11, color: 'var(--cs-text-dim)' }}>
                   {p.maturity} · {p.stack.slice(0, 4).join(', ')}
                   {p.stack.length > 4 && ` +${p.stack.length - 4}`}

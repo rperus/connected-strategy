@@ -57,6 +57,8 @@ export interface Project {
   stack: string[];
   maturity: ProjectMaturity;
   lastScanned?: string;
+  health_score?: number;
+  last_execution_date?: string;
   tags: string[];
   platformId?: string;
   description?: string;
@@ -338,7 +340,7 @@ export interface CustomerJourney {
 }
 
 // ─── Improvement Proposals ───────────────────────────────────────────────────
-export type ProposalStatus = 'draft' | 'approved' | 'rejected' | 'implemented' | 'archived';
+export type ProposalStatus = 'draft' | 'approved' | 'in-progress' | 'rejected' | 'implemented' | 'archived';
 export type RiskLevel = 'low' | 'medium' | 'high';
 export type ChangeType = 'feature' | 'architecture' | 'process' | 'data' | 'ui' | 'infra' | 'docs';
 

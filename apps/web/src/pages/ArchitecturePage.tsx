@@ -39,7 +39,7 @@ export function ArchitecturePage() {
           <div style={{ fontSize: 56, fontWeight: 800, color: score >= 70 ? '#22c55e' : '#f59e0b' }}>{score}</div>
           <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', marginTop: 4 }}>Resilience Score</div>
           <div className="score-bar" style={{ marginTop: 12 }}>
-            <div className="score-fill" style={{ width: `${score}%`, background: '#34d399' }} />
+            <div className="score-fill" style={{ transform: `scaleX(${score / 100})`, background: '#34d399' }} />
           </div>
         </div>
         <div className="card">
@@ -57,7 +57,7 @@ export function ArchitecturePage() {
             </div>
             <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', marginBottom: 10 }}>{d.desc}</div>
             <div className="score-bar">
-              <div className="score-fill" style={{ width: `${d.score}%`, background: '#34d399' }} />
+              <div className="score-fill" style={{ transform: `scaleX(${d.score / 100})`, background: '#34d399' }} />
             </div>
           </div>
         ))}

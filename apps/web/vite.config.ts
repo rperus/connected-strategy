@@ -12,5 +12,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor_react: ['react', 'react-dom', 'react-router-dom'],
+          vendor_clerk: ['@clerk/clerk-react']
+        }
+      }
+    }
   },
 });

@@ -12,25 +12,26 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^5.1.6",
+    "@clerk/clerk-sdk-node": "5.1.6",
     "@cs/agents": "workspace:*",
     "@cs/domain": "workspace:*",
     "@cs/prompt-packets": "workspace:*",
     "@cs/reporting": "workspace:*",
     "@cs/runtime": "workspace:*",
-    "better-sqlite3": "^12.9.0",
-    "compression": "^1.8.1",
-    "cors": "^2.8.5",
-    "express": "^4.21.0",
-    "express-rate-limit": "^8.5.2",
-    "helmet": "^8.1.0"
+    "@google/generative-ai": "^0.24.1",
+    "better-sqlite3": "12.9.0",
+    "compression": "1.8.1",
+    "cors": "2.8.5",
+    "express": "4.21.0",
+    "express-rate-limit": "8.5.2",
+    "helmet": "8.1.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/compression": "^1.8.1",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "tsx": "^4.7.0",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/compression": "1.8.1",
+    "@types/cors": "2.8.17",
+    "@types/express": "4.17.21",
+    "tsx": "4.7.0",
     "typescript": "^5.4.0"
   }
 }

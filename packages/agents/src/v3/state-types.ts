@@ -79,6 +79,8 @@ export interface ProjectStateV3 {
     naturalLanguageUpdates: Array<{ at: string; message: string; appliedChanges: string[] }>;
     dismissedPriorities: string[];
     completedPriorities: string[];
+    approvedPriorities?: string[];
+    inProgressPriorities?: string[];
   };
 }
 
@@ -98,7 +100,7 @@ export interface Citation {
   agent: string;
 }
 
-export type TelemetryEventType = 'pipeline_started' | 'pipeline_finished' | 'agent_started' | 'agent_finished' | 'tool_call' | 'tool_result' | 'finding_yielded';
+export type TelemetryEventType = 'pipeline_started' | 'pipeline_finished' | 'agent_started' | 'agent_finished' | 'tool_call' | 'tool_result' | 'finding_yielded' | 'proposal:updated';
 
 export interface TelemetryEvent {
   id: string;

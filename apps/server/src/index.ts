@@ -72,6 +72,14 @@ app.use(express.json({ limit: '5mb' }));
 // ─── Initialize SQLite on startup ───────────────────────────────
 const database = getDb();
 
+try {
+  const row = database.prepare('SELECT value FROM settings WHERE key = ?').get('GEMINI_API_KEY') as any;
+  if (row && row.value && !process.env.GEMINI_API_KEY) {
+    process.env.GEMINI_API_KEY = row.value;
+    console.log('[CS-API] Gemini LLM: ✅ API key loaded from SQLite settings');
+  }
+} catch (e) { /* ignore */ }
+
 // Wire telemetry persistence
 initTelemetryDb(database);
 
@@ -115,6 +123,9 @@ app.use('/api/prompt-packets', reportRoutes);
 import worksheetRoutes from './modules/worksheets/routes.js';
 app.use('/api/worksheets', worksheetRoutes);
 
+import settingsRoutes from './modules/settings/routes.js';
+app.use('/api/settings', settingsRoutes);
+
 import metricsRoutes from './modules/metrics/routes.js';
 app.use('/api/metrics', metricsRoutes);
 
@@ -130,12 +141,17 @@ app.use('/api/telemetry', telemetryRoutes);
 import copilotRoutes from './modules/copilot/routes.js';
 app.use('/api/copilot', copilotRoutes);
 
+// ─── Global Error Handler ───────────────────────────────────────
+import { errorHandler } from './middleware/error-handler.js';
+app.use(errorHandler as express.ErrorRequestHandler);
+
 // ─── Start ──────────────────────────────────────────────────────
 const PORT = resolvePort('connected_strategy_api', 4311);
+const HOST = process.env.HOST || '127.0.0.1';
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[CS-API] Connected Strategy API running on http://0.0.0.0:${PORT}`);
-  console.log(`[CS-API] Health: http://0.0.0.0:${PORT}/api/health`);
+const server = app.listen(PORT, '127.0.0.1', () => {
+  console.log(`[CS-API] Connected Strategy API running on http://${HOST}:${PORT}`);
+  console.log(`[CS-API] Health: http://${HOST}:${PORT}/api/health`);
   console.log(`[CS-API] Persistence: SQLite (data/connected_strategy.db)`);
 });
 

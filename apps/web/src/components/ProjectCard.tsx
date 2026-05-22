@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Project } from '@cs/domain';
 import { StatusBadge } from './Badges';
 
@@ -11,11 +11,10 @@ const MATURITY_CLR: Record<string, string> = {
 interface Props { project: Project; composite?: number; }
 
 export function ProjectCard({ project, composite }: Props) {
-  const nav = useNavigate();
   const pct = MATURITY_PCT[project.maturity] ?? 0;
   const clr = MATURITY_CLR[project.maturity] ?? '#7b7f9a';
   return (
-    <div className="project-card" onClick={() => nav(`/project/${project.id}`)}>
+    <Link to={`/project/${project.id}`} className="project-card" style={{ textDecoration: 'none', display: 'block', color: 'inherit' }}>
       <div className="project-card-name">{project.name}</div>
       <div className="project-card-desc">{project.description ?? 'Sin descripción'}</div>
       <div className="stack-badges">
@@ -33,13 +32,18 @@ export function ProjectCard({ project, composite }: Props) {
         )}
       </div>
       {project.lastScanned && (
-        <div style={{ fontSize: 11, color: 'var(--cs-text-dim)', marginTop: 8 }}>
-          Escaneado: {new Date(project.lastScanned).toLocaleDateString('es-MX')}
+        <div style={{ fontSize: 11, color: 'var(--cs-text-dim)', marginTop: 8, display: 'flex', justifyContent: 'space-between' }}>
+          <span>Escaneado: {new Date(project.lastScanned).toLocaleDateString('es-MX')}</span>
+          {project.health_score !== undefined && (
+            <span style={{ color: project.health_score > 80 ? '#22c55e' : project.health_score > 50 ? '#f59e0b' : '#ef4444' }}>
+              ♥ {project.health_score}%
+            </span>
+          )}
         </div>
       )}
       <div className="maturity-bar">
-        <div className="maturity-fill" style={{ width: `${pct}%`, background: clr }} />
+        <div className="maturity-fill" style={{ transform: `scaleX(${pct / 100})`, background: clr }} />
       </div>
-    </div>
+    </Link>
   );
 }

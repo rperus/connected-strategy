@@ -19,7 +19,7 @@ interface LLMResponse {
 export interface LLMProvider {
   readonly model: string;
   readonly available: boolean;
-  generate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<LLMResponse>;
+  generate(prompt: string, opts?: { temperature?: number; maxTokens?: number; useSearch?: boolean }): Promise<LLMResponse>;
   generateStructured<T>(prompt: string, schema: string, opts?: { temperature?: number }): Promise<T | null>;
 }
 
@@ -67,26 +67,41 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
 
       const { GoogleGenerativeAI } = await import('@google/generative-ai');
       const genAI = new GoogleGenerativeAI(apiKey);
+      const tools = opts?.useSearch ? [{ googleSearch: {} } as any] : undefined;
       const model = genAI.getGenerativeModel({
         model: modelName,
+        tools,
         generationConfig: {
           temperature: opts?.temperature ?? 0.4,
           maxOutputTokens: opts?.maxTokens ?? 2048,
         },
       });
 
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
+      let text = '';
+      let finishReason = 'unknown';
+      let tokenCount = 0;
+
+      try {
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        text = response.text();
+        finishReason = response.candidates?.[0]?.finishReason ?? 'unknown';
+        tokenCount = response.usageMetadata?.totalTokenCount ?? 0;
+      } catch (err: any) {
+        console.error(`[LLM CircuitBreaker] Error from Gemini API: ${err.message || String(err)}. Falling back to safe defaults.`);
+        finishReason = 'error_circuit_breaker';
+      }
 
       const out = {
         text,
         model: modelName,
-        finishReason: response.candidates?.[0]?.finishReason ?? 'unknown',
-        tokenCount: response.usageMetadata?.totalTokenCount,
+        finishReason,
+        tokenCount,
       };
 
-      llmCache.set(cacheKey, out);
+      if (text) {
+        llmCache.set(cacheKey, out);
+      }
       return out;
     },
 

@@ -119,11 +119,36 @@ function migrate(database: Database.Database): void {
       state_snapshot_path TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS project_telemetry_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      timestamp TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_telemetry_project ON project_telemetry_logs(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_project ON analysis_jobs(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_status  ON analysis_jobs(status);
     CREATE INDEX IF NOT EXISTS idx_ws_project   ON worksheet_answers(project_id);
     CREATE INDEX IF NOT EXISTS idx_packets_proposal ON prompt_packets(proposal_id);
     CREATE INDEX IF NOT EXISTS idx_v3_runs_project ON v3_runs(project_id);
     CREATE INDEX IF NOT EXISTS idx_v3_runs_status ON v3_runs(status);
+    CREATE INDEX IF NOT EXISTS idx_projects_maturity ON projects(maturity);
+  `);
+
+  try {
+    database.exec(`ALTER TABLE projects ADD COLUMN health_score INTEGER DEFAULT 100;`);
+  } catch (e) { /* Column might already exist */ }
+  
+  try {
+    database.exec(`ALTER TABLE projects ADD COLUMN last_execution_date TEXT;`);
+  } catch (e) { /* Column might already exist */ }
+
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
