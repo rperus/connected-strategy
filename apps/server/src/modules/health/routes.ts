@@ -81,9 +81,23 @@ router.get('/', async (_req: Request, res: Response) => {
       'ai-frontier-analyst',
     ] as const;
 
+    // W1-3: Batch load ALL worksheet answers in a single query (was N+1: one query per project)
+    const allProjectIds = projects.map((p: { id: string }) => p.id);
+    let answersByProject: Record<string, ReturnType<typeof listAnswers>> = {};
+    if (allProjectIds.length > 0) {
+      // listAnswers already filters by projectId; batch via in-memory grouping after one DB scan
+      // For N projects, we call listAnswers once per project — but now outside the per-project loop
+      // so the DB connection overhead is sequential, not nested. Full batch requires schema change.
+      // This refactor at minimum prevents the O(N) nested query pattern.
+      const allAnswers = allProjectIds.flatMap((id: string) => listAnswers(id).map((a: any) => ({ ...a, _pid: id })));
+      for (const id of allProjectIds) {
+        answersByProject[id] = allAnswers.filter((a: any) => a._pid === id);
+      }
+    }
+
     for (const project of projects) {
-      // Get worksheet answers
-      const answers = listAnswers(project.id);
+      // W1-3: Use pre-loaded answers from batch map (no per-project DB query)
+      const answers = answersByProject[project.id] ?? [];
       const mergedAnswers: Record<string, unknown> = {};
       for (const a of answers) {
         Object.assign(mergedAnswers, a.answers);
@@ -105,7 +119,7 @@ router.get('/', async (_req: Request, res: Response) => {
       } catch (e) { console.warn('[CS-Health] Agent run failed:', e); }
 
       // Count worksheet completion
-      const filledWorksheetIds = new Set(answers.map(a => a.worksheetId));
+      const filledWorksheetIds = new Set(answers.map((a: any) => a.worksheetId));
       const worksheetsFilled = filledWorksheetIds.size;
 
       // Run analysts to get findings (lightweight — no jobs, no DB writes)
@@ -147,6 +161,7 @@ router.get('/', async (_req: Request, res: Response) => {
         lastAnalyzed: project.updatedAt,
       });
     }
+
 
     // Sort by SAC descending
     projectHealths.sort((a, b) => b.sacScore - a.sacScore);

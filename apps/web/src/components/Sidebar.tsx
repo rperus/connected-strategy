@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ApiStatusIndicator } from './ApiStatus';
 import { useProject } from '../context/ProjectContext';
+import { ALL_WORKSHEETS } from '@cs/domain';
 
 const NAV = [
   { section: 'Inicio', items: [
@@ -62,6 +63,26 @@ const MATURITY_COLOR: Record<string, string> = {
 export function Sidebar() {
   const { activeProject, setActiveProject, allProjects } = useProject();
   const [open, setOpen] = useState(false);
+
+  // W3-4: Live worksheet progress badge — reads from localStorage without API call
+  const [wsProgress, setWsProgress] = useState(0);
+  useEffect(() => {
+    function computeProgress() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('cs_worksheet_answers') ?? '{}');
+        const filled = ALL_WORKSHEETS.filter(ws => {
+          const ans = stored[ws.id] ?? {};
+          return Object.values(ans).some(v => v !== undefined && v !== '');
+        }).length;
+        setWsProgress(Math.round((filled / ALL_WORKSHEETS.length) * 100));
+      } catch { setWsProgress(0); }
+    }
+    computeProgress();
+    // Re-check on storage events (other tabs) and every 10s
+    window.addEventListener('storage', computeProgress);
+    const id = setInterval(computeProgress, 10000);
+    return () => { window.removeEventListener('storage', computeProgress); clearInterval(id); };
+  }, []);
 
   return (
     <nav className="sidebar">
@@ -200,9 +221,30 @@ export function Sidebar() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                // W3-1: title = tooltip for collapsed mobile nav (icon-only mode)
+                title={item.label}
+                aria-label={item.label}
               >
-                <span className="icon">{item.icon}</span>
-                {item.label}
+                <span className="icon" aria-hidden="true">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+                {/* W3-4: worksheet progress badge — only on Worksheets nav item */}
+                {item.to === '/worksheets' && wsProgress > 0 && (
+                  <span style={{
+                    marginLeft: 'auto',
+                    fontSize: 9,
+                    fontWeight: 700,
+                    padding: '1px 5px',
+                    borderRadius: 10,
+                    background: wsProgress === 100
+                      ? 'rgba(16,185,129,0.2)'
+                      : 'rgba(99,102,241,0.2)',
+                    color: wsProgress === 100 ? 'var(--cs-success)' : 'var(--cs-accent-hover)',
+                    border: `1px solid ${wsProgress === 100 ? 'var(--cs-success)' : 'var(--cs-accent)'}44`,
+                    flexShrink: 0,
+                  }}>
+                    {wsProgress}%
+                  </span>
+                )}
               </NavLink>
             ))}
           </div>

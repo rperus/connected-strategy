@@ -52,11 +52,23 @@ app.use(helmet());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use('/api/', limiter);
+
+// W2-8: Tighter rate limiting for expensive pipeline endpoints (LLM calls)
+const pipelineLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // max 5 pipeline runs per 15 min per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: 'Too many pipeline requests. Please wait before running another analysis.' },
+});
+app.use('/api/pipeline/run-full', pipelineLimiter);
+app.use('/api/pipeline/auto-execute', pipelineLimiter);
+app.use('/api/pipeline/market-intel', pipelineLimiter);
 
 // Configurable CORS
 const corsOrigins = process.env.CS_CORS_ORIGINS 
@@ -94,14 +106,29 @@ cleanOldTelemetryEvents(90); // 90 days retention for telemetry
 startScheduler();
 
 // ─── Health check ───────────────────────────────────────────────
+const serverStartedAt = Date.now();
 app.get('/api/health', (_req, res) => {
-  res.json({
-    ok: true,
-    status: 'ok',
-    service: 'connected_strategy_api',
-    persistence: 'sqlite',
-    timestamp: new Date().toISOString(),
-  });
+  // W2-7: Real health check — verify SQLite DB is alive
+  try {
+    const db = getDb();
+    db.prepare('SELECT 1').get(); // lightweight DB ping
+    res.json({
+      ok: true,
+      status: 'ok',
+      service: 'connected_strategy_api',
+      persistence: 'sqlite',
+      uptimeSeconds: Math.floor((Date.now() - serverStartedAt) / 1000),
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(503).json({
+      ok: false,
+      status: 'degraded',
+      service: 'connected_strategy_api',
+      error: 'Database unavailable',
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // ─── Module route mounts ────────────────────────────────────────

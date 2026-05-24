@@ -6,6 +6,7 @@
   --cs-surface: #12151f;
   --cs-surface-glass: rgba(18, 21, 31, 0.55);
   --cs-surface-2: rgba(26, 29, 46, 0.6);
+  --cs-surface-3: rgba(36, 39, 62, 0.7); /* W2-9: was missing — used in several components */
   --cs-border: rgba(255, 255, 255, 0.08);
   --cs-border-hover: rgba(255, 255, 255, 0.15);
   --cs-border-glow: rgba(99, 102, 241, 0.5);
@@ -56,6 +57,21 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
+}
+
+/* ── Base app layout (desktop) — W2-2 requires this base to override in mobile ── */
+.app-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .sidebar {
@@ -804,6 +820,9 @@ tbody tr:hover td { background: var(--cs-surface-2); }
 .card-grid > *:nth-child(n+7) { animation-delay: 0.35s; }
 
 /* ── Scrollbar ── */
+/* W2-10: Firefox standard scrollbar API */
+* { scrollbar-width: thin; scrollbar-color: var(--cs-border) transparent; }
+/* Chromium/WebKit */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--cs-border); border-radius: 3px; }
@@ -858,4 +877,156 @@ tbody tr:hover td { background: var(--cs-surface-2); }
   .briefing-page .card {
     margin-bottom: 20px;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   W2-2: MOBILE RESPONSIVE LAYOUT
+   Breakpoints: ≤768px (mobile), 768-1024px (tablet)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tablet: narrow sidebar ── */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 200px; }
+  .page-container { padding: 24px 20px; }
+  .card-grid-2 { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .bmc-grid { grid-template-columns: repeat(3, 1fr); }
+  .score-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
+
+/* ── Mobile: sidebar becomes bottom nav ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+
+  .app-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Sidebar → horizontal bottom navigation */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    height: auto;
+    max-height: 64px;
+    border-right: none;
+    border-top: 1px solid var(--cs-border);
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 100;
+    padding: 0 4px;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .sidebar-logo { display: none; }
+  .sidebar-section-label { display: none; }
+  .sidebar-section { padding: 0; flex: 0 0 auto; }
+  .sidebar-nav { flex-direction: row; gap: 0; }
+
+  .nav-item {
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 8px;
+    font-size: 9px;
+    min-width: 52px;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    transform: none !important;
+    white-space: nowrap;
+    border-left: none !important;
+  }
+  .nav-item .icon { font-size: 18px; width: auto; }
+
+  /* Main content: full width + bottom padding for nav */
+  .main-content { width: 100%; padding-bottom: 72px; }
+
+  .page-container {
+    padding: 16px 12px;
+    max-width: 100%;
+  }
+
+  /* All grids → single column */
+  .card-grid-2,
+  .card-grid-3,
+  .card-grid-4,
+  .score-grid,
+  .activity-grid,
+  .launcher-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* BMC horizontally scrollable */
+  .bmc-grid {
+    grid-template-columns: repeat(5, minmax(130px, 1fr));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-title { font-size: 20px; }
+  .section-title { font-size: 14px; }
+
+  /* Worksheet page: single column */
+  .page-container[style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Remove hover lifts on touch devices */
+  .project-card:hover,
+  .score-card:hover,
+  .card:hover { transform: none; }
+
+  /* Full-width buttons in action rows */
+  .proposal-actions { flex-direction: column; }
+  .proposal-actions .btn { width: 100%; justify-content: center; }
+
+  /* Copilot FAB: above bottom nav */
+  button[aria-label*="Cerebro"] { bottom: 72px !important; }
+
+  /* Copilot chat panel: full-screen on mobile */
+  div[style*="width: 380px"] {
+    width: calc(100vw - 16px) !important;
+    right: 8px !important;
+    bottom: 80px !important;
+    height: 70vh !important;
+  }
+
+  /* Tables: horizontal scroll */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 560px; }
+
+  /* Toast: full-width on mobile */
+  .toast, .toast-alert {
+    right: 8px;
+    left: 8px;
+    bottom: 80px;
+    text-align: center;
+  }
+}
+
+/* ── W2-8: ARIA-aware toast for screen readers ── */
+/* Use class="toast-alert" + role="alert" + aria-live="polite" in JSX */
+.toast-alert {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--cs-surface-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cs-success);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--cs-success-dim);
+  color: var(--cs-text);
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }

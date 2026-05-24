@@ -1,13 +1,31 @@
 import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import type { AgentContext, AgentResult } from '../types.js';
 import type { MoveManifest } from '../v3/handoff/manifest-builder.js';
 import { getGeminiProvider } from '../llm-provider.js';
 
 const execAsync = promisify(exec);
+
+/**
+ * W0-1 SECURITY: Safe git runner using spawn with array args.
+ * Never interpolates user data into shell strings — prevents command injection.
+ */
+function runGit(args: string[], cwd: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('git', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '';
+    let stderr = '';
+    proc.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
+    proc.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+    proc.on('close', (code) => {
+      if (code === 0) resolve(stdout);
+      else reject(new Error(`git ${args[0]} failed (exit ${code}): ${stderr.trim()}`));
+    });
+  });
+}
 
 export async function runAutonomousExecutor(
   input: { projectId: string; projectPath: string; moveId: string },
@@ -66,7 +84,7 @@ export async function runAutonomousExecutor(
 
   // 3. Init git and create branch
   const branchName = `cs/auto-${input.moveId}-${Date.now()}`;
-  await execAsync(`git checkout -b ${branchName}`, { cwd: tmpDir });
+  await runGit(['checkout', '-b', branchName], tmpDir); // W0-1: safe spawn, no shell injection
 
   // 4. Execute edits via LLM
   log(`[autonomous-executor] Implementing ${manifest.files_to_edit.length} edits and ${manifest.files_to_create.length} creations...`);
@@ -120,10 +138,10 @@ export async function runAutonomousExecutor(
   // 5. Diff & Commit changes
   let diff = '';
   try {
-    const { stdout } = await execAsync(`git diff`, { cwd: tmpDir });
-    diff = stdout;
-    await execAsync(`git add .`, { cwd: tmpDir });
-    await execAsync(`git commit -m "feat(cs-auto): ${manifest.title}"`, { cwd: tmpDir });
+    diff = await runGit(['diff'], tmpDir); // W0-1: safe
+    await runGit(['add', '.'], tmpDir);
+    // W0-1 SECURITY: manifest.title passed as array arg — not interpolated into shell string
+    await runGit(['commit', '-m', `feat(cs-auto): ${manifest.title}`], tmpDir);
   } catch (err) {
     log(`[autonomous-executor] Git commit failed (maybe no changes?)`);
   }
@@ -144,14 +162,25 @@ export async function runAutonomousExecutor(
     log(`[autonomous-executor] Validation failed. Changes will NOT be pushed.`);
   }
 
-  // 7. Push to remote & create PR placeholder
+  // 7. HITL Gate — require human approval before pushing to remote
+  // W1-12: LLM06 OWASP — autonomous executor must not push without human review.
+  // Instead of auto-pushing, we return a 'pending_review' status with the branch name.
+  // A human must explicitly call the confirm endpoint (or set CS_AUTO_PUSH=true for CI).
   if (validationPassed) {
-    log(`[autonomous-executor] Validation passed. Pushing to origin...`);
-    try {
-      await execAsync(`git push -u origin ${branchName}`, { cwd: tmpDir });
-      log(`[autonomous-executor] Create PR at: https://github.com/pulls (simulate)`);
-    } catch (err) {
-      log(`[autonomous-executor] Git push failed. (No remote origin or permissions issue)`);
+    const autoApproved = process.env.CS_AUTO_PUSH === 'true';
+    if (autoApproved) {
+      log(`[autonomous-executor] CS_AUTO_PUSH=true — pushing to origin (CI mode)...`);
+      try {
+        // W0-1 SECURITY: branchName passed as array arg — not interpolated into shell string
+        await runGit(['push', '-u', 'origin', branchName], tmpDir);
+        log(`[autonomous-executor] Create PR at: https://github.com/pulls (simulate)`);
+      } catch (err) {
+        log(`[autonomous-executor] Git push failed. (No remote origin or permissions issue)`);
+      }
+    } else {
+      log(`[autonomous-executor] Validation passed. Awaiting human approval before push.`);
+      log(`[autonomous-executor] Branch ready for review: ${branchName}`);
+      log(`[autonomous-executor] To push: set CS_AUTO_PUSH=true or manually run: git push -u origin ${branchName}`);
     }
   }
 

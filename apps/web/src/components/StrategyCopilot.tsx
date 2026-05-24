@@ -57,9 +57,13 @@ export function StrategyCopilot() {
 
   return (
     <>
-      {/* Floating Button */}
-      <div 
+      {/* W1-9: Floating Action Button — replaced div with button for semantics + aria-label for screen readers */}
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Cerrar Cerebro Copilot' : 'Abrir Cerebro Copilot'}
+        title={isOpen ? 'Cerrar Cerebro Copilot' : 'Abrir Cerebro Copilot'}
+        aria-expanded={isOpen}
         style={{
           position: 'fixed',
           bottom: 24,
@@ -75,11 +79,12 @@ export function StrategyCopilot() {
           cursor: 'pointer',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           zIndex: 9999,
-          fontSize: 24
+          fontSize: 24,
+          border: 'none',
         }}
       >
         {isOpen ? '✕' : '🧠'}
-      </div>
+      </button>
 
       {/* Chat Window */}
       {isOpen && (
@@ -173,8 +178,10 @@ export function StrategyCopilot() {
               }}
             />
             <button 
+              type="button"
               onClick={handleSend}
               disabled={isTyping || !input.trim()}
+              aria-label="Enviar mensaje"
               style={{
                 backgroundColor: input.trim() && !isTyping ? 'var(--cs-primary)' : 'var(--cs-border)',
                 color: 'white',

@@ -236,7 +236,9 @@ export function WorksheetsPage() {
     toastRef.current = setTimeout(() => setToast(''), 2500);
   }, []);
 
-  // ── Answer change: update local state + localStorage immediately ──────────
+  const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Answer change: update local state + localStorage + debounced auto-save ──
   function setAnswer(qId: string, val: unknown) {
     setAllAnswers((prev) => {
       const next = {
@@ -245,6 +247,14 @@ export function WorksheetsPage() {
       };
       // Persist to localStorage immediately as offline cache
       lsSave(next);
+
+      // W2-4: Debounced auto-save to API (1500ms after last keystroke)
+      if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+      autoSaveRef.current = setTimeout(async () => {
+        const ok = await putAnswerToApi(projectId, selected.id, next[selected.id] ?? {});
+        if (ok) setStorageMode('sqlite');
+      }, 1500);
+
       return next;
     });
   }

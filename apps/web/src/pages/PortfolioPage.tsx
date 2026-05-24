@@ -150,18 +150,30 @@ export function PortfolioPage() {
           className="btn btn-primary btn-sm"
           onClick={handleScan}
           disabled={scanning}
+          type="button"
         >
           {scanning ? 'Escaneando…' : '+ Escanear Workspace'}
         </button>
-        <button className="btn btn-secondary btn-sm">Importar</button>
+        {/* W1-11: Removed ghost "Importar" button (had no onClick handler — dead UI code) */}
       </div>
 
-      {/* Project cards grid */}
+      {/* W3-5: Project cards grid with stagger enter animation */}
+      <style>{`
+        @keyframes cardEnter {
+          from { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(2px); }
+          to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .project-entry { animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+      `}</style>
       <div className="card-grid card-grid-2">
-        {projects.map((p) => {
+        {projects.map((p, i) => {
           const as = analysisState[p.id];
           return (
-            <div key={p.id}>
+            <div
+              key={p.id}
+              className="project-entry"
+              style={{ animationDelay: `${i * 0.07}s` }}
+            >
               <ProjectCard
                 project={p}
                 composite={metricsMap[p.id]?.strategicAdvantageComposite}
@@ -177,7 +189,6 @@ export function PortfolioPage() {
                 border: '1px solid var(--cs-border)',
                 marginTop: -1,
               }}>
-                {/* Analysis status indicator */}
                 {!as && (
                   <span style={{ fontSize: 11, color: 'var(--cs-text-dim)' }}>Sin análisis</span>
                 )}
@@ -201,6 +212,7 @@ export function PortfolioPage() {
                   style={{ marginLeft: 'auto' }}
                   disabled={as?.status === 'running'}
                   onClick={() => handleAnalyzeProject(p)}
+                  type="button"
                 >
                   {as?.status === 'running' ? '⟳' : '▶ Analizar'}
                 </button>
@@ -208,40 +220,109 @@ export function PortfolioPage() {
             </div>
           );
         })}
+        {/* W3-2: Premium empty state — shown when no projects and not loading */}
         {projects.length === 0 && apiState !== 'loading' && (
-          <div className="card" style={{ 
-            gridColumn: '1 / -1', 
-            textAlign: 'center', 
+          <div style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: '64px 32px',
-            background: 'linear-gradient(180deg, var(--cs-surface) 0%, rgba(0,0,0,0) 100%)',
-            borderStyle: 'dashed'
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%)',
+            border: '1px dashed rgba(99,102,241,0.25)',
+            borderRadius: 'var(--radius)',
+            textAlign: 'center',
+            position: 'relative',
+            overflow: 'hidden',
           }}>
-            <div style={{ 
-              fontSize: 48, 
-              marginBottom: 16,
-              animation: 'float 3s ease-in-out infinite' 
+            <style>{`
+              @keyframes float {
+                0%,100% { transform: translateY(0); }
+                50% { transform: translateY(-12px); }
+              }
+              @keyframes orbitGlow {
+                0%,100% { box-shadow: 0 0 40px rgba(99,102,241,0.15); }
+                50% { box-shadow: 0 0 80px rgba(139,92,246,0.3); }
+              }
+            `}</style>
+            {/* Orbit ring decoration */}
+            <div style={{
+              position: 'absolute', top: -60, right: -60,
+              width: 200, height: 200, borderRadius: '50%',
+              border: '1px solid rgba(99,102,241,0.12)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{
+              position: 'absolute', bottom: -80, left: -40,
+              width: 240, height: 240, borderRadius: '50%',
+              border: '1px solid rgba(139,92,246,0.08)',
+              pointerEvents: 'none',
+            }} />
+
+            {/* Floating emoji icon */}
+            <div style={{
+              fontSize: 56,
+              marginBottom: 20,
+              animation: 'float 3.5s ease-in-out infinite',
+              filter: 'drop-shadow(0 0 20px rgba(99,102,241,0.4))',
             }}>
               🛰️
             </div>
-            <h3 style={{ marginBottom: 8, color: 'var(--cs-text)' }}>Tu Control Tower está vacío</h3>
-            <p style={{ color: 'var(--cs-text-muted)', maxWidth: 400, margin: '0 auto 24px auto', lineHeight: 1.5 }}>
-              No detectamos proyectos analizados. Haz clic en <strong>Escanear Workspace</strong> para descubrir directorios locales y auto-generar perfiles estratégicos con la IA.
+
+            <h2 style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: 'var(--cs-text)',
+              marginBottom: 10,
+              letterSpacing: '-0.02em',
+            }}>
+              Tu Torre de Control está esperando
+            </h2>
+            <p style={{
+              color: 'var(--cs-text-muted)',
+              maxWidth: 420,
+              margin: '0 auto 28px',
+              lineHeight: 1.65,
+              fontSize: 14,
+            }}>
+              Escanea tu workspace local para descubrir proyectos y generar perfiles estratégicos automáticamente con IA.
+              O sigue la Guía Rápida para registrar tu primer proyecto en 2 minutos.
             </p>
-            <button
-              className="btn btn-primary"
-              onClick={handleScan}
-              disabled={scanning}
-              style={{ padding: '10px 24px', fontSize: 14 }}
-            >
-              {scanning ? 'Escaneando disco...' : '+ Escanear C:\\dev ahora'}
-            </button>
-            <style>{`
-              @keyframes float {
-                0% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
-                100% { transform: translateY(0px); }
-              }
-            `}</style>
+
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                className="btn btn-primary"
+                onClick={handleScan}
+                disabled={scanning}
+                type="button"
+                style={{ padding: '11px 28px', fontSize: 14, boxShadow: '0 0 24px rgba(99,102,241,0.35)' }}
+              >
+                {scanning ? '⟳ Escaneando…' : '🔍 Escanear Workspace'}
+              </button>
+              <a
+                href="/quick-start"
+                className="btn btn-secondary"
+                style={{ padding: '11px 28px', fontSize: 14, textDecoration: 'none' }}
+              >
+                📖 Guía Rápida →
+              </a>
+            </div>
+
+            {/* Stats hint */}
+            <div style={{ marginTop: 28, display: 'flex', gap: 24, justifyContent: 'center' }}>
+              {[
+                { emoji: '🏢', label: 'Proyectos', hint: 'Ilimitados en local' },
+                { emoji: '🤖', label: 'Agentes IA', hint: '21 especializados' },
+                { emoji: '📊', label: 'Frameworks', hint: 'Wharton + Porter + BCG' },
+              ].map(({ emoji, label, hint }) => (
+                <div key={label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, marginBottom: 4 }}>{emoji}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--cs-text)' }}>{label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--cs-text-dim)' }}>{hint}</div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

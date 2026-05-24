@@ -217,8 +217,10 @@ export function HomePage() {
         </p>
       </div>
 
-      {/* Coach Panel — proactive strategic insights */}
-      <CoachPanel projects={projects} metricsMap={liveMetricsMap && Object.keys(liveMetricsMap).length > 0 ? liveMetricsMap : MOCK_METRICS} />
+      {/* W1-2: CoachPanel now receives ONLY live API data — no mock fallback.
+          When liveMetricsMap is empty (no pipeline run yet), CoachPanel receives empty map
+          and generateInsights returns [] → CoachPanel returns null (already handles this). */}
+      <CoachPanel projects={projects} metricsMap={liveMetricsMap} />
 
       {/* Project quick-select + Analyze button */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>

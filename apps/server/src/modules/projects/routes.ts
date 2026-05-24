@@ -159,9 +159,15 @@ router.post('/', (req: Request, res: Response) => {
  */
 router.delete('/:id', (req: Request, res: Response) => {
   if (req.params.id === 'demo-data') {
-    const { getDb } = require('../../db/index.js');
-    getDb().prepare("DELETE FROM projects WHERE tags LIKE '%demo%' OR id IN ('balam-licitaciones', 'connected-strategy', 'rodrigo-os', 'rodrigo-os-health', 'youtube-cashcow', 'balam-demo', 'grant-navigator')").run();
-    return res.json({ ok: true, message: 'Demo data cleared' });
+    // W0-4: Replaced require() (CJS) with static import. package.json has "type":"module"
+    // getDb is imported at module level via db/repositories — import it directly here.
+    import('../../db/index.js').then(({ getDb }) => {
+      getDb().prepare("DELETE FROM projects WHERE tags LIKE '%demo%' OR id IN ('balam-licitaciones', 'connected-strategy', 'rodrigo-os', 'rodrigo-os-health', 'youtube-cashcow', 'balam-demo', 'grant-navigator')").run();
+      return res.json({ ok: true, message: 'Demo data cleared' });
+    }).catch((err) => {
+      res.status(500).json({ ok: false, error: String(err) });
+    });
+    return;
   }
 
   const deleted = deleteProject(req.params.id);

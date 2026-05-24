@@ -11,6 +11,14 @@ import type { Request, Response, NextFunction } from 'express';
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   // Bypass if no Clerk keys are provided (Local development mode)
   if (!process.env.CLERK_SECRET_KEY && !process.env.CLERK_PUBLISHABLE_KEY) {
+    // W0-3 SECURITY: In production, refuse to start without Clerk keys.
+    // Without this guard, a misconfigured deploy would expose all /api/* endpoints.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[AUTH] FATAL: CLERK_SECRET_KEY and CLERK_PUBLISHABLE_KEY are required in production.');
+      console.error('[AUTH] Refusing to accept requests without authentication. Exiting.');
+      process.exit(1);
+    }
+
     if (req.path === '/health') return next(); // don't spam logs for healthchecks
     
     // Inject a dummy local tenant

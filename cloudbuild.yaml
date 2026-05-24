@@ -23,9 +23,10 @@ steps:
       - '4311' # The backend API port exposed by the docker container
       - '--set-env-vars'
       - 'NODE_ENV=production'
-      # To add Secrets: 
-      # - '--set-secrets'
-      # - 'GEMINI_API_KEY=GEMINI_API_KEY:latest'
+      # W0-6: Inject GEMINI_API_KEY from GCP Secret Manager (not as env var in plaintext)
+      # Prerequisite: create secret with: gcloud secrets create GEMINI_API_KEY --data-file=-
+      - '--set-secrets'
+      - 'GEMINI_API_KEY=GEMINI_API_KEY:latest'
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/connected-strategy/api:latest'

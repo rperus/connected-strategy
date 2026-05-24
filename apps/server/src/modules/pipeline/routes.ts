@@ -1,5 +1,6 @@
 import express from 'express';
 import { Request, Response, Router } from 'express';
+import { z } from 'zod'; // W2-3: Runtime validation
 import { ProjectStateStore, runV3Pipeline, getHistoricalRuns } from '@cs/agents';
 import { runCausalMapper } from '@cs/agents/dist/agents/causal-mapper.js';
 import { listProjects } from '../../db/repositories/projects.js';
@@ -12,6 +13,24 @@ import { broadcastEvent } from '../../services/telemetry.js';
 import { AppError } from '../../middleware/error-handler.js';
 // Removed getRegisteredAgent
 
+// W2-3: Zod schemas for input validation
+const RunFullSchema = z.object({
+  projectIds: z.array(z.string().max(100)).optional(),
+  naturalLanguageContext: z.string().max(2000).optional(),
+  skipPhases: z.array(z.enum(['A','B','C','D','E','F','G'])).optional(),
+  useGemini: z.boolean().optional(),
+  competitorHints: z.array(z.string().max(200)).max(10).optional(),
+  customerSegment: z.string().max(200).optional(),
+});
+
+const ContextSchema = z.object({
+  message: z.string().min(1).max(2000),
+});
+
+const ProposalStatusSchema = z.object({
+  status: z.enum(['draft', 'approved', 'in-progress', 'implemented', 'rejected']),
+});
+
 const pipelineEvents = new EventEmitter();
 const router: Router = express.Router();
 const store = new ProjectStateStore('data/projects');
@@ -23,15 +42,26 @@ function readJsonl(path: string) {
   }).filter(Boolean);
 }
 
+/**
+ * W0-2 SECURITY: Validate that a projectId cannot be used to escape the data/projects/ directory.
+ * Prevents path traversal attacks like projectId = "../../etc/passwd".
+ */
+function safeProjectDataPath(...segments: string[]): string {
+  const base = path.resolve('data', 'projects');
+  const resolved = path.resolve(base, ...segments);
+  if (!resolved.startsWith(base + path.sep) && resolved !== base) {
+    throw new Error(`Invalid project path: traversal detected`);
+  }
+  return resolved;
+}
+
 router.post('/run-full', async (req: Request, res: Response) => {
-  const body = req.body as {
-    projectIds?: string[];
-    naturalLanguageContext?: string;
-    skipPhases?: Array<'A'|'B'|'C'|'D'|'E'|'F'|'G'>;
-    useGemini?: boolean;
-    competitorHints?: string[];
-    customerSegment?: string;
-  };
+  // W2-3: Validate request body with Zod
+  const parsed = RunFullSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ ok: false, error: 'Invalid request body', details: parsed.error.flatten() });
+  }
+  const body = parsed.data;
 
   const runId = `v3-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
   const projects = listProjects().filter((p: { id: string }) => !body.projectIds || body.projectIds.includes(p.id));
@@ -144,9 +174,12 @@ router.get('/moves/:projectId', (req, res) => {
 });
 
 router.post('/context/:projectId', (req, res) => {
-  const message = req.body.message as string;
-  if (!message) return res.status(400).json({ ok: false, error: 'message required' });
-  store.appendContext(req.params.projectId, message, []);
+  // W2-3: Validate message body
+  const parsed = ContextSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ ok: false, error: parsed.error.flatten().fieldErrors.message?.[0] ?? 'message required' });
+  }
+  store.appendContext(req.params.projectId, parsed.data.message, []);
   res.json({ ok: true });
 });
 
@@ -206,7 +239,12 @@ router.get('/proposals', (req, res) => {
 
 router.put('/proposals/:projectId/:proposalId/status', (req, res) => {
   const { projectId, proposalId } = req.params;
-  const { status } = req.body; 
+  // W2-3: Validate status value
+  const parsed = ProposalStatusSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ ok: false, error: 'Invalid status. Must be: draft, approved, in-progress, implemented, or rejected.' });
+  }
+  const { status } = parsed.data;
   
   const state = store.load(projectId);
   if (!state) return res.status(404).json({ ok: false, error: 'State not found' });
@@ -268,9 +306,19 @@ router.get('/history/:projectId', (req, res) => {
     res.json({ ok: true, data: paginated, meta: { total: runs.length, limit } });
   } catch (err) {
     // Fallback to legacy JSONL if DB not initialized or errored
-    const lines = readJsonl(`data/projects/${req.params.projectId}/history.jsonl`);
-    const paginated = lines.slice(-limit);
-    res.json({ ok: true, data: paginated, meta: { total: lines.length, limit } });
+    try {
+      // W0-2 SECURITY: validate projectId cannot escape data/projects/ directory
+      const historyPath = safeProjectDataPath(req.params.projectId, 'history.jsonl');
+      const lines = readJsonl(historyPath);
+      const paginated = lines.slice(-limit);
+      res.json({ ok: true, data: paginated, meta: { total: lines.length, limit } });
+    } catch (pathErr: any) {
+      if (pathErr.message?.includes('traversal')) {
+        res.status(400).json({ ok: false, error: 'Invalid projectId' });
+      } else {
+        res.json({ ok: true, data: [], meta: { total: 0, limit } });
+      }
+    }
   }
 });
 

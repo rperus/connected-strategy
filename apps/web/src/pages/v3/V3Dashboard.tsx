@@ -178,7 +178,7 @@ export const V3Dashboard: React.FC = () => {
                       <span style={{ color: '#a855f7', fontWeight: 600 }}>{f?.score || 0}/100</span>
                     </div>
                     <div style={{ width: '100%', height: 6, background: '#374151', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ transform: `scaleX(${f?.score || 0 / 100})`, height: '100%', background: 'linear-gradient(90deg, #818cf8, #c084fc)' }} />
+                      <div style={{ transform: `scaleX(${(f?.score ?? 0) / 100})`, height: '100%', background: 'linear-gradient(90deg, #818cf8, #c084fc)', transformOrigin: 'left' }} />
                     </div>
                   </div>
                 );

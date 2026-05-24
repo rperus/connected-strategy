@@ -47,11 +47,45 @@ const SwarmComparatorPage = React.lazy(() => import('./pages/SwarmComparatorPage
 const SettingsPage = React.lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const QuickStartPage = React.lazy(() => import('./pages/QuickStartPage').then(m => ({ default: m.QuickStartPage })));
 
-// ─── Loading fallback ────────────────────────────────────────────────────────
+// ─── Loading fallback (W3-3: skeleton loader) ────────────────────────────────
 function PageLoader() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', minWidth: '100%', opacity: 0.5 }}>
-      <span style={{ fontSize: 18 }}>Cargando…</span>
+    <div style={{ padding: '32px 28px', maxWidth: 1200, margin: '0 auto' }}>
+      <style>{`
+        @keyframes skeletonPulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.9; }
+        }
+        .skel {
+          background: linear-gradient(90deg, var(--cs-surface-2), var(--cs-surface-3, rgba(36,39,62,0.7)), var(--cs-surface-2));
+          background-size: 200% 100%;
+          border-radius: 8px;
+          animation: skeletonPulse 1.6s ease-in-out infinite;
+        }
+      `}</style>
+      {/* Page title skeleton */}
+      <div className="skel" style={{ height: 32, width: '40%', marginBottom: 10 }} />
+      <div className="skel" style={{ height: 14, width: '60%', marginBottom: 32 }} />
+      {/* Cards grid skeleton */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} style={{
+            background: 'var(--cs-surface-glass)',
+            border: '1px solid var(--cs-border)',
+            borderRadius: 16,
+            padding: 24,
+            animationDelay: `${i * 0.1}s`,
+          }}>
+            <div className="skel" style={{ height: 20, width: '70%', marginBottom: 12 }} />
+            <div className="skel" style={{ height: 12, width: '90%', marginBottom: 8 }} />
+            <div className="skel" style={{ height: 12, width: '60%', marginBottom: 20 }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div className="skel" style={{ height: 24, width: 60 }} />
+              <div className="skel" style={{ height: 24, width: 80 }} />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -81,9 +115,32 @@ function InnerApp() {
     <ProjectProvider>
       <BrowserRouter>
         <div className="app-layout">
+          {/* W1-7: Skip navigation link — WCAG 2.4.1 (keyboard users bypass 29-item sidebar) */}
+          <a
+            href="#main-content"
+            className="skip-nav"
+            style={{
+              position: 'absolute',
+              top: -40,
+              left: 0,
+              padding: '8px 16px',
+              background: 'var(--cs-primary)',
+              color: 'white',
+              zIndex: 99999,
+              borderRadius: '0 0 8px 0',
+              fontSize: 14,
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'top 0.2s',
+            }}
+            onFocus={(e) => { e.currentTarget.style.top = '0'; }}
+            onBlur={(e) => { e.currentTarget.style.top = '-40px'; }}
+          >
+            Saltar al contenido principal
+          </a>
           <Sidebar />
           <StrategyCopilot />
-          <main className="main-content">
+          <main id="main-content" className="main-content">
             <ErrorBoundary>
               <Suspense fallback={<PageLoader />}>
                 <Routes>

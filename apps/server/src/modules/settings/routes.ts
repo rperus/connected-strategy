@@ -32,6 +32,15 @@ router.post('/', (req: Request, res: Response) => {
   try {
     const { geminiApiKey } = req.body;
     const db = getDb();
+
+    // W0-7 SECURITY: In production, GEMINI_API_KEY must come from GCP Secret Manager.
+    // Storing secrets in SQLite is only acceptable for local-first development.
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({
+        ok: false,
+        error: 'API key storage via UI is disabled in production. Use GCP Secret Manager.',
+      });
+    }
     
     if (geminiApiKey !== undefined) {
       // Si mandan un string vacío, lo borramos (modo offline determinista)
@@ -39,6 +48,8 @@ router.post('/', (req: Request, res: Response) => {
         db.prepare('DELETE FROM settings WHERE key = ?').run('GEMINI_API_KEY');
         delete process.env.GEMINI_API_KEY;
       } else {
+        // W0-7: Log a warning — key is stored in plaintext for local dev only
+        console.warn('[SETTINGS] API key stored in local SQLite (local-dev only). In production, use Secret Manager.');
         db.prepare(`
           INSERT INTO settings (key, value, updated_at) 
           VALUES (?, ?, datetime('now'))
