@@ -123,7 +123,7 @@ export function CustomerJourneyPage() {
       </div>
 
       {/* Phase headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, marginBottom: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 4, marginBottom: 6 }}>
         {phases.map(p => {
           const cfg = PHASE_CONFIG[p];
           const phaseIdx = phases.indexOf(p);

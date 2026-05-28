@@ -20,20 +20,9 @@ import { startScheduler, stopScheduler } from './scheduler.js';
 import { initTelemetryDb, broadcastEvent } from './services/telemetry.js';
 
 // ─── Load .env before anything else ────────────────────────────────────────
+import dotenv from 'dotenv';
 try {
-  const envPath = resolve(getProjectRoot(), '.env');
-  const envContent = readFileSync(envPath, 'utf-8');
-  for (const line of envContent.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eqIdx = trimmed.indexOf('=');
-    if (eqIdx === -1) continue;
-    const key = trimmed.slice(0, eqIdx).trim();
-    const val = trimmed.slice(eqIdx + 1).trim();
-    if (key && !process.env[key]) {
-      process.env[key] = val;
-    }
-  }
+  dotenv.config({ path: resolve(getProjectRoot(), '.env') });
   if (process.env.GEMINI_API_KEY) {
     console.log('[CS-API] Gemini LLM: ✅ API key loaded — AI enrichment enabled');
   } else {

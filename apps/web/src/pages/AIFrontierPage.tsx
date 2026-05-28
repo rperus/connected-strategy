@@ -55,7 +55,7 @@ export function AIFrontierPage() {
         </table>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
         {['Corto Plazo (0-3m)', 'Mediano Plazo (3-6m)', 'Largo Plazo (6-12m)'].map((period, idx) => {
           const items = MATRIX.filter((_, i) => Math.floor(i / 2) === idx);
           return (

@@ -13,6 +13,7 @@ function getDb(): Database.Database {
     }
     
     dbInstance = new Database(path.join(dbDir, 'telemetry.sqlite'));
+    dbInstance.pragma('busy_timeout = 5000');
     
     // Initialize schema
     dbInstance.exec(`

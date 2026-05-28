@@ -37,4 +37,4 @@ COPY --from=builder /app/packages ./packages
 
 EXPOSE 4311
 
-CMD ["node", "apps/server/dist/main.js"]
+CMD ["node", "apps/server/dist/index.js"]

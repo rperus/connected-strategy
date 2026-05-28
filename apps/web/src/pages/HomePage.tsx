@@ -405,7 +405,7 @@ export function HomePage() {
       </div>
       <ScoreGrid metrics={metrics} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginTop: 28 }}>
         {/* Radar */}
         <div className="card">
           <div className="section-title" style={{ marginBottom: 16 }}>Radar Estratégico</div>

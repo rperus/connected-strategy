@@ -173,7 +173,7 @@ export function FiveForcesPage() {
 
         {/* Summary cards */}
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 12, marginBottom: 16 }}>
             <div className="card" style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 36, fontWeight: 800, color: attractivenessColor }}>{100 - avgScore}</div>
               <div style={{ fontSize: 11, color: 'var(--cs-text-muted)' }}>Atractivo de Industria</div>

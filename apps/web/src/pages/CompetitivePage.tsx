@@ -22,7 +22,7 @@ export function CompetitivePage() {
       <ProjectBanner context="Ventaja Competitiva" />
 
       {/* Fit summary */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, marginBottom: 28 }}>
         {[
           { label: 'Internal Fit', val: internalFit, color: '#6366f1' },
           { label: 'External Fit', val: externalFit, color: '#22c55e' },
@@ -76,7 +76,7 @@ export function CompetitivePage() {
       </div>
 
       {/* WTP / Cost narratives */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 24 }}>
         <div className="card">
           <div style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', marginBottom: 8 }}>Narrativa WTP</div>
           <p style={{ fontSize: 13, color: 'var(--cs-text-muted)', lineHeight: 1.6 }}>{wtpNarrative}</p>
@@ -88,7 +88,7 @@ export function CompetitivePage() {
       </div>
 
       {/* Choices & risks */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
         <div className="card">
           <div className="section-title">✓ Trade-offs Estratégicos</div>
           {differentiationChoices.map((c, i) => (

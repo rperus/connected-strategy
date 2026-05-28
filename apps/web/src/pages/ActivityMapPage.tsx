@@ -230,7 +230,7 @@ export function ActivityMapPage() {
           {/* Stats */}
           <div className="card" style={{ padding: '16px' }}>
             <h3 style={{ margin: '0 0 8px', fontSize: '14px' }}>📊 Coherencia del Sistema</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '8px', fontSize: '12px' }}>
               <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--cs-surface)', textAlign: 'center' }}>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--cs-accent)' }}>{fitScore}</div>
                 <div style={{ color: 'var(--cs-text-muted)' }}>Fit Score</div>

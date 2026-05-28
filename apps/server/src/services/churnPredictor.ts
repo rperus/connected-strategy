@@ -1,4 +1,5 @@
 import { getDb } from '../db/index.js';
+import { broadcastEvent } from './telemetry.js';
 
 export function checkChurnRisks() {
   const db = getDb();
@@ -6,6 +7,8 @@ export function checkChurnRisks() {
 
   // Find projects without recent execution
   const projects = db.prepare(`SELECT id, health_score, last_execution_date FROM projects`).all() as any[];
+
+  const updateScoreStmt = db.prepare(`UPDATE projects SET health_score = ? WHERE id = ?`);
 
   for (const p of projects) {
     if (!p.last_execution_date) continue;
@@ -24,8 +27,8 @@ export function checkChurnRisks() {
     }
 
     if (newHealthScore !== p.health_score) {
-      db.prepare(`UPDATE projects SET health_score = ? WHERE id = ?`).run(newHealthScore, p.id);
-      db.prepare(`INSERT INTO project_telemetry_logs (project_id, event_type) VALUES (?, ?)`).run(p.id, 'HEALTH_SCORE_UPDATED');
+      updateScoreStmt.run(newHealthScore, p.id);
+      broadcastEvent({ event: 'HEALTH_SCORE_UPDATED', projectId: p.id, payload: { oldScore: p.health_score, newScore: newHealthScore } });
     }
   }
 }

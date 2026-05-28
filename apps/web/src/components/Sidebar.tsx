@@ -110,7 +110,7 @@ export function Sidebar() {
         </div>
 
         {/* Selector button */}
-        <button
+        <button type="button"
           onClick={() => setOpen(o => !o)}
           style={{
             width: '100%',
@@ -167,7 +167,7 @@ export function Sidebar() {
             position: 'relative',
           }}>
             {allProjects.map(p => (
-              <button
+              <button type="button"
                 key={p.id}
                 onClick={() => { setActiveProject(p); setOpen(false); }}
                 style={{

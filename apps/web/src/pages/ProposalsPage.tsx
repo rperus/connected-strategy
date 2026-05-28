@@ -104,7 +104,7 @@ export function ProposalsPage() {
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(4, 1fr)', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
         gap: 16, 
         alignItems: 'start',
         overflowX: 'auto',
@@ -151,20 +151,20 @@ export function ProposalsPage() {
                     <div style={{ display: 'flex', gap: 4, marginTop: 12, flexWrap: 'wrap' }}>
                       {col.id === 'draft' && (
                         <>
-                          <button className="btn btn-sm" style={{ background: '#3b82f6', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'approved')}>Aprobar</button>
-                          <button className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'rejected')}>Rechazar</button>
+                          <button type="button" className="btn btn-sm" style={{ background: '#3b82f6', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'approved')}>Aprobar</button>
+                          <button type="button" className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'rejected')}>Rechazar</button>
                         </>
                       )}
                       {col.id === 'approved' && (
                         <>
-                          <button className="btn btn-sm" style={{ background: '#f59e0b', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'in-progress')}>Iniciar</button>
-                          <button className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'draft')}>Regresar</button>
+                          <button type="button" className="btn btn-sm" style={{ background: '#f59e0b', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'in-progress')}>Iniciar</button>
+                          <button type="button" className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'draft')}>Regresar</button>
                         </>
                       )}
                       {col.id === 'in-progress' && (
                         <>
-                          <button className="btn btn-sm" style={{ background: '#10b981', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'implemented')}>Completar</button>
-                          <button className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'approved')}>Pausar</button>
+                          <button type="button" className="btn btn-sm" style={{ background: '#10b981', color: 'white', flex: 1 }} onClick={() => updateStatus(p, 'implemented')}>Completar</button>
+                          <button type="button" className="btn btn-sm btn-secondary" onClick={() => updateStatus(p, 'approved')}>Pausar</button>
                         </>
                       )}
                       {col.id === 'implemented' && (

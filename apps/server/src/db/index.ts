@@ -23,6 +23,7 @@ export function getDb(): Database.Database {
   // WAL mode for concurrent reads
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
 
   // Run migrations on first connect
   migrate(db);
@@ -63,7 +64,8 @@ function migrate(database: Database.Database): void {
       confidence    TEXT NOT NULL DEFAULT '{}',
       completed_at  TEXT,
       updated_at    TEXT NOT NULL DEFAULT (datetime('now')),
-      UNIQUE(worksheet_id, project_id)
+      UNIQUE(worksheet_id, project_id),
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS analysis_jobs (
@@ -76,7 +78,8 @@ function migrate(database: Database.Database): void {
       error_message TEXT,
       created_at    TEXT NOT NULL DEFAULT (datetime('now')),
       started_at    TEXT,
-      completed_at  TEXT
+      completed_at  TEXT,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS prompt_packets (
@@ -116,17 +119,11 @@ function migrate(database: Database.Database): void {
       total_tokens INTEGER,
       estimated_cost_usd REAL,
       error_message TEXT,
-      state_snapshot_path TEXT NOT NULL
+      state_snapshot_path TEXT NOT NULL,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS project_telemetry_logs (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      project_id TEXT NOT NULL,
-      event_type TEXT NOT NULL,
-      timestamp TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_telemetry_project ON project_telemetry_logs(project_id);
+    CREATE INDEX IF NOT EXISTS idx_telemetry_project ON telemetry_events(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_project ON analysis_jobs(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_status  ON analysis_jobs(status);
     CREATE INDEX IF NOT EXISTS idx_ws_project   ON worksheet_answers(project_id);

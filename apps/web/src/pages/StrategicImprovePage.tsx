@@ -155,7 +155,7 @@ export function StrategicImprovePage() {
             Último run: {new Date(lastRun.timestamp).toLocaleString()} · {lastRun.elapsed} · {lastRun.total_findings} hallazgos
           </span>
         )}
-        <button onClick={runPipeline} disabled={running} style={{
+        <button type="button" onClick={runPipeline} disabled={running} style={{
           marginLeft:'auto', padding:'6px 16px', borderRadius:20, fontSize:11, fontWeight:700, cursor:running?'not-allowed':'pointer',
           background: running ? 'rgba(16,185,129,0.1)' : 'linear-gradient(135deg,#10b981,#059669)',
           border:'1px solid #059669', color:'#fff',
@@ -211,7 +211,7 @@ export function StrategicImprovePage() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6 }}>
             {(['proposals','findings','prompt'] as const).map(t => (
-              <button key={t} onClick={() => setTab(t)} style={{
+              <button type="button" key={t} onClick={() => setTab(t)} style={{
                 padding:'5px 14px', borderRadius:16, fontSize:10, fontWeight:700, cursor:'pointer',
                 background: tab===t ? 'rgba(99,102,241,0.2)' : 'transparent',
                 border: tab===t ? '1px solid #6366f1' : '1px solid rgba(255,255,255,0.1)',
@@ -274,7 +274,7 @@ export function StrategicImprovePage() {
                 <div className="card" style={{ textAlign:'center', padding:32, color:'var(--cs-text-muted)' }}>
                   <div style={{ fontSize:28, marginBottom:8 }}>🔍</div>
                   <div>Corre el pipeline para ver hallazgos reales de los agentes.</div>
-                  <button onClick={runPipeline} disabled={running} style={{
+                  <button type="button" onClick={runPipeline} disabled={running} style={{
                     marginTop:12, padding:'6px 16px', borderRadius:16, fontSize:11, fontWeight:700, cursor:'pointer',
                     background:'rgba(16,185,129,0.2)', border:'1px solid #10b981', color:'#10b981',
                   }}>{running ? '⟳ Corriendo…' : '🚀 Correr ahora'}</button>
@@ -305,7 +305,7 @@ export function StrategicImprovePage() {
                   <span style={{ fontSize:12, fontWeight:800, color:'#22c55e' }}>
                     {currentLivePrompt ? 'Prompt Real (pipeline)' : 'Prompt Estático (sin pipeline)'}
                   </span>
-                  <button onClick={() => {
+                  <button type="button" onClick={() => {
                     const text = currentLivePrompt?.promptForAntigravity ??
                       `# Sugerencias para ${project?.name}\n⚠️ SUGERENCIA — requiere revisión de Antigravity antes de implementar\n\n${staticProposals.map((p,i) => `${i+1}. **${p.title}** [${p.impact}]\n   ${p.description}`).join('\n\n')}`;
                     navigator.clipboard.writeText(text);

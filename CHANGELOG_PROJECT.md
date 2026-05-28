@@ -7,6 +7,14 @@
 - **Multiplayer (SSE)**: Synchronized Kanban state across multiple clients in real-time using Server-Sent Events via `/api/telemetry/stream`.
 - **Copilot Function Calling**: Empowered the Gemini Copilot to perform native system actions. Users can now ask the chat to move Kanban cards, and the Copilot will execute the action using `update_proposal_status` tools.
 
+## [2.7.1] - 2026-05-24 (Auditoría Completa Remediation)
+### Security & Bug Fixes (Wave 0-3)
+- **Wave 0 (Seguridad crítica):** 7 fixes incluyendo prevención de Command Injection (`runGit` con array spawn), Path Traversal en `pipeline/routes`, bloqueo Auth Bypass en producción, reemplazo de `require` dinámicos por `import()`, y prevención de Prompt Injection en el Copilot.
+- **Wave 1 (Quick Wins):** 7 fixes resolviendo bugs matemáticos en métricas, data mocking forzado sin API, a11y (Skip-nav y Aria-labels), y un HITL gate (`CS_AUTO_PUSH=true`) para operaciones de Git autónomas.
+- **Wave 2 (Estructural):** 7 fixes incorporando Responsiveness (Sidebar colapsable a Bottom Nav), validación en tiempo de ejecución con `Zod`, Health Check robusto (Ping a BD + uptime), Rate Limiters dinámicos (5 req/15min) y debounce en autoguardados (1.5s).
+- **Wave 3 (UX Premium):** 5 fixes añadiendo Skeleton Loaders animados en carga diferida (React.Suspense), tooltips de navegación, estados vacíos Premium en el Portfolio con animaciones *glassmorphism*, y Stagger Animations para los listados.
+- **Stability:** Typecheck estricto ejecutado post-remediación con 0 errores en los 9 workspaces.
+
 ## 2026-05-20: Launch Readiness v2.6.0 — Quick Start & Empty States
 
 ### P0: Architecture & Initialization

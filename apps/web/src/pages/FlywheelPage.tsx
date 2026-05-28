@@ -223,7 +223,7 @@ export function FlywheelPage() {
       <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cs-text)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Evalúa cada fase del loop
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 20 }}>
         {nodes.map(n => (
           <div key={n.key} className="card" style={{ borderTop: `3px solid ${n.color}` }}>
             <div style={{ fontSize: 18, marginBottom: 4 }}>{n.emoji}</div>

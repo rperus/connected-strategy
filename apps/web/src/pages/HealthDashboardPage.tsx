@@ -393,7 +393,7 @@ export function HealthDashboardPage() {
               <summary style={{ cursor: 'pointer', fontSize: 11, color: 'var(--cs-text-muted)', fontWeight: 600, marginBottom: 6 }}>
                 Desglose de métricas
               </summary>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 20px', marginTop: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '0 20px', marginTop: 8 }}>
                 {p.metrics && (
                   <>
                     <ScoreBar label="Connected Exp." score={Math.round((p.metrics as Record<string,number>).connectedExperienceScore ?? 0)} />
@@ -410,7 +410,7 @@ export function HealthDashboardPage() {
               </div>
 
               {/* Weakest & strongest */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginTop: 12 }}>
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#ef4444', marginBottom: 4 }}>🔻 Más débiles</div>
                   {p.weakestMetrics.map((m, i) => (

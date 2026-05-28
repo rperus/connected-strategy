@@ -11,7 +11,6 @@
  */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_METRICS, MOCK_PROJECTS } from '../mockData';
 import type { StrategicMetrics, Project } from '@cs/domain';
 
 interface CoachInsight {
@@ -147,7 +146,7 @@ interface CoachPanelProps {
   metricsMap?: Record<string, StrategicMetrics>;
 }
 
-export function CoachPanel({ projects = MOCK_PROJECTS, metricsMap = MOCK_METRICS }: CoachPanelProps) {
+export function CoachPanel({ projects = [], metricsMap = {} }: CoachPanelProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | CoachInsight['type']>('all');

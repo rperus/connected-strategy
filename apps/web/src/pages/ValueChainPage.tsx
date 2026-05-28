@@ -177,7 +177,7 @@ export function ValueChainPage() {
             return (
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--cs-text)', marginBottom: 12 }}>{act.name}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
                   <div>
                     <label style={{ fontSize: 10, fontWeight: 600, color: '#ef4444' }}>Costo (%): {act.costShare}</label>
                     <input type="range" min={0} max={100} value={act.costShare} onChange={e => updater(act.id, { costShare: Number(e.target.value) })} style={{ width: '100%', accentColor: '#ef4444' }} />

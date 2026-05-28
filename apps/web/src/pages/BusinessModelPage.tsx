@@ -75,7 +75,7 @@ export function BusinessModelPage() {
       </div>
 
       {/* Cost / Revenue */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 8 }}>
         <div className="bmc-cell">
           <div className="bmc-cell-title">Estructura de Costos</div>
           <ul className="bmc-cell-list">{bm.costStructure.map((x, i) => <li key={i}>{x}</li>)}</ul>

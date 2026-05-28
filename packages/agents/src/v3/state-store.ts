@@ -27,7 +27,12 @@ export class ProjectStateStore {
   }
 
   private getProjectPath(projectId: string): string {
-    return path.join(this.rootDir, projectId);
+    const base = path.resolve(this.rootDir);
+    const resolved = path.resolve(base, projectId);
+    if (!resolved.startsWith(base + path.sep) && resolved !== base) {
+      throw new Error(`Path traversal attempt detected in projectId: ${projectId}`);
+    }
+    return resolved;
   }
 
   private ensureProjectDir(projectId: string): string {

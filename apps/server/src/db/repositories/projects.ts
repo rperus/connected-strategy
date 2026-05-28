@@ -52,9 +52,9 @@ export function upsertProject(project: Project): Project {
       stack = excluded.stack,
       maturity = excluded.maturity,
       tags = excluded.tags,
-      last_scanned = excluded.last_scanned,
-      health_score = excluded.health_score,
-      last_execution_date = excluded.last_execution_date,
+      last_scanned = COALESCE(excluded.last_scanned, projects.last_scanned),
+      health_score = COALESCE(excluded.health_score, projects.health_score),
+      last_execution_date = COALESCE(excluded.last_execution_date, projects.last_execution_date),
       updated_at = excluded.updated_at
   `).run(
     project.id,
@@ -64,7 +64,7 @@ export function upsertProject(project: Project): Project {
     project.maturity,
     JSON.stringify(project.tags),
     project.lastScanned ?? null,
-    project.health_score ?? null,
+    project.health_score ?? 100,
     project.last_execution_date ?? null,
     project.createdAt ?? now,
     now,

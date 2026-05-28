@@ -123,7 +123,7 @@ export function BriefingPage() {
       <ProjectBanner context="Executive Briefing" />
 
       {/* Portfolio KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'SAC Promedio', value: avgSAC, suffix: '/100', color: scoreColor(avgSAC) },
           { label: 'Proyectos', value: projects.length, suffix: '', color: '#6366f1' },
@@ -137,7 +137,7 @@ export function BriefingPage() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
         {/* Left: Portfolio ranking */}
         <div className="card">
           <div style={{ fontSize: 12, fontWeight: 800, marginBottom: 14 }}>🏆 Ranking del Portfolio</div>

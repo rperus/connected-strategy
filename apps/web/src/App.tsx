@@ -141,46 +141,42 @@ function InnerApp() {
           <Sidebar />
           <StrategyCopilot />
           <main id="main-content" className="main-content">
-            <ErrorBoundary>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
+            <Routes>
                   {/* Root routes */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/health" element={<HealthDashboardPage />} />
-                  <Route path="/quick-start" element={<QuickStartPage />} />
-                  <Route path="/portfolio" element={<PortfolioPage />} />
-                  <Route path="/project/:id" element={<ProjectDetailPage />} />
-                  <Route path="/worksheets" element={<WorksheetsPage />} />
-                  <Route path="/competitive" element={<CompetitivePage />} />
-                  <Route path="/business-model" element={<BusinessModelPage />} />
-                  <Route path="/data-science" element={<DataSciencePage />} />
-                  <Route path="/architecture" element={<ArchitecturePage />} />
-                  <Route path="/ai-frontier" element={<AIFrontierPage />} />
-                  <Route path="/proposals" element={<ProposalsPage />} />
-                  <Route path="/prompts" element={<PromptPacketsPage />} />
-                  <Route path="/reports" element={<ReportsPage />} />
-                  <Route path="/launcher" element={<LauncherPage />} />
-                  <Route path="/frontier" element={<EfficiencyFrontierPage />} />
-                  <Route path="/strategy-matrix" element={<StrategyMatrixPage />} />
-                  <Route path="/activity-map" element={<ActivityMapPage />} />
-                  <Route path="/five-forces" element={<FiveForcesPage />} />
-                  <Route path="/customer-journey" element={<CustomerJourneyPage />} />
-                  <Route path="/star-matrix" element={<STARMatrixPage />} />
-                  <Route path="/flywheel" element={<FlywheelPage />} />
-                  <Route path="/value-chain" element={<ValueChainPage />} />
-                  <Route path="/agents" element={<AgentOrchestratorPage />} />
-                  <Route path="/matrix" element={<PortfolioMatrixPage />} />
-                  <Route path="/briefing" element={<BriefingPage />} />
-                  <Route path="/intel" element={<PlatformIntelPage />} />
-                  <Route path="/improve" element={<StrategicImprovePage />} />
-                  <Route path="/causal" element={<CausalDagPage />} />
-                  <Route path="/swarm-comparator" element={<SwarmComparatorPage />} />
-                  <Route path="/v3" element={<V3Dashboard />} />
-                  <Route path="/v3/moves" element={<V3Moves />} />
-                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HomePage /></Suspense></ErrorBoundary>} />
+                  <Route path="/health" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><HealthDashboardPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/quick-start" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><QuickStartPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/portfolio" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><PortfolioPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/project/:id" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProjectDetailPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/worksheets" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><WorksheetsPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/competitive" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CompetitivePage /></Suspense></ErrorBoundary>} />
+                  <Route path="/business-model" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><BusinessModelPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/data-science" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><DataSciencePage /></Suspense></ErrorBoundary>} />
+                  <Route path="/architecture" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ArchitecturePage /></Suspense></ErrorBoundary>} />
+                  <Route path="/ai-frontier" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AIFrontierPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/proposals" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProposalsPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/prompts" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><PromptPacketsPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/reports" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ReportsPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/launcher" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><LauncherPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/frontier" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><EfficiencyFrontierPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/strategy-matrix" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><StrategyMatrixPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/activity-map" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ActivityMapPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/five-forces" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><FiveForcesPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/customer-journey" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CustomerJourneyPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/star-matrix" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><STARMatrixPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/flywheel" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><FlywheelPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/value-chain" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ValueChainPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/agents" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgentOrchestratorPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/matrix" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><PortfolioMatrixPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/briefing" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><BriefingPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/intel" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><PlatformIntelPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/improve" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><StrategicImprovePage /></Suspense></ErrorBoundary>} />
+                  <Route path="/causal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CausalDagPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/swarm-comparator" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><SwarmComparatorPage /></Suspense></ErrorBoundary>} />
+                  <Route path="/v3" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><V3Dashboard /></Suspense></ErrorBoundary>} />
+                  <Route path="/v3/moves" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><V3Moves /></Suspense></ErrorBoundary>} />
+                  <Route path="/settings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><SettingsPage /></Suspense></ErrorBoundary>} />
                 </Routes>
-              </Suspense>
-            </ErrorBoundary>
           </main>
         </div>
       </BrowserRouter>

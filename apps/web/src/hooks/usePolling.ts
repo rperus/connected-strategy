@@ -30,19 +30,29 @@ export function usePolling<T>(
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     try {
       setStatus((prev) => (prev === 'idle' ? 'loading' : prev));
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: abortController.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       const payload = json.data ?? json;
-      setData(payload as T);
-      setStatus('live');
-      setError(null);
-      setLastUpdated(Date.now());
-    } catch (err) {
+      
+      // Only update state if not aborted
+      if (!abortController.signal.aborted) {
+        setData(payload as T);
+        setStatus('live');
+        setError(null);
+        setLastUpdated(Date.now());
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
       setError(String(err));
       setStatus('error');
     }
@@ -59,6 +69,7 @@ export function usePolling<T>(
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, [url, intervalMs, enabled, fetchData]);
 

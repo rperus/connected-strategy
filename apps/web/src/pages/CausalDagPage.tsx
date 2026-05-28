@@ -134,7 +134,7 @@ export function CausalDagPage() {
             <div style={{ position: 'absolute', bottom: 24, left: 24, background: 'rgba(10,13,20,0.9)', backdropFilter: 'blur(10px)', padding: 16, borderRadius: 12, border: '1px solid var(--cs-border)', width: 400, color: 'white', zIndex: 10 }}>
               <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', fontWeight: 700, marginBottom: 4 }}>DIMENSIÓN</div>
               <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{NODE_POSITIONS[hoveredNode]?.label}</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 10, marginBottom: 12 }}>
                 <div><div style={{ fontSize: 10, color: '#6b7280' }}>Raw Score</div><div style={{ fontSize: 14, fontWeight: 'bold' }}>{dim.rawScore}</div></div>
                 <div><div style={{ fontSize: 10, color: '#6b7280' }}>Causal Score</div><div style={{ fontSize: 14, fontWeight: 'bold', color: 'var(--cs-accent)' }}>{dim.causalScore}</div></div>
                 <div><div style={{ fontSize: 10, color: '#6b7280' }}>Boost</div><div style={{ fontSize: 14, fontWeight: 'bold', color: dim.causalBoost > 0 ? '#22c55e' : '#ef4444' }}>{dim.causalBoost.toFixed(1)}</div></div>

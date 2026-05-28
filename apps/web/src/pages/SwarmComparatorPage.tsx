@@ -99,7 +99,7 @@ export function SwarmComparatorPage() {
       {!loading && data && data.comparison && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           {/* Header Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, position: 'sticky', top: 0, background: 'var(--cs-bg)', paddingBottom: 16, zIndex: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, position: 'sticky', top: 0, background: 'var(--cs-bg)', paddingBottom: 16, zIndex: 10 }}>
             <div className="card" style={{ textAlign: 'center', borderColor: 'var(--cs-accent)' }}>
               <div style={{ fontSize: 12, color: 'var(--cs-accent)', fontWeight: 700, textTransform: 'uppercase' }}>Proyecto Base</div>
               <div style={{ fontSize: 20, fontWeight: 800 }}>{data.projects.p1.name}</div>
@@ -116,7 +116,7 @@ export function SwarmComparatorPage() {
               <div style={{ background: 'var(--cs-surface-2)', padding: '12px 20px', borderBottom: '1px solid var(--cs-border)', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
                 🤖 Agent: <span style={{ color: 'var(--cs-accent)' }}>{row.agent.replace(/-/g, ' ').toUpperCase()}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 150 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', minHeight: 150 }}>
                 {/* Project 1 */}
                 <div style={{ padding: 20, borderRight: '1px solid var(--cs-border)' }}>
                   {row.project1.length === 0 ? (

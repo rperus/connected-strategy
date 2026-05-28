@@ -1,17 +1,18 @@
 # Current State
 
-> Date: 2026-05-22
-> Version: 2.7.0 "Agentic Intelligence"
+> Date: 2026-05-24
+> Version: 2.7.1 "Secure & Refined"
 > Coordinator: Cerebro
-> Active Wave: Wave 11
+> Active Wave: Audit Remediation (Waves 0-3)
 
-## Platform Status — v2.7.0
+## Platform Status — v2.7.1
 
 | Check | Result |
 |---|---|
-| Security | ✅ 0 High/Moderate CVEs (Electron ^39) |
+| Security | ✅ 0 High/Moderate CVEs, Command Injections mitigated |
 | Architecture | ✅ 0 Circular Dependencies |
-| Web Bundle | ✅ Code-split (240kB initial) |
+| Web Bundle | ✅ Code-split (240kB initial) + Skeletons |
+| Stability | ✅ Rate limits, Zod runtime checks, Health ping |
 |---|---|
 | pnpm --filter @cs/domain typecheck | ✅ 0 errors |
 | pnpm --filter @cs/agents typecheck | ✅ 0 errors |

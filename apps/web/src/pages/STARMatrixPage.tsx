@@ -218,7 +218,7 @@ export function STARMatrixPage() {
       {/* STAR Legend with tech examples */}
       <div className="card" style={{ marginTop: 20 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--cs-text)', marginBottom: 12 }}>Tecnologías de Referencia por Fase STAR</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
           {[
             { phase: 'SENSE', techs: ['IoT Sensors', 'Voice/Gesture UI', 'Wearables', 'AR/VR', 'Computer Vision'] },
             { phase: 'TRANSMIT', techs: ['5G / LoRa', 'Bluetooth LE', 'Blockchain', 'API Gateway', 'Event Streaming'] },
