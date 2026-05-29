@@ -67,7 +67,21 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     projectId: project.id,
     projectPath: project.path,
     startedAt: new Date().toISOString(),
-    llm: options.useGemini ? getGeminiProvider() : { generate: async () => ({ text: '' }), generateStructured: async () => null, model: 'mock', available: true },
+    llm: (() => {
+      const baseLlm = options.useGemini ? getGeminiProvider() : { generate: async () => ({ text: '' }), generateStructured: async () => null, model: 'mock', available: true };
+      const fullContext = store.readContext(project.id);
+      return {
+        ...baseLlm,
+        generate: async (prompt: string, opts?: any) => {
+          const injectedPrompt = fullContext ? `=== PROJECT CONTEXT ===\n${fullContext}\n=======================\n\n${prompt}` : prompt;
+          return baseLlm.generate(injectedPrompt, opts);
+        },
+        generateStructured: async (prompt: string, schema: string, opts?: any) => {
+          const injectedPrompt = fullContext ? `=== PROJECT CONTEXT ===\n${fullContext}\n=======================\n\n${prompt}` : prompt;
+          return baseLlm.generateStructured(injectedPrompt, schema, opts);
+        }
+      };
+    })(),
     store,
     fileReader: new FileReader(project.path),
     log: (msg: string) => {

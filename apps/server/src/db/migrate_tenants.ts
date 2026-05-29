@@ -13,8 +13,7 @@ const tables = [
   'analysis_jobs',
   'prompt_packets',
   'pipeline_runs',
-  'telemetry_events',
-  'llm_cache'
+  'telemetry_events'
 ];
 
 db.transaction(() => {

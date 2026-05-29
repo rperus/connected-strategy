@@ -73,6 +73,14 @@ export function listAnswers(projectId: string): WorksheetAnswer[] {
   return rows.map(rowToAnswer);
 }
 
+export function listAllAnswers(): WorksheetAnswer[] {
+  const db = getDb();
+  const rows = db.prepare(
+    'SELECT * FROM worksheet_answers ORDER BY project_id, worksheet_id'
+  ).all() as AnswerRow[];
+  return rows.map(rowToAnswer);
+}
+
 export function deleteAnswer(worksheetId: string, projectId: string): boolean {
   const db = getDb();
   const result = db.prepare(

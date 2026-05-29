@@ -26,6 +26,10 @@ RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 COPY . .
 
+# Pass environment variables for Vite build
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build packages in dependency order
 RUN pnpm --filter @cs/domain build
 RUN pnpm --filter @cs/runtime build

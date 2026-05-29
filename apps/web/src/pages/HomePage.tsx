@@ -206,7 +206,7 @@ export function HomePage() {
           Recognize → Request → Respond → Repeat
           {projectsStatus === 'live' && <span className="badge badge-success" style={{ marginLeft: 10 }}>API live</span>}
           {projectsStatus === 'error' && <span className="badge badge-warning" style={{ marginLeft: 10 }}>Demo mode</span>}
-          {projectsStatus === 'live' && projects.length > 0 && <button className="btn btn-sm btn-ghost" style={{ marginLeft: 10, fontSize: 10, color: 'var(--cs-text-muted)' }} onClick={async () => { await fetch(api.projects + '/demo-data', { method: 'DELETE' }); window.location.reload(); }}>Limpiar Demo</button>}
+          {projectsStatus === 'live' && projects.length > 0 && <button className="btn btn-sm btn-ghost" style={{ marginLeft: 10, fontSize: 10, color: 'var(--cs-text-muted)' }} onClick={async () => { if (window.confirm('🚨 PRECAUCIÓN: ¿Estás seguro que deseas eliminar los datos de demostración? Esta acción no se puede deshacer.')) { await fetch(api.projects + '/demo-data', { method: 'DELETE' }); window.location.reload(); } }}>Limpiar Demo</button>}
           {projectsStatus === 'loading' && <span className="badge badge-cyan" style={{ marginLeft: 10 }}>Conectando…</span>}
           {hasLiveMetrics && <span className="badge badge-violet" style={{ marginLeft: 8 }}>Métricas reales ✓</span>}
           {stats && stats.total > 0 && (

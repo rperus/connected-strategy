@@ -123,7 +123,6 @@ function migrate(database: Database.Database): void {
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
     );
 
-    CREATE INDEX IF NOT EXISTS idx_telemetry_project ON telemetry_events(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_project ON analysis_jobs(project_id);
     CREATE INDEX IF NOT EXISTS idx_jobs_status  ON analysis_jobs(status);
     CREATE INDEX IF NOT EXISTS idx_ws_project   ON worksheet_answers(project_id);

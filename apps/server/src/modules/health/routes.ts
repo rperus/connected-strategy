@@ -14,7 +14,7 @@
 import express from 'express';
 import type { Request, Response, Router } from 'express';
 import { listProjects } from '../../db/repositories/projects.js';
-import { listAnswers } from '../../db/repositories/worksheets.js';
+import { listAnswers, listAllAnswers } from '../../db/repositories/worksheets.js';
 import { computeStrategicMetrics, defaultScoringWeights, ALL_WORKSHEETS } from '@cs/domain';
 import type { WorksheetAnswer, StrategicMetrics } from '@cs/domain';
 import type { AgentContext, AnalystReport, AnalystFinding } from '@cs/agents';
@@ -85,13 +85,12 @@ router.get('/', async (_req: Request, res: Response) => {
     const allProjectIds = projects.map((p: { id: string }) => p.id);
     let answersByProject: Record<string, ReturnType<typeof listAnswers>> = {};
     if (allProjectIds.length > 0) {
-      // listAnswers already filters by projectId; batch via in-memory grouping after one DB scan
-      // For N projects, we call listAnswers once per project — but now outside the per-project loop
-      // so the DB connection overhead is sequential, not nested. Full batch requires schema change.
-      // This refactor at minimum prevents the O(N) nested query pattern.
-      const allAnswers = allProjectIds.flatMap((id: string) => listAnswers(id).map((a: any) => ({ ...a, _pid: id })));
-      for (const id of allProjectIds) {
-        answersByProject[id] = allAnswers.filter((a: any) => a._pid === id);
+      const allAnswers = listAllAnswers();
+      for (const answer of allAnswers) {
+        if (!answersByProject[answer.projectId]) {
+          answersByProject[answer.projectId] = [];
+        }
+        answersByProject[answer.projectId].push(answer);
       }
     }
 

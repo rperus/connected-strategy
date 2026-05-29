@@ -525,13 +525,7 @@ export function WorksheetsPage() {
             alignItems: 'center',
           }}
         >
-          <button
-            className="btn btn-primary"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? 'Guardando…' : 'Guardar'}
-          </button>
+
           <button className="btn btn-secondary" onClick={handleClear}>
             Limpiar
           </button>

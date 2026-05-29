@@ -28,7 +28,7 @@ export function checkChurnRisks() {
 
     if (newHealthScore !== p.health_score) {
       updateScoreStmt.run(newHealthScore, p.id);
-      broadcastEvent({ event: 'HEALTH_SCORE_UPDATED', projectId: p.id, payload: { oldScore: p.health_score, newScore: newHealthScore } });
+      broadcastEvent('project:scanned', { oldScore: p.health_score, newScore: newHealthScore }, p.id);
     }
   }
 }

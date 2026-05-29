@@ -13,7 +13,7 @@ import express from 'express';
 import type { Request, Response, Router } from 'express';
 import { computeStrategicMetrics, defaultScoringWeights } from '@cs/domain';
 import type { WorksheetAnswer } from '@cs/domain';
-import { listAnswers } from '../../db/repositories/worksheets.js';
+import { listAnswers, listAllAnswers } from '../../db/repositories/worksheets.js';
 import { getProject } from '../../db/repositories/projects.js';
 import { synthesizePortfolioInsight } from '@cs/agents';
 
@@ -130,8 +130,17 @@ router.get('/', async (req: Request, res: Response) => {
 
     const metricsMap: Record<string, unknown> = {};
 
+    const allAnswers = listAllAnswers();
+    const answersByProject: Record<string, WorksheetAnswer[]> = {};
+    for (const answer of allAnswers) {
+      if (!answersByProject[answer.projectId]) {
+        answersByProject[answer.projectId] = [];
+      }
+      answersByProject[answer.projectId].push(answer);
+    }
+
     for (const project of projects) {
-      const answers = listAnswers(project.id);
+      const answers = answersByProject[project.id] || [];
       const syntheticAnswer = mergeAnswers(project.id, answers);
       const weights = defaultScoringWeights(project.id);
       const metrics = computeStrategicMetrics(project.id, syntheticAnswer, weights);

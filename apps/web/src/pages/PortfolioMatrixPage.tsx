@@ -7,6 +7,7 @@
  */
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import ReactECharts from 'echarts-for-react';
 import { MOCK_METRICS, MOCK_PROJECTS } from '../mockData';
 import { ProjectBanner } from '../components/ProjectBanner';
 
@@ -81,78 +82,65 @@ export function PortfolioMatrixPage() {
             ))}
           </div>
 
-          <svg width="100%" viewBox={`0 0 ${SVG} ${SVG}`} style={{ display: 'block' }}>
-            {/* Quadrant backgrounds */}
-            <rect x={PAD} y={PAD} width={PLOT / 2} height={PLOT / 2} fill="#6366f108" stroke="#6366f122" strokeWidth={1} />
-            <rect x={PAD + PLOT / 2} y={PAD} width={PLOT / 2} height={PLOT / 2} fill="#22c55e08" stroke="#22c55e22" strokeWidth={1} />
-            <rect x={PAD} y={PAD + PLOT / 2} width={PLOT / 2} height={PLOT / 2} fill="#f59e0b08" stroke="#f59e0b22" strokeWidth={1} />
-            <rect x={PAD + PLOT / 2} y={PAD + PLOT / 2} width={PLOT / 2} height={PLOT / 2} fill="#ec4899o8" stroke="#ec489922" strokeWidth={1} />
-
-            {/* Quadrant labels */}
-            {[
-              { cx: PAD + PLOT * 0.25, cy: PAD + PLOT * 0.25, label: '🎓 Coach Behavior', color: '#6366f1' },
-              { cx: PAD + PLOT * 0.75, cy: PAD + PLOT * 0.25, label: '🤝 Trusted Partner', color: '#22c55e' },
-              { cx: PAD + PLOT * 0.25, cy: PAD + PLOT * 0.75, label: '📦 Respond to Desire', color: '#f59e0b' },
-              { cx: PAD + PLOT * 0.75, cy: PAD + PLOT * 0.75, label: '📋 Curated Offering', color: '#ec4899' },
-            ].map(q => (
-              <text key={q.label} x={q.cx} y={q.cy} textAnchor="middle" fill={q.color} fontSize={10} fontWeight={700} opacity={0.7}>
-                {q.label}
-              </text>
-            ))}
-
-            {/* Axes */}
-            <line x1={PAD} y1={PAD + PLOT / 2} x2={PAD + PLOT} y2={PAD + PLOT / 2} stroke="rgba(255,255,255,0.15)" strokeWidth={1} strokeDasharray="4,3" />
-            <line x1={PAD + PLOT / 2} y1={PAD} x2={PAD + PLOT / 2} y2={PAD + PLOT} stroke="rgba(255,255,255,0.15)" strokeWidth={1} strokeDasharray="4,3" />
-
-            {/* Axis labels */}
-            <text x={PAD + PLOT / 2} y={SVG - 8} textAnchor="middle" fill="var(--cs-text-muted)" fontSize={11}>← Switching Cost Index (0-100) →</text>
-            <text x={12} y={PAD + PLOT / 2} textAnchor="middle" fill="var(--cs-text-muted)" fontSize={11} transform={`rotate(-90, 12, ${PAD + PLOT / 2})`}>WTP Uplift (0-100)</text>
-            <text x={PAD} y={SVG - 8} fill="var(--cs-text-muted)" fontSize={9}>0</text>
-            <text x={PAD + PLOT - 8} y={SVG - 8} fill="var(--cs-text-muted)" fontSize={9}>100</text>
-            <text x={PAD - 20} y={PAD + PLOT} fill="var(--cs-text-muted)" fontSize={9}>0</text>
-            <text x={PAD - 20} y={PAD + 4} fill="var(--cs-text-muted)" fontSize={9}>100</text>
-
-            {/* Project nodes */}
-            {projects.map(p => {
-              const m = metrics[p.id];
-              if (!m) return null;
-              const cx = toX(m.switchingCostIndex);
-              const cy = toY(m.wtpUpliftIndex);
-              const r = toR(m.strategicAdvantageComposite);
-              const color = COLORS[p.id] ?? '#6366f1';
-              const isHov = hovered === p.id;
-              const isSel = selected === p.id;
-              const active = isHov || isSel;
-
-              return (
-                <g key={p.id}
-                  onClick={() => setSelected(isSel ? null : p.id)}
-                  onMouseEnter={() => setHovered(p.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {active && <circle cx={cx} cy={cy} r={r + 6} fill={`${color}20`} />}
-                  <circle cx={cx} cy={cy} r={r} fill={`${color}30`} stroke={color} strokeWidth={active ? 2.5 : 1.5} />
-                  <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle" fontSize={14}>{EMOJIS[p.id] ?? '⬡'}</text>
-                  {active && (
-                    <text x={cx} y={cy - r - 6} textAnchor="middle" fill={color} fontSize={10} fontWeight={700}>{p.name}</text>
-                  )}
-                  {!active && (
-                    <text x={cx + r + 4} y={cy + 4} fill={color} fontSize={9} opacity={0.8}>{p.name.split(' ')[0]}</text>
-                  )}
-                  {/* SAC label inside node */}
-                  <text x={cx} y={cy + r + 12} textAnchor="middle" fill="var(--cs-text-muted)" fontSize={8}>SAC {m.strategicAdvantageComposite}</text>
-                </g>
-              );
-            })}
-
-            {/* Target zone indicator */}
-            <rect x={PAD + PLOT * 0.55} y={PAD + PLOT * 0.05} width={PLOT * 0.4} height={PLOT * 0.4}
-              fill="none" stroke="#22c55e" strokeWidth={1.5} strokeDasharray="6,4" rx={8} opacity={0.5} />
-            <text x={PAD + PLOT * 0.75} y={PAD + PLOT * 0.03} textAnchor="middle" fill="#22c55e" fontSize={9} fontWeight={700}>
-              🎯 ZONA OBJETIVO
-            </text>
-          </svg>
+          <ReactECharts
+            option={{
+              grid: { left: 40, right: 40, top: 40, bottom: 40 },
+              tooltip: { show: false },
+              xAxis: {
+                type: 'value', min: 0, max: 100,
+                name: 'Switching Cost Index (0-100)', nameLocation: 'middle', nameGap: 25,
+                nameTextStyle: { color: 'var(--cs-text-muted)' },
+                axisLabel: { color: 'var(--cs-text-muted)', fontSize: 9 },
+                splitLine: { show: false }, axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }
+              },
+              yAxis: {
+                type: 'value', min: 0, max: 100,
+                name: 'WTP Uplift (0-100)', nameLocation: 'middle', nameGap: 25,
+                nameTextStyle: { color: 'var(--cs-text-muted)' },
+                axisLabel: { color: 'var(--cs-text-muted)', fontSize: 9 },
+                splitLine: { show: false }, axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }
+              },
+              series: [{
+                type: 'scatter',
+                data: projects.map(p => {
+                  const m = metrics[p.id];
+                  if (!m) return null;
+                  return {
+                    name: p.name,
+                    value: [m.switchingCostIndex, m.wtpUpliftIndex, m.strategicAdvantageComposite, p.id],
+                    itemStyle: { color: COLORS[p.id] ?? '#6366f1', opacity: 0.8 },
+                    symbolSize: (data: any) => 20 + (data[2] / 100) * 40,
+                  };
+                }).filter(Boolean),
+                label: {
+                  show: true,
+                  formatter: (params: any) => EMOJIS[params.value[3]] ?? '⬡',
+                  fontSize: 16,
+                  position: 'inside',
+                  color: '#fff'
+                },
+                markArea: {
+                  silent: true,
+                  data: [
+                    [{ xAxis: 0, yAxis: 50, itemStyle: { color: '#6366f111' } }, { xAxis: 50, yAxis: 100 }],
+                    [{ xAxis: 50, yAxis: 50, itemStyle: { color: '#22c55e11' } }, { xAxis: 100, yAxis: 100 }],
+                    [{ xAxis: 0, yAxis: 0, itemStyle: { color: '#f59e0b11' } }, { xAxis: 50, yAxis: 50 }],
+                    [{ xAxis: 50, yAxis: 0, itemStyle: { color: '#ec489911' } }, { xAxis: 100, yAxis: 50 }],
+                  ]
+                },
+                markLine: {
+                  silent: true,
+                  symbol: ['none', 'none'],
+                  lineStyle: { type: 'dashed', color: 'rgba(255,255,255,0.15)' },
+                  data: [{ xAxis: 50 }, { yAxis: 50 }]
+                }
+              }]
+            }}
+            style={{ width: '100%', height: SVG }}
+            onEvents={{
+              click: (params: any) => { if(params.componentType === 'series') setSelected(selected === params.value[3] ? null : params.value[3]); }
+            }}
+          />
         </div>
 
         {/* Side panel */}
