@@ -1,23 +1,23 @@
 # Current Task
 
-**Date:** 2026-05-22
+**Date:** 2026-05-29
 - **Status**: COMPLETADA / LAUNCH READY
-- **Fecha**: 2026-05-22 (Wave 11)
+- **Fecha**: 2026-05-29 (Audited & Perfected)
 
-## Completado: Wave 10 & Wave 11
+## Completado: Gran Remediación Integral
 
-- **Wave 10 & 11 (Market Intel, Multiplayer & Autonomous):**
-  - Implementado Strategy Copilot (Cerebro) interactivo con contexto V3.
-  - V3 UI Data Binding finalizado para Proposals y Findings.
-  - `market-intel-agent` con Google Search Grounding activo.
-  - Strategic Kanban (UI) con nuevo estado `in-progress` y sincro SSE.
+- **Clúster 1 (Backend):**
+  - Resoluciones N+1 en endpoints de telemetría y salud.
+  - Corrección de anomalías en el schema SQLite (índices duplicados borrados).
+  - Variables de entorno (API URL) fijadas correctamente en Dockerfile.
 
-- **Auditoría Completa Remediation (Waves 0-3):**
-  - **Wave 0 (Seguridad):** 7 fixes (Auth bypass, command injection, path traversal).
-  - **Wave 1 (Quick Wins):** 7 fixes (Math bugs, data mocking, a11y, HITL).
-  - **Wave 2 (Estructural):** 7 fixes (Mobile UI, Zod runtime, Health check, Rate limit).
-  - **Wave 3 (UX Premium):** 5 fixes (Skeletons, empty states, tooltips, stagger anims).
-  - **Total:** 26 fixes aplicados. Typecheck: 0 errores.
+- **Clúster 2 (Frontend & UX):**
+  - Matriz STAR / Radar renderizada de forma nativa vía ECharts.
+  - Purgado de "Doppelgängers" (Botones redundantes).
+  - Modal "Safe Delete" nativo en el panel Demo.
+
+- **Clúster 3 (Inteligencia & Agentes):**
+  - Amnesia de Contexto (P0) curada vía Interceptor Wrapper en Orquestador V3.
 
 
 ## Arrancar

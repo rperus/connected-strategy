@@ -1,5 +1,11 @@
 # Project Changelog
 
+## [2.7.2] - 2026-05-29 (Gran Remediación Completa)
+### Security, UX & Intelligence
+- **Clúster 1 (Backend & Datos):** Eliminadas consultas N+1 en health y metrics; corregidos índices zombis en base de datos SQLite; asegurada persistencia de variables en Dockerfile.
+- **Clúster 2 (Visual & UX):** Sustituidas gráficas manuales por ECharts paramétricos (Radar, Portfolio Matrix); eliminados "Doppelgängers" cognitivos en UI (botones duplicados); mitigada fricción emocional con Modal nativo de "Safe Delete".
+- **Clúster 3 (Inteligencia & Agentes):** Resuelta **Amnesia de Contexto (P0)** mediante inyección global (Interceptor Pattern) del `ProjectContext` en el Orquestador V3, evitando la alucinación sin refactorizar prompts en masa.
+
 ## [2.7.0] - 2026-05-22 (Wave 11)
 ### Added
 - **Market Intelligence**: New `/api/pipeline/market-intel/:projectId` endpoint using Google Search Grounding to generate external competitive landscape reports.

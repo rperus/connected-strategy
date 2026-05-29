@@ -1,9 +1,9 @@
 # Current State
 
-> Date: 2026-05-24
-> Version: 2.7.1 "Secure & Refined"
+> Date: 2026-05-29
+> Version: 2.7.2 "Audited & Perfected"
 > Coordinator: Cerebro
-> Active Wave: Audit Remediation (Waves 0-3)
+> Active Wave: Deployment Ready
 
 ## Platform Status — v2.7.1
 
@@ -22,6 +22,13 @@
 | Interactive Pages | ✅ 29 pages |
 | Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (17) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
+
+## What Changed: v2.7.1 → v2.7.2
+
+### v2.7.2 — Gran Remediación Completa
+- **Clúster 1 (Backend)**: 0 queries N+1, base de datos sana sin drift de índices.
+- **Clúster 2 (Frontend)**: Visualización ECharts, UX premium sin botones duplicados, protección destructiva activada.
+- **Clúster 3 (Agentes)**: Interceptor de LLM V3 activo (Zero Amnesia de Contexto). Compilación limpia de agentes.
 
 ## What Changed: v2.6.0 → v2.7.0
 
