@@ -1,6 +1,29 @@
 # Project Changelog
 
-## [2.7.2] - 2026-05-29 (Gran Remediación Completa)
+## [2.8.0] - 2026-05-30 (Knowledge & Lambda Intelligence)
+### RAG Pipeline (Real Knowledge Base)
+- **Replaced mock `vectorStore.ts`** with real SQLite FTS5 implementation — BM25 keyword search, batch indexing, deduplication, source tracking.
+- **Replaced mock `documentParser.ts`** with real file reader — reads .txt/.md files, chunks via `@cs/knowledge` chunker, detects section titles, loop phases, and domain keywords heuristically.
+- **New `ingestion.ts`** — orchestrates batch ingestion of all 14 Wharton knowledge sources from `@cs/knowledge` catalog with graceful degradation for missing files.
+- **New Knowledge API** (`/api/knowledge/*`) — 6 endpoints for ingestion, search, reindex, and custom file/text ingestion.
+- **Updated `synthetic-consultant.ts`** — now uses real FTS5 search with source citations and confidence scoring instead of mock data.
+- **New `rag/index.ts`** barrel export — all RAG APIs exported from `@cs/agents`.
+
+### Lambda Benchmark Scripts
+- **`scripts/lambda-benchmark/extract-prompts.ts`** — extracts all V3 agent prompt templates into portable JSON for testing on Lambda GPU instances.
+- **`scripts/lambda-benchmark/run-benchmark.sh`** — bash script to run benchmarks on Lambda with vLLM (supports Llama 3.1 70B, Mistral Large, Qwen 2.5 72B).
+- **`scripts/lambda-benchmark/evaluate-results.ts`** — compares model outputs against Gemini baseline (JSON parse rate, schema validation, quality heuristics, cost comparison).
+- **`scripts/lambda-benchmark/README.md`** — full instructions for running benchmarks and decision framework.
+
+### Synthetic Training Data Generator
+- **`scripts/training-data/generate-pairs.ts`** — uses Gemini API to generate instruction-response pairs for fine-tuning a Connected Strategy expert model.
+- **`scripts/training-data/export-jsonl.ts`** — exports in Alpaca and ShareGPT format for fine-tuning on Lambda with QLoRA.
+- **`scripts/training-data/README.md`** — instructions for generating, curating, and using training data.
+
+### Verification
+- ✅ `pnpm -r typecheck` — 0 errors across all 9 packages
+- ✅ `pnpm --filter @cs/knowledge test` — 6/6 tests passing
+
 ### Security, UX & Intelligence
 - **Clúster 1 (Backend & Datos):** Eliminadas consultas N+1 en health y metrics; corregidos índices zombis en base de datos SQLite; asegurada persistencia de variables en Dockerfile.
 - **Clúster 2 (Visual & UX):** Sustituidas gráficas manuales por ECharts paramétricos (Radar, Portfolio Matrix); eliminados "Doppelgängers" cognitivos en UI (botones duplicados); mitigada fricción emocional con Modal nativo de "Safe Delete".

@@ -1,11 +1,11 @@
 # Current State
 
-> Date: 2026-05-29
-> Version: 2.7.2 "Audited & Perfected"
+> Date: 2026-05-30
+> Version: 2.8.0 "Knowledge & Lambda Intelligence"
 > Coordinator: Cerebro
-> Active Wave: Deployment Ready
+> Active Wave: Knowledge Pipeline
 
-## Platform Status — v2.7.1
+## Platform Status — v2.8.0
 
 | Check | Result |
 |---|---|
@@ -22,15 +22,21 @@
 | Interactive Pages | ✅ 29 pages |
 | Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (17) |
 | Crews | ✅ Recon · Analysis · Action · Cross-cutting |
+| **RAG Pipeline** | ✅ **SQLite FTS5 — real knowledge base** |
+| **Knowledge API** | ✅ **6 endpoints at /api/knowledge/*** |
+| **Lambda Scripts** | ✅ **Benchmark + Training Data generators** |
+
+## What Changed: v2.7.2 → v2.8.0
+
+### v2.8.0 — Knowledge & Lambda Intelligence
+- **RAG Pipeline Real**: Mock `vectorStore.ts` reemplazado con SQLite FTS5 (BM25 search, batch indexing, dedup, source tracking).
+- **Document Parser Real**: Lee archivos .txt/.md del catálogo Wharton, chunking, detección de secciones y keywords.
+- **Knowledge API**: 6 endpoints REST para ingesta, búsqueda, reindexación y archivos custom.
+- **Synthetic Consultant Mejorado**: Ahora usa búsqueda real con citaciones de fuente y scoring de confianza.
+- **Lambda Benchmark Scripts**: Extracción de prompts V3, ejecución vLLM en GPU, evaluación vs Gemini.
+- **Training Data Generator**: Generación de pares instrucción-respuesta para fine-tuning con QLoRA.
 
 ## What Changed: v2.7.1 → v2.7.2
-
-### v2.7.2 — Gran Remediación Completa
-- **Clúster 1 (Backend)**: 0 queries N+1, base de datos sana sin drift de índices.
-- **Clúster 2 (Frontend)**: Visualización ECharts, UX premium sin botones duplicados, protección destructiva activada.
-- **Clúster 3 (Agentes)**: Interceptor de LLM V3 activo (Zero Amnesia de Contexto). Compilación limpia de agentes.
-
-## What Changed: v2.6.0 → v2.7.0
 
 ### v2.7.0 — Agentic Intelligence & Multiplayer (Wave 11)
 - **Market Intel**: Agents now utilize Google Search to analyze the external environment dynamically.

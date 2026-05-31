@@ -52,3 +52,33 @@ export * from './v3/shared-findings.js';
 export * from './agents/batch-reporter.js';
 export * from './agents/synthetic-consultant.js';
 export * from './agents/market-intel-agent.js';
+
+// ─── RAG (Retrieval-Augmented Generation) ─────────────────────────────────────
+export {
+  vectorSearch,
+  indexDocument,
+  indexChunksBatch,
+  getIndexStats,
+  clearSource,
+  clearAllChunks,
+  closeKnowledgeDb,
+} from './rag/vectorStore.js';
+export type { DocumentChunk } from './rag/vectorStore.js';
+
+export {
+  parseAndIndexDocument,
+  parseAndIndexSource,
+  parseAndIndexText,
+} from './rag/documentParser.js';
+export type { ParseResult } from './rag/documentParser.js';
+
+export {
+  ingestAllSources,
+  ingestSources,
+  ingestCustomFile,
+  ingestCustomText,
+  getIngestionStatus,
+  reindexSource,
+  reindexAll,
+} from './rag/ingestion.js';
+export type { IngestionReport } from './rag/ingestion.js';

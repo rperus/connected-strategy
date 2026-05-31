@@ -157,6 +157,9 @@ app.use('/api/telemetry', telemetryRoutes);
 import copilotRoutes from './modules/copilot/routes.js';
 app.use('/api/copilot', copilotRoutes);
 
+import knowledgeRoutes from './modules/knowledge/routes.js';
+app.use('/api/knowledge', knowledgeRoutes);
+
 // ─── Global Error Handler ───────────────────────────────────────
 import { errorHandler } from './middleware/error-handler.js';
 app.use(errorHandler as express.ErrorRequestHandler);

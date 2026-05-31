@@ -301,9 +301,8 @@ router.get('/findings', (req, res) => {
 router.get('/history/:projectId', (req, res) => {
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 50;
   try {
-    const runs = getHistoricalRuns(req.params.projectId);
-    const paginated = runs.slice(-limit);
-    res.json({ ok: true, data: paginated, meta: { total: runs.length, limit } });
+    const runs = getHistoricalRuns(req.params.projectId, limit);
+    res.json({ ok: true, data: runs, meta: { total: runs.length, limit } });
   } catch (err) {
     // Fallback to legacy JSONL if DB not initialized or errored
     try {

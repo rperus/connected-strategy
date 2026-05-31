@@ -48,8 +48,8 @@ export function saveHistoricalRun(run: HistoricalRun) {
   stmt.run(run);
 }
 
-export function getHistoricalRuns(projectId: string): HistoricalRun[] {
+export function getHistoricalRuns(projectId: string, limit = 50): HistoricalRun[] {
   const db = getDb();
-  const stmt = db.prepare(`SELECT * FROM runs WHERE projectId = ? ORDER BY startedAt DESC LIMIT 50`);
-  return stmt.all(projectId) as HistoricalRun[];
+  const stmt = db.prepare(`SELECT * FROM runs WHERE projectId = ? ORDER BY startedAt DESC LIMIT ?`);
+  return stmt.all(projectId, limit) as HistoricalRun[];
 }

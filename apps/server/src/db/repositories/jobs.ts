@@ -74,12 +74,12 @@ export function getJobDb(id: string): AnalysisJob | undefined {
   return row ? rowToJob(row) : undefined;
 }
 
-export function listJobsDb(projectId?: string): AnalysisJob[] {
+export function listJobsDb(projectId?: string, limit = 100, offset = 0): AnalysisJob[] {
   const db = getDb();
   if (projectId) {
-    return (db.prepare('SELECT * FROM analysis_jobs WHERE project_id = ? ORDER BY created_at DESC').all(projectId) as JobRow[]).map(rowToJob);
+    return (db.prepare('SELECT * FROM analysis_jobs WHERE project_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?').all(projectId, limit, offset) as JobRow[]).map(rowToJob);
   }
-  return (db.prepare('SELECT * FROM analysis_jobs ORDER BY created_at DESC').all() as JobRow[]).map(rowToJob);
+  return (db.prepare('SELECT * FROM analysis_jobs ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset) as JobRow[]).map(rowToJob);
 }
 
 export function getJobStatsDb(): { total: number; queued: number; running: number; done: number; failed: number } {

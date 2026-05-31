@@ -73,11 +73,11 @@ export function listAnswers(projectId: string): WorksheetAnswer[] {
   return rows.map(rowToAnswer);
 }
 
-export function listAllAnswers(): WorksheetAnswer[] {
+export function listAllAnswers(limit = 500, offset = 0): WorksheetAnswer[] {
   const db = getDb();
   const rows = db.prepare(
-    'SELECT * FROM worksheet_answers ORDER BY project_id, worksheet_id'
-  ).all() as AnswerRow[];
+    'SELECT * FROM worksheet_answers ORDER BY project_id, worksheet_id LIMIT ? OFFSET ?'
+  ).all(limit, offset) as AnswerRow[];
   return rows.map(rowToAnswer);
 }
 

@@ -68,10 +68,10 @@ export function getPacketDb(id: string): PromptPacket | undefined {
   return row ? rowToPacket(row) : undefined;
 }
 
-export function listPacketsDb(proposalId?: string): PromptPacket[] {
+export function listPacketsDb(proposalId?: string, limit = 100, offset = 0): PromptPacket[] {
   const db = getDb();
   if (proposalId) {
-    return (db.prepare('SELECT * FROM prompt_packets WHERE proposal_id = ? ORDER BY generated_at DESC').all(proposalId) as PacketRow[]).map(rowToPacket);
+    return (db.prepare('SELECT * FROM prompt_packets WHERE proposal_id = ? ORDER BY generated_at DESC LIMIT ? OFFSET ?').all(proposalId, limit, offset) as PacketRow[]).map(rowToPacket);
   }
-  return (db.prepare('SELECT * FROM prompt_packets ORDER BY generated_at DESC').all() as PacketRow[]).map(rowToPacket);
+  return (db.prepare('SELECT * FROM prompt_packets ORDER BY generated_at DESC LIMIT ? OFFSET ?').all(limit, offset) as PacketRow[]).map(rowToPacket);
 }

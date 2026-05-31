@@ -79,10 +79,10 @@ export function getProject(id: string): Project | undefined {
   return row ? rowToProject(row) : undefined;
 }
 
-export function listProjects(filters?: { maturity?: string; stack?: string }): Project[] {
+export function listProjects(filters?: { maturity?: string; stack?: string }, limit = 200): Project[] {
   const db = getDb();
   let sql = 'SELECT * FROM projects WHERE 1=1';
-  const params: string[] = [];
+  const params: (string | number)[] = [];
 
   if (filters?.maturity) {
     sql += ' AND maturity = ?';
@@ -93,7 +93,8 @@ export function listProjects(filters?: { maturity?: string; stack?: string }): P
     params.push(`%${filters.stack}%`);
   }
 
-  sql += ' ORDER BY updated_at DESC';
+  sql += ' ORDER BY updated_at DESC LIMIT ?';
+  params.push(limit);
   const rows = db.prepare(sql).all(...params) as ProjectRow[];
   return rows.map(rowToProject);
 }
