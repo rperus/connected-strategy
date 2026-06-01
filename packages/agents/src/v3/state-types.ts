@@ -19,8 +19,6 @@ import type {
   synthesisSchema
 } from '@cs/domain';
 import type { z } from 'zod';
-import type { RevenueModelArchitectOutput } from './agents/revenue-model-architect.js';
-import type { TemporalAnalystOutput } from './agents/temporal-analyst.js';
 
 export interface DiscoveryResult {
   // placeholder
@@ -126,3 +124,27 @@ export interface HistoricalRun {
   resolvedPriorities: number;
 }
 
+export interface RevenueModelArchitectOutput {
+  connectionArchitecture: string;
+  revenueModel: {
+    what: string;
+    when: string;
+    who: string;
+    why: string;
+    currency: string;
+  };
+  alternatives: string[];
+}
+
+export interface TemporalTrend {
+  metric: 'healthScore' | 'velocity' | 'errorRate';
+  direction: 'up' | 'down' | 'flat';
+  significance: 'high' | 'low';
+  description: string;
+}
+
+export interface TemporalAnalystOutput {
+  totalRunsAnalyzed: number;
+  trends: TemporalTrend[];
+  regressions: string[];
+}

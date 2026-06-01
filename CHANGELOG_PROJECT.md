@@ -1,5 +1,29 @@
 # Project Changelog
 
+## [v2.8.2] — 2026-06-01
+### Added
+- **Reportes de Auditoría Estructural**: Generados reportes persistentes para las fases de análisis arquitectónico en `scratch/`:
+  - [fase2_findings.md](file:///c:/dev/Connected_Strategy/scratch/fase2_findings.md) (Deuda Técnica y Huérfanos).
+  - [fase3_findings.md](file:///c:/dev/Connected_Strategy/scratch/fase3_findings.md) (Fragilidad de Red y Cuellos de Botella).
+  - [fase4_findings.md](file:///c:/dev/Connected_Strategy/scratch/fase4_findings.md) (Visión Holística y Oportunidades Zero-UI).
+
+### Removed
+- **Higiene de Código Heredado**: Eliminados físicamente **21 archivos de agentes V2 legados** en `packages/agents/src/agents/` que se encontraban 100% huérfanos y en desuso por la migración al Swarm V3 (ej. `action-lead.ts`, `validation-agent.ts`, etc.).
+
+### Changed
+- **Disolución de Acoplamientos Circulares**: Rompimos la circularidad estructural en `packages/agents/src/v3/` al migrar las interfaces de firmas de salida (`RevenueModelArchitectOutput`, `TemporalTrend`, `TemporalAnalystOutput`) directamente a `state-types.ts`, desacoplando por completo el árbol de tipos del estado del Swarm del directorio de agentes especialistas.
+- **Validación Universal**: Verificada la robustez del monorrepo tras la higiene:
+  - ✅ 0 errores de compilación en `@cs/domain`, `@cs/agents`, `@cs/web`.
+  - ✅ 100% de éxito en la suite de pruebas unitarias (`pnpm test` - 30 tests pasados).
+
+## [v2.8.1] — 2026-05-31
+### Added
+- **OpenAI Compatible Provider**: Added `createOpenAICompatibleProvider` in `llm-provider.ts` to support Lambda AI, vLLM, Llama 3, Qwen, and other standard API endpoints.
+- **Semantic Reviewer Harness**: Added `harness-reviewer.ts` implementing a two-pass `callLLMWithReviewer` function (Implementer → Reviewer) to prevent open-source model hallucinations.
+### Changed
+- **Prompt Engineering**: Injected `<thinking>` and `<output>` tags into `llm-validated.ts` to force open-source models into step-by-step reasoning before emitting JSON.
+- **JSON Extraction**: Upgraded `extractJSON` to robustly extract content from `<output>` tags, falling back to markdown.
+
 ## [2.8.0] - 2026-05-30 (Knowledge & Lambda Intelligence)
 ### RAG Pipeline (Real Knowledge Base)
 - **Replaced mock `vectorStore.ts`** with real SQLite FTS5 implementation — BM25 keyword search, batch indexing, deduplication, source tracking.

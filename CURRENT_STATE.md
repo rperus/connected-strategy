@@ -1,16 +1,16 @@
 # Current State
 
-> Date: 2026-05-30
-> Version: 2.8.0 "Knowledge & Lambda Intelligence"
+> Date: 2026-06-01
+> Version: 2.8.2 "Structural Re-Architecture & Zero-UI"
 > Coordinator: Cerebro
-> Active Wave: Knowledge Pipeline
+> Active Wave: Code Hygiene & Structural Refactor
 
-## Platform Status — v2.8.0
+## Platform Status — v2.8.2
 
 | Check | Result |
 |---|---|
 | Security | ✅ 0 High/Moderate CVEs, Command Injections mitigated |
-| Architecture | ✅ 0 Circular Dependencies |
+| Architecture | ✅ 0 Circular Dependencies (V3 Broken Cycles) |
 | Web Bundle | ✅ Code-split (240kB initial) + Skeletons |
 | Stability | ✅ Rate limits, Zod runtime checks, Health ping |
 |---|---|
@@ -18,13 +18,30 @@
 | pnpm --filter @cs/agents typecheck | ✅ 0 errors |
 | pnpm --filter @cs/web typecheck | ✅ 0 errors |
 | Worksheets | ✅ 15 worksheets (WS01-WS15) |
-| Agents | ✅ 21 agents registered (3-tier swarm) |
-| Interactive Pages | ✅ 29 pages |
-| Agent Tiers | ✅ Supervisor (1) · Crew Leads (3) · Specialists (17) |
-| Crews | ✅ Recon · Analysis · Action · Cross-cutting |
+| Agents | ✅ 3 active agents (Swarm V3 modular) |
+| Interactive Pages | ✅ 33 pages |
+| Swarm Engine | ✅ Mediator event-ready orquestación |
 | **RAG Pipeline** | ✅ **SQLite FTS5 — real knowledge base** |
 | **Knowledge API** | ✅ **6 endpoints at /api/knowledge/*** |
 | **Lambda Scripts** | ✅ **Benchmark + Training Data generators** |
+| **Open Source Harness** | ✅ **OpenAI provider + Semantic Reviewer + Thinking tags** |
+
+## What Changed: v2.8.1 → v2.8.2
+
+### v2.8.2 — Structural Re-Architecture & Zero-UI
+- **Higiene de Código**: Remoción física de **21 archivos de agentes legados V2** en `packages/agents/src/agents/` que se encontraban totalmente huérfanos y en desuso tras la migración al Swarm V3.
+- **Acoplamiento Cero en Tipos**: Rompimos la circularidad estructural del Swarm V3 al mover las definiciones de salida (`RevenueModelArchitectOutput`, `TemporalTrend`, `TemporalAnalystOutput`) directamente a `state-types.ts`, desligando la base de datos de estado del directorio de agentes especialistas.
+- **Auditoría e Inteligencia de Red**: Generación de 3 reportes exhaustivos basados en grafos interactivos en `scratch/`:
+  - `fase2_findings.md` (Huérfanos y duplicidad lógica).
+  - `fase3_findings.md` (Fragilidad de red y propuestas de Lifecycle/Mediator).
+  - `fase4_findings.md` (Silos UI-to-AI y 3 flujos Zero-UI anticipativos).
+
+## What Changed: v2.8.0 → v2.8.1
+
+### v2.8.1 — Harness Engineering
+- **OpenAI Compatible Provider**: Añadido soporte para modelos open source sin censura (ej. Llama 3) vía API de OpenAI/vLLM en `llm-provider.ts`.
+- **Patrón Semantic Reviewer**: Implementado `harness-reviewer.ts` con verificación a doble pasada (Implementer → Reviewer) para evitar alucinaciones en modelos menos confiables.
+- **Guardrails en Prompts**: Inyectados tags `<thinking>` y `<output>` en `llm-validated.ts` para obligar a los modelos a razonar antes de emitir JSON, previniendo el colapso de formato.
 
 ## What Changed: v2.7.2 → v2.8.0
 

@@ -1,17 +1,5 @@
 import { getHistoricalRuns } from '../db/index.js';
-
-export interface TemporalTrend {
-  metric: 'healthScore' | 'velocity' | 'errorRate';
-  direction: 'up' | 'down' | 'flat';
-  significance: 'high' | 'low';
-  description: string;
-}
-
-export interface TemporalAnalystOutput {
-  totalRunsAnalyzed: number;
-  trends: TemporalTrend[];
-  regressions: string[];
-}
+import type { TemporalTrend, TemporalAnalystOutput } from '../state-types.js';
 
 export async function runTemporalAnalyst(ctx: { projectId: string, emitTelemetry: (evt: any) => void }): Promise<{ data: TemporalAnalystOutput }> {
   ctx.emitTelemetry({ type: 'agent_started', agentId: 'temporal-analyst', message: 'Starting temporal memory analysis...' });
