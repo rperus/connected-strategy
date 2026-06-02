@@ -16,7 +16,7 @@
 
 ## Próximos Pasos (Arquitectura)
 
-1. **[ ] Implementar ServerLifecycleManager**: Desacoplar `closeDb()` de Express/mantenimiento mediante hooks de apagado centralizados.
+1. **[x] Implementar ServerLifecycleManager**: Desacoplar `closeDb()` de Express/mantenimiento mediante hooks de apagado centralizados.
 2. **[x] Migrar runV3Pipeline a Arquitectura Dirigida por Eventos**: Integración SAGA + GCP Pub/Sub completada.
 3. **[ ] Conectar runWorksheetSynthesizer a la UI**: Implementar el autocompletado anticipativo Zero-UI en `WorksheetsPage.tsx` con RAG pre-flights.
 4. **[ ] Ingestar Knowledge Base**: Indexar los archivos Wharton disponibles llamando a `POST /api/knowledge/ingest`.

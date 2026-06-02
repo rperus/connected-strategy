@@ -164,6 +164,8 @@ app.use('/api/knowledge', knowledgeRoutes);
 import { errorHandler } from './middleware/error-handler.js';
 app.use(errorHandler as express.ErrorRequestHandler);
 
+import { ServerLifecycleManager } from './services/lifecycle.js';
+
 // ─── Start ──────────────────────────────────────────────────────
 const PORT = resolvePort('connected_strategy_api', 4311);
 const HOST = process.env.HOST || '127.0.0.1';
@@ -174,20 +176,20 @@ const server = app.listen(PORT, '127.0.0.1', () => {
   console.log(`[CS-API] Persistence: SQLite (data/connected_strategy.db)`);
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('[CS-API] Shutting down...');
-  stopScheduler();
-  closeDb();
-  server.close();
+// Register graceful shutdown hooks
+ServerLifecycleManager.registerShutdownHook('Express Server', () => {
+  return new Promise((resolve) => server.close(() => resolve()));
 });
 
-process.on('SIGINT', () => {
-  console.log('[CS-API] Interrupted, closing DB...');
+ServerLifecycleManager.registerShutdownHook('Scheduler Daemon', () => {
   stopScheduler();
-  closeDb();
-  server.close();
-  process.exit(0);
 });
+
+ServerLifecycleManager.registerShutdownHook('SQLite Database', () => {
+  closeDb();
+});
+
+// Bind signal traps
+ServerLifecycleManager.trapSignals();
 
 export default app;
