@@ -1,5 +1,17 @@
 # Project Changelog
 
+## [v2.9.0] — 2026-06-02
+### Added
+- **Arquitectura Dirigida por Eventos (EDA)**: Implementación de topología Pub/Sub en todo el Swarm V3. El `EventHub` fue creado actuando como un gestor centralizado del estado.
+- **Google Cloud Pub/Sub**: Integración oficial del SDK `@google-cloud/pubsub`. El sistema ahora puede escalar horizontalmente enrutando la telemetría y los eventos SAGA a través de `cs-events-topic`. En caso de desconexión, hace fallback a `in-memory`.
+- **Patrón SAGA para el Orquestador**: `pipeline-orchestrator.ts` ha pasado de ser un ejecutor imperativo síncrono a un gestor de procesos asíncronos basado en comandos (`RUN_*`) y eventos (`*_COMPLETED`, `*_FAILED`).
+
+### Changed
+- **Refactor Masivo del Swarm V3 (20 Agentes)**: Todos los agentes (`db-architect`, `code-cartographer`, `customer-journey-mapper`, `chief-strategist`, etc.) fueron refactorizados mediante un script AST para adoptar firmas `registerX(hub)` en vez de funciones asíncronas directas.
+- **Pruebas de Compilación y Funcionalidad**:
+  - ✅ 0 errores de compilación (`pnpm -r typecheck` limpio en todos los 9 paquetes).
+  - ✅ Unit tests 100% pasando (30/30).
+
 ## [v2.8.2] — 2026-06-01
 ### Added
 - **Reportes de Auditoría Estructural**: Generados reportes persistentes para las fases de análisis arquitectónico en `scratch/`:

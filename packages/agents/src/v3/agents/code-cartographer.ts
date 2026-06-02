@@ -1,5 +1,6 @@
 import { discoverProjectFiles } from '../code-discovery.js';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
+import { EventHub } from "../hub/event-hub.js";
 
 interface CodeCartographerInput {
   projectPath: string;
@@ -12,35 +13,36 @@ interface CodeCartographerOutput {
   monorepoStructure: any;
 }
 
-export async function runCodeCartographer(
-  input: CodeCartographerInput,
-  ctx: AgentV3Context
-): Promise<AgentV3Result<CodeCartographerOutput>> {
-  const start = Date.now();
-  try {
+export function registerCodeCartographer(hub: EventHub, ctx: any): void {
+    hub.subscribe<CodeCartographerInput>('_R_U_N__CODE_CARTOGRAPHER', async (event) => {
+          const input = event.payload;
+          const start = Date.now();
+    try {
     const fileDiscovery = await discoverProjectFiles(input.projectPath);
 
-    return {
-      success: true,
-      data: {
+    // Update state here if needed
+        // hub.updateState(event.projectId, (state) => { /* update logic */ });
+        
+        await hub.publish({
+          domain: 'lifecycle',
+          type: '_R_U_N__CODE_CARTOGRAPHER_COMPLETED',
+          projectId: event.projectId,
+          payload: { success: true, data: {
         fileDiscovery,
         gitStats: {},
         dependencyGraph: fileDiscovery.packageJson?.dependencies || {},
         monorepoStructure: { hasMonorepo: fileDiscovery.hasMonorepo }
-      },
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 0,
-      filesRead: []
-    };
-  } catch (err: any) {
-    return {
-      success: false,
-      error: err.message,
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 0,
-      filesRead: []
-    };
-  }
+      } },
+          timestamp: Date.now()
+        });
+    } catch (err: any) {
+    await hub.publish({
+          domain: 'lifecycle',
+          type: '_R_U_N__CODE_CARTOGRAPHER_COMPLETED_FAILED',
+          projectId: event.projectId,
+          payload: { success: false, error: err.message },
+          timestamp: Date.now()
+        });
+    }
+        });
 }

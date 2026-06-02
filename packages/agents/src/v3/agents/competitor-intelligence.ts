@@ -4,6 +4,8 @@ import type { CompetitorProfile } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
 
+import { EventHub } from '../hub/event-hub.js';
+
 interface CompetitorIntelligenceInput {
   projectName: string;
   sector: string;
@@ -19,11 +21,10 @@ const outSchema = z.object({
   competitors: z.array(competitorProfileSchema)
 });
 
-export async function runCompetitorIntelligence(
-  input: CompetitorIntelligenceInput,
-  ctx: AgentV3Context
-): Promise<AgentV3Result<CompetitorIntelligenceOutput>> {
-  const start = Date.now();
+export function registerCompetitorIntelligence(hub: EventHub, ctx: AgentV3Context): void {
+  hub.subscribe<CompetitorIntelligenceInput>('RUN_COMPETITIVE_ANALYSIS', async (event) => {
+    const input = event.payload;
+    const start = Date.now();
   try {
     const prompt = `
 Identifica perfiles de competidores para el proyecto ${input.projectName} (${input.projectDescription}) en el sector ${input.sector}.
@@ -47,7 +48,7 @@ Reglas:
     for (const comp of out.competitors) {
       for (const move of comp.recentMoves) {
         if (move.sourceUrl) {
-          ctx.store.appendCitation(ctx.projectId, {
+          hub.appendCitation(event.projectId, {
             claim: move.description,
             sourceUrl: move.sourceUrl,
             retrievedAt: new Date().toISOString(),
@@ -57,22 +58,30 @@ Reglas:
       }
     }
 
-    return {
-      success: true,
-      data: out,
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 1,
-      filesRead: ctx.fileReader.getReadFilesList()
-    };
+    // Update Blackboard State
+    hub.updateState(event.projectId, (state) => {
+      if (!state.competitive) state.competitive = {};
+      state.competitive.competitors = out.competitors;
+    });
+
+    // Publish completion
+    await hub.publish({
+      domain: 'lifecycle',
+      type: 'COMPETITIVE_ANALYSIS_COMPLETED',
+      projectId: event.projectId,
+      payload: { success: true },
+      timestamp: Date.now()
+    });
+
   } catch (err: any) {
-    return {
-      success: false,
-      error: err.message,
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 1,
-      filesRead: ctx.fileReader.getReadFilesList()
-    };
+    // Publish error
+    await hub.publish({
+      domain: 'lifecycle',
+      type: 'COMPETITIVE_ANALYSIS_FAILED',
+      projectId: event.projectId,
+      payload: { success: false, error: err.message },
+      timestamp: Date.now()
+    });
   }
+  });
 }

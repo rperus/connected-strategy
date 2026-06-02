@@ -2,6 +2,7 @@ import { ws01Schema } from '@cs/domain';
 import type { WS01_JourneyMap } from '@cs/domain';
 import type { AgentV3Context, AgentV3Result } from '../types.js';
 import { callLLMValidated } from '../llm-validated.js';
+import { EventHub } from "../hub/event-hub.js";
 
 interface CustomerJourneyMapperInput {
   projectName: string;
@@ -14,13 +15,12 @@ interface CustomerJourneyMapperOutput {
   ws01: WS01_JourneyMap;
 }
 
-export async function runCustomerJourneyMapper(
-  input: CustomerJourneyMapperInput,
-  ctx: AgentV3Context
-): Promise<AgentV3Result<CustomerJourneyMapperOutput>> {
-  const start = Date.now();
-  try {
-    const prompt = `
+export function registerCustomerJourneyMapper(hub: EventHub, ctx: any): void {
+    hub.subscribe<CustomerJourneyMapperInput>('_R_U_N__CUSTOMER_JOURNEY_MAPPER', async (event) => {
+          const input = event.payload;
+          const start = Date.now();
+      try {
+        const prompt = `
 Eres un consultor estratégico Wharton experto en Connected Strategy.
 Vas a mapear el customer journey del proyecto "${input.projectName}" para el segmento
 "${input.customerSegment}" en el use case "${input.useCase}".
@@ -49,29 +49,31 @@ Sé honesto: si el proyecto es peor que un competidor en algo, dilo.
 El projecto está en: ${ctx.projectPath}
 `;
 
-    const result = await callLLMValidated(
-      ctx.llm,
-      prompt,
-      ws01Schema,
-      { temperature: 0.3, maxOutputTokens: 12000 }
-    );
+        const result = await callLLMValidated(
+          ctx.llm,
+          prompt,
+          ws01Schema,
+          { temperature: 0.3, maxOutputTokens: 12000 }
+        );
 
-    return {
-      success: true,
-      data: { ws01: result as WS01_JourneyMap },
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 1,
-      filesRead: ctx.fileReader.getReadFilesList()
-    };
-  } catch (err: any) {
-    return {
-      success: false,
-      error: err.message,
-      tokensUsed: 0,
-      durationMs: Date.now() - start,
-      llmCalls: 1,
-      filesRead: ctx.fileReader.getReadFilesList()
-    };
-  }
+        // Update state here if needed
+        // hub.updateState(event.projectId, (state) => { /* update logic */ });
+        
+        await hub.publish({
+          domain: 'lifecycle',
+          type: '_R_U_N__CUSTOMER_JOURNEY_MAPPER_COMPLETED',
+          projectId: event.projectId,
+          payload: { success: true, data: { ws01: result as WS01_JourneyMap } },
+          timestamp: Date.now()
+        });
+      } catch (err: any) {
+        await hub.publish({
+          domain: 'lifecycle',
+          type: '_R_U_N__CUSTOMER_JOURNEY_MAPPER_COMPLETED_FAILED',
+          projectId: event.projectId,
+          payload: { success: false, error: err.message },
+          timestamp: Date.now()
+        });
+      }
+        });
 }

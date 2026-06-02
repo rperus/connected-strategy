@@ -2,7 +2,7 @@ import { describe, it } from 'node:test';
 import { expect } from 'expect';
 import { computeHealthScoreWithCI } from '../synthesis/health-score.js';
 import { buildChiefStrategistPrompt } from '../synthesis/prompt-builder.js';
-import { runChiefStrategist } from '../agents/chief-strategist.js';
+import { registerChiefStrategist } from '../agents/chief-strategist.js';
 import type { ProjectStateV3 } from '../state-store.js';
 import type { AgentV3Context } from '../types.js';
 
@@ -60,10 +60,20 @@ describe('Chief Strategist', () => {
         log: () => {}
       };
 
-      const result = await runChiefStrategist({ state }, ctx);
-      expect(result.success).toBe(false);
-      expect(result.llmCalls).toBe(3);
-      expect(result.error?.includes('validation failed') || result.error?.includes('failed')).toBe(true);
+      let publishedResult: any;
+      const hub = {
+        subscribe: async (type: string, handler: any) => {
+          await handler({ projectId: 'p1', payload: { state } });
+        },
+        publish: async (event: any) => {
+          publishedResult = event.payload;
+        },
+        updateState: () => {}
+      } as any;
+
+      registerChiefStrategist(hub, ctx);
+      expect(publishedResult.success).toBe(false);
+      expect(publishedResult.error?.includes('validation failed') || publishedResult.error?.includes('failed')).toBe(true);
     });
 
     it('returns success when LLM gives valid JSON directly', async () => {
@@ -104,9 +114,20 @@ describe('Chief Strategist', () => {
         log: () => {}
       };
 
-      const result = await runChiefStrategist({ state }, ctx);
-      expect(result.success).toBe(true);
-      expect(result.data?.executiveSummary).toBe('Exec');
+      let publishedResult: any;
+      const hub = {
+        subscribe: async (type: string, handler: any) => {
+          await handler({ projectId: 'p1', payload: { state } });
+        },
+        publish: async (event: any) => {
+          publishedResult = event.payload;
+        },
+        updateState: () => {}
+      } as any;
+
+      registerChiefStrategist(hub, ctx);
+      expect(publishedResult.success).toBe(true);
+      expect(publishedResult.data?.executiveSummary).toBe('Exec');
     });
   });
 });

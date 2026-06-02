@@ -2,21 +2,22 @@ import { ProjectStateStore } from './state-store.js';
 import type { ProjectStateV3 } from './state-store.js';
 import { getGeminiProvider } from '../llm-provider.js';
 import { FileReader } from './file-reader.js';
-import { runCustomerJourneyMapper } from './agents/customer-journey-mapper.js';
-import { runInfoFlowAnalyzer } from './agents/info-flow-analyzer.js';
-import { runDeeperNeedsLaddering } from './agents/deeper-needs-laddering.js';
-import { runConnectedExperienceMatrix } from './agents/connected-experience-matrix.js';
-import { runTechStackMapper } from './agents/tech-stack-mapper.js';
-import { runRevenueModelArchitect } from './agents/revenue-model-architect.js';
-import { runIndustryStructureAnalyst } from './agents/industry-structure-analyst.js';
-import { runCompetitorIntelligence } from './agents/competitor-intelligence.js';
-import { runWtpCostDriverScorer } from './agents/wtp-cost-driver-scorer.js';
-import { runActivitySystemMapper } from './agents/activity-system-mapper.js';
-import { runCodeCartographer } from './agents/code-cartographer.js';
-import { runTemporalAnalyst } from './agents/temporal-analyst.js';
-import { mergeSwarmResults, runDbArchitect, runSecurityAuditor, runApiDesignCritic, runPerformanceEngineer, runMlReadiness, runFrontendPerf, runObservability } from './agents/swarm/index.js';
+import { registerCustomerJourneyMapper } from './agents/customer-journey-mapper.js';
+import { registerInfoFlowAnalyzer } from './agents/info-flow-analyzer.js';
+import { registerDeeperNeedsLaddering } from './agents/deeper-needs-laddering.js';
+import { registerConnectedExperienceMatrix } from './agents/connected-experience-matrix.js';
+import { registerTechStackMapper } from './agents/tech-stack-mapper.js';
+import { registerRevenueModelArchitect } from './agents/revenue-model-architect.js';
+import { registerIndustryStructureAnalyst } from './agents/industry-structure-analyst.js';
+import { registerCompetitorIntelligence } from './agents/competitor-intelligence.js';
+import { EventHub } from './hub/event-hub.js';
+import { registerWtpCostDriverScorer } from './agents/wtp-cost-driver-scorer.js';
+import { registerActivitySystemMapper } from './agents/activity-system-mapper.js';
+import { registerCodeCartographer } from './agents/code-cartographer.js';
+import { registerTemporalAnalyst } from './agents/temporal-analyst.js';
+import { registerDbArchitect, registerSecurityAuditor, registerApiDesignCritic, registerPerformanceEngineer, registerMlReadiness, registerFrontendPerf, registerObservability, mergeSwarmResults } from './agents/swarm/index.js';
 import { runFrontierPhase } from './frontier/index.js';
-import { runChiefStrategist } from './agents/chief-strategist.js';
+import { registerChiefStrategist } from './agents/chief-strategist.js';
 import { SharedFindingsStore } from './shared-findings.js';
 import { runHandoffPhase } from './handoff/index.js';
 import { saveHistoricalRun } from './db/index.js';
@@ -39,11 +40,45 @@ export interface RunV3Opts {
   emitter?: EventEmitter;
 }
 
+function waitForEvent(hub: EventHub, eventType: string): Promise<any> {
+  return new Promise((resolve) => {
+    let handled = false;
+    hub.subscribe(eventType, (event) => {
+      if (!handled) {
+        handled = true;
+        resolve(event);
+      }
+    });
+  });
+}
+
+async function executeAgent(hub: EventHub, commandType: string, projectId: string, payload: any): Promise<any> {
+  const completedEventType = commandType.replace('RUN_', '') + '_COMPLETED';
+  const failedEventType = commandType.replace('RUN_', '') + '_FAILED';
+  
+  const promise = Promise.race([
+    waitForEvent(hub, completedEventType),
+    waitForEvent(hub, failedEventType).then(e => { throw new Error(e.payload.error); })
+  ]);
+  
+  await hub.publish({
+    domain: 'command',
+    type: commandType,
+    projectId,
+    payload,
+    timestamp: Date.now()
+  });
+  
+  return promise;
+}
+
 export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   const { runId, project, store, options, emitter } = opts;
   const skip = new Set(options.skipPhases);
 
   const sharedFindings = new SharedFindingsStore();
+  const hub = new EventHub(store);
+  await hub.init();
 
   let state = store.load(project.id) || {
     schemaVersion: '3.0.0',
@@ -111,6 +146,36 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     });
   });
 
+  // REGISTER ALL AGENTS AS LISTENERS
+  registerCompetitorIntelligence(hub, ctx);
+  registerCodeCartographer(hub, ctx);
+  registerCustomerJourneyMapper(hub, ctx);
+  registerInfoFlowAnalyzer(hub, ctx);
+  registerDeeperNeedsLaddering(hub, ctx);
+  registerConnectedExperienceMatrix(hub, ctx);
+  registerTechStackMapper(hub, ctx);
+  registerRevenueModelArchitect(hub, ctx);
+  registerIndustryStructureAnalyst(hub, ctx);
+  registerWtpCostDriverScorer(hub, ctx);
+  registerActivitySystemMapper(hub, ctx);
+  registerDbArchitect(hub, ctx);
+  registerSecurityAuditor(hub, ctx);
+  registerApiDesignCritic(hub, ctx);
+  registerPerformanceEngineer(hub, ctx);
+  registerMlReadiness(hub, ctx);
+  registerFrontendPerf(hub, ctx);
+  registerObservability(hub, ctx);
+  registerTemporalAnalyst(hub, ctx);
+  registerChiefStrategist(hub, ctx);
+  
+  await hub.publish({
+    domain: 'lifecycle',
+    type: 'PIPELINE_STARTED',
+    projectId: project.id,
+    payload: { projectId: project.id },
+    timestamp: Date.now()
+  });
+
   const phasesCompleted: string[] = [];
   const errors: Array<{ phase: string; message: string }> = [];
 
@@ -128,8 +193,8 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   if (!skip.has('A')) {
     options.onProgress?.('A', 'Starting Discovery (Code Cartographer)...');
     try {
-      const disco = await runCodeCartographer({ projectPath: project.path }, ctx);
-      state.discovery = disco.data! as any;
+      const disco = await executeAgent(hub, 'RUN_CODE_CARTOGRAPHER', project.id, { projectPath: project.path });
+      state.discovery = disco.payload.data as any;
       phasesCompleted.push('A');
       store.save(state);
       options.onProgress?.('A', 'Discovery Complete.');
@@ -141,31 +206,32 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     try {
       const segment = options.customerSegment ?? 'primary user';
       const competitors = options.competitorHints ?? [];
-      const ws01 = await runCustomerJourneyMapper({ projectName: project.name, customerSegment: segment, useCase: 'main use', competitorNames: competitors }, ctx);
-      
-      const ws03 = await runInfoFlowAnalyzer({ ws01Output: ws01.data!.ws01 }, ctx);
-      const ws04ws06 = await runDeeperNeedsLaddering({ ws01Output: ws01.data!.ws01, projectName: project.name }, ctx);
-      const ws05ws07ws08 = await runConnectedExperienceMatrix({ ws01Output: ws01.data!.ws01, ws04Output: ws04ws06.data!.ws04, competitorNames: competitors }, ctx);
-      const ws09ws10ws11 = await runTechStackMapper({ packageJson: {}, fileDiscovery: { byCategory: {} } }, ctx);
+      const ws01 = await executeAgent(hub, 'RUN_CUSTOMER_JOURNEY_MAPPER', project.id, { projectName: project.name, customerSegment: segment, useCase: 'main use', competitorNames: competitors });
+      const ws01Output = ws01.payload.data.ws01;
 
-      const revenue = await runRevenueModelArchitect({
-        ws07Output: ws05ws07ws08.data!.ws07,
-        ws08Output: ws05ws07ws08.data!.ws08,
+      const ws03 = await executeAgent(hub, 'RUN_INFO_FLOW_ANALYZER', project.id, { ws01Output });
+      const ws04ws06 = await executeAgent(hub, 'RUN_DEEPER_NEEDS_LADDERING', project.id, { ws01Output, projectName: project.name });
+      const ws05ws07ws08 = await executeAgent(hub, 'RUN_CONNECTED_EXPERIENCE_MATRIX', project.id, { ws01Output, ws04Output: ws04ws06.payload.data.ws04, competitorNames: competitors });
+      const ws09ws10ws11 = await executeAgent(hub, 'RUN_TECH_STACK_MAPPER', project.id, { packageJson: {}, fileDiscovery: { byCategory: {} } });
+
+      const revenue = await executeAgent(hub, 'RUN_REVENUE_MODEL_ARCHITECT', project.id, {
+        ws07Output: ws05ws07ws08.payload.data.ws07,
+        ws08Output: ws05ws07ws08.payload.data.ws08,
         competitorPricing: competitors
-      }, ctx);
+      });
 
       state.wharton = {
-        ws01: ws01.data?.ws01,
-        ws03: ws03.data?.ws03,
-        ws04: ws04ws06.data?.ws04,
-        ws05: ws05ws07ws08.data?.ws05,
-        ws06: ws04ws06.data?.ws06,
-        ws07: ws05ws07ws08.data?.ws07,
-        ws08: ws05ws07ws08.data?.ws08,
-        ws09: ws09ws10ws11.data?.ws09,
-        ws10: ws09ws10ws11.data?.ws10,
-        ws11: ws09ws10ws11.data?.ws11,
-        revenueModel: revenue.data,
+        ws01: ws01Output,
+        ws03: ws03.payload.data.ws03,
+        ws04: ws04ws06.payload.data.ws04,
+        ws05: ws05ws07ws08.payload.data.ws05,
+        ws06: ws04ws06.payload.data.ws06,
+        ws07: ws05ws07ws08.payload.data.ws07,
+        ws08: ws05ws07ws08.payload.data.ws08,
+        ws09: ws09ws10ws11.payload.data.ws09,
+        ws10: ws09ws10ws11.payload.data.ws10,
+        ws11: ws09ws10ws11.payload.data.ws11,
+        revenueModel: revenue.payload.data,
       };
       phasesCompleted.push('B');
       store.save(state);
@@ -177,20 +243,27 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     options.onProgress?.('C', 'Starting Competitive Analysis (Five Forces, WTP, Activity System)...');
     try {
       const segment = options.customerSegment ?? 'primary user';
-      const [forces, intel, drivers, activitySys] = await Promise.all([
-        runIndustryStructureAnalyst({ projectName: project.name, sector: 'auto-detect', segment }, ctx),
-        runCompetitorIntelligence({ projectName: project.name, sector: 'auto-detect', projectDescription: '', knownCompetitors: options.competitorHints }, ctx),
-        runWtpCostDriverScorer({ ws01Output: state.wharton!.ws01!, competitors: [] }, ctx),
-        runActivitySystemMapper({ ws01Output: state.wharton!.ws01!, ws07Output: state.wharton!.ws07!, ws08Output: state.wharton!.ws08! }, ctx)
+      const [forces, drivers, activitySys] = await Promise.all([
+        executeAgent(hub, 'RUN_INDUSTRY_STRUCTURE_ANALYST', project.id, { projectName: project.name, sector: 'auto-detect', segment }),
+        executeAgent(hub, 'RUN_WTP_COST_DRIVER_SCORER', project.id, { ws01Output: state.wharton!.ws01!, competitors: [] }),
+        executeAgent(hub, 'RUN_ACTIVITY_SYSTEM_MAPPER', project.id, { ws01Output: state.wharton!.ws01!, ws07Output: state.wharton!.ws07!, ws08Output: state.wharton!.ws08! }),
+        executeAgent(hub, 'RUN_COMPETITIVE_ANALYSIS', project.id, {
+          projectName: project.name,
+          sector: 'auto-detect',
+          projectDescription: '',
+          knownCompetitors: options.competitorHints
+        })
       ]);
 
+      const hubState = store.load(project.id) || state;
+
       state.competitive = {
-        fiveForces: forces.data?.fiveForces,
-        scenarios: forces.data?.scenarios,
-        competitors: intel.data?.competitors,
-        wtpDrivers: drivers.data?.wtpDrivers,
-        costDrivers: drivers.data?.costDrivers,
-        activitySystem: activitySys.data,
+        ...hubState.competitive,
+        fiveForces: forces.payload.data?.fiveForces,
+        scenarios: forces.payload.data?.scenarios,
+        wtpDrivers: drivers.payload.data?.wtpDrivers,
+        costDrivers: drivers.payload.data?.costDrivers,
+        activitySystem: activitySys.payload.data,
       };
       phasesCompleted.push('C');
       store.save(state);
@@ -202,19 +275,20 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     options.onProgress?.('D', 'Starting Swarm Phase (Parallel QA & Ops Agents)...');
     try {
       const files = (state.discovery as any)?.files || [];
-      const swarmResults = await Promise.all([
-        runDbArchitect({ files }, ctx),
-        runSecurityAuditor({ files }, ctx),
-        runApiDesignCritic({ files }, ctx),
-        runPerformanceEngineer({ files }, ctx),
-        runMlReadiness({ files }, ctx),
-        runFrontendPerf({ files }, ctx),
-        runObservability({ files }, ctx)
+      const swarmResultsRaw = await Promise.all([
+        executeAgent(hub, 'RUN_DB_ARCHITECT', project.id, { files }),
+        executeAgent(hub, 'RUN_SECURITY_AUDITOR', project.id, { files }),
+        executeAgent(hub, 'RUN_API_DESIGN_CRITIC', project.id, { files }),
+        executeAgent(hub, 'RUN_PERFORMANCE_ENGINEER', project.id, { files }),
+        executeAgent(hub, 'RUN_ML_READINESS', project.id, { files }),
+        executeAgent(hub, 'RUN_FRONTEND_PERF', project.id, { files }),
+        executeAgent(hub, 'RUN_OBSERVABILITY', project.id, { files })
       ]);
-      state.swarm = mergeSwarmResults(swarmResults);
+      const swarmResults = swarmResultsRaw.map(r => ({ data: r.payload.data }));
+      state.swarm = mergeSwarmResults(swarmResults as any);
       
-      const temporalResult = await runTemporalAnalyst(ctx);
-      state.temporal = temporalResult.data;
+      const temporalResult = await executeAgent(hub, 'RUN_TEMPORAL_ANALYST', project.id, {});
+      state.temporal = temporalResult.payload.data;
 
       phasesCompleted.push('D');
       store.save(state);
@@ -236,8 +310,8 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
     options.onProgress?.('F', 'Starting Chief Strategist (Synthesis)...');
     try {
       const liveFindings = sharedFindings.getAll();
-      const synth = await runChiefStrategist({ state, liveFindings }, ctx);
-      state.synthesis = synth.data;
+      const synth = await executeAgent(hub, 'RUN_CHIEF_STRATEGIST', project.id, { state, liveFindings });
+      state.synthesis = synth.payload.data;
       phasesCompleted.push('F');
       store.save(state);
       options.onProgress?.('F', 'Synthesis Complete.');

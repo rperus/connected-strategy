@@ -1,28 +1,23 @@
 # Current Task
 
-**Date:** 2026-06-01
+**Date:** 2026-06-02
 - **Status**: COMPLETADA
-- **Fecha**: 2026-06-01 (Structural Re-Architecture & Zero-UI)
+- **Fecha**: 2026-06-02 (EDA & GCP Pub/Sub Integration)
 
-## Completado: Re-Arquitectura Estructural y Zero-UI (v2.8.2)
+## Completado: Transición Total a EDA y Pub/Sub (v2.9.0)
 
-- **Mapeo y Salud Base (Fase 1):**
-  - AST sincronizado exitosamente (1,638 nodos y 2,912 aristas).
-  - Identificadas comunidades principales, God Nodes e importaciones circulares en el Swarm V3.
-- **Higiene de Código (Fase 2 & Fase 5):**
-  - Eliminación física de **21 archivos de agentes heredados V2** completamente huérfanos.
-  - Generado reporte de huérfanos y duplicados en `scratch/fase2_findings.md`.
-- **Resolución de Ciclos Circulares (Fase 3 & Fase 5):**
-  - Disueltos los acoplamientos en el Swarm V3 al independizar `state-types.ts` del directorio de agentes especialistas.
-  - Evaluada la centralidad de red (Betweenness Centrality) de `closeDb()` y `runV3Pipeline()`. Reporte en `scratch/fase3_findings.md`.
-- **Visión Holística y Zero-UI (Fase 4):**
-  - Detectados silos funcionales en worksheets e interfaz React.
-  - Diseñadas 3 propuestas de automatización proactiva Zero-UI (Auto-Fill RAG, SSE Alerts, Auto-Healing PRs). Reporte en `scratch/fase4_findings.md`.
+- **EventHub y Pub/Sub:**
+  - Integrado `@google-cloud/pubsub` en el núcleo del sistema de eventos.
+  - El sistema enruta mensajes por la red con fallback automático a local in-memory.
+- **Refactorización Swarm V3:**
+  - Migrados los 20 agentes a un patrón pasivo (Listeners) guiado por AST.
+- **Pipeline SAGA:**
+  - El orquestador ejecuta flujos de forma dirigida por eventos, permitiendo escalabilidad distribuida real.
 
 ## Próximos Pasos (Arquitectura)
 
 1. **[ ] Implementar ServerLifecycleManager**: Desacoplar `closeDb()` de Express/mantenimiento mediante hooks de apagado centralizados.
-2. **[ ] Migrar runV3Pipeline a PipelineMediator**: Desacoplar la orquestación monolítica de agentes mediante una arquitectura dirigida por eventos (Event-Driven).
+2. **[x] Migrar runV3Pipeline a Arquitectura Dirigida por Eventos**: Integración SAGA + GCP Pub/Sub completada.
 3. **[ ] Conectar runWorksheetSynthesizer a la UI**: Implementar el autocompletado anticipativo Zero-UI en `WorksheetsPage.tsx` con RAG pre-flights.
 4. **[ ] Ingestar Knowledge Base**: Indexar los archivos Wharton disponibles llamando a `POST /api/knowledge/ingest`.
 5. **[ ] Producción y Escala**: Subir la rama a producción remota tras la remediación de la auditoría.

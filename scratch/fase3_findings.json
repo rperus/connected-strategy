@@ -1,0 +1,103 @@
+{
+  "highest_node": {
+    "id": "db_index_closedb",
+    "label": "closeDb()",
+    "source_file": "apps/server/src/db/index.ts",
+    "betweenness": 0.042212258395030566
+  },
+  "blast_radius_1_hop": 2,
+  "blast_radius_2_hop": 36,
+  "connected_components_split": 1,
+  "top_centrality": [
+    {
+      "id": "packages_agents_src_index_ts_src_index",
+      "label": "index.ts",
+      "file": "packages/agents/src/index.ts",
+      "score": 0.07821917243258468
+    },
+    {
+      "id": "packages_domain_src_index_ts_src_index",
+      "label": "index.ts",
+      "file": "packages/domain/src/index.ts",
+      "score": 0.06464641550466063
+    },
+    {
+      "id": "apps_server_src_index_ts_src_index",
+      "label": "index.ts",
+      "file": "apps/server/src/index.ts",
+      "score": 0.06016119785288278
+    },
+    {
+      "id": "db_index_closedb",
+      "label": "closeDb()",
+      "file": "apps/server/src/db/index.ts",
+      "score": 0.042212258395030566
+    },
+    {
+      "id": "v3_pipeline_orchestrator_runv3pipeline",
+      "label": "runV3Pipeline()",
+      "file": "packages/agents/src/v3/pipeline-orchestrator.ts",
+      "score": 0.04210057602086699
+    },
+    {
+      "id": "pipeline_routes",
+      "label": "routes.ts",
+      "file": "apps/server/src/modules/pipeline/routes.ts",
+      "score": 0.042076003636531245
+    },
+    {
+      "id": "apps_server_src_db_index_ts_db_index",
+      "label": "index.ts",
+      "file": "apps/server/src/db/index.ts",
+      "score": 0.0417783738814965
+    },
+    {
+      "id": "agents_causal_mapper",
+      "label": "causal-mapper.ts",
+      "file": "packages/agents/src/agents/causal-mapper.ts",
+      "score": 0.04134835599576662
+    },
+    {
+      "id": "apps_server_src_db_index_ts_db_index_getdb",
+      "label": "getDb()",
+      "file": "apps/server/src/db/index.ts",
+      "score": 0.04090612411934886
+    },
+    {
+      "id": "src_port_config_getprojectroot",
+      "label": "getProjectRoot()",
+      "file": "packages/runtime/src/port-config.ts",
+      "score": 0.04046775887073527
+    },
+    {
+      "id": "src_types_agentresult",
+      "label": "AgentResult",
+      "file": "packages/agents/src/types.ts",
+      "score": 0.03911907579235966
+    },
+    {
+      "id": "agents_causal_mapper_runcausalmapper",
+      "label": "runCausalMapper()",
+      "file": "packages/agents/src/agents/causal-mapper.ts",
+      "score": 0.038908132476287334
+    },
+    {
+      "id": "src_scheduler_runprojectautonomously",
+      "label": "runProjectAutonomously()",
+      "file": "apps/server/src/scheduler.ts",
+      "score": 0.03816613395708892
+    },
+    {
+      "id": "src_types_defaultscoringweights",
+      "label": "defaultScoringWeights()",
+      "file": "packages/domain/src/types.ts",
+      "score": 0.036406734120463045
+    },
+    {
+      "id": "src_scoring_computestrategicmetrics",
+      "label": "computeStrategicMetrics()",
+      "file": "packages/domain/src/scoring.ts",
+      "score": 0.03509180000368633
+    }
+  ]
+}
