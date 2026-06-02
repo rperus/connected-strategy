@@ -23,7 +23,7 @@ import { runHandoffPhase } from './handoff/index.js';
 import { saveHistoricalRun } from './db/index.js';
 import EventEmitter from 'events';
 import type { TelemetryEvent } from './state-types.js';
-import { runSyntheticConsultant } from '../agents/synthetic-consultant.js';
+import { registerWorksheetSynthesizer } from '../agents/synthetic-consultant.js';
 
 export interface RunV3Opts {
   runId: string;
@@ -167,6 +167,7 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   registerObservability(hub, ctx);
   registerTemporalAnalyst(hub, ctx);
   registerChiefStrategist(hub, ctx);
+  registerWorksheetSynthesizer(hub, ctx);
   
   await hub.publish({
     domain: 'lifecycle',
@@ -179,12 +180,12 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
   const phasesCompleted: string[] = [];
   const errors: Array<{ phase: string; message: string }> = [];
 
-  options.onProgress?.('0', 'Starting Pre-Flight Draft (SyntheticConsultant)...');
+  options.onProgress?.('0', 'Starting Pre-Flight Draft (WorksheetSynthesizer)...');
   try {
     const wsQuestions = ['What is the core business?', 'Who is the main customer?']; // Mock questions for WS01
-    const draft = await runSyntheticConsultant({ worksheetId: 'ws01', questions: wsQuestions }, ctx);
+    const draft = await executeAgent(hub, 'RUN_WORKSHEET_SYNTHESIZER', project.id, { worksheetId: 'ws01', questions: wsQuestions });
     state.wharton = state.wharton || {};
-    state.wharton.ws01 = { ...state.wharton.ws01, ...((draft.data as any) || {}) };
+    state.wharton.ws01 = { ...state.wharton.ws01, ...((draft.payload.data as any) || {}) };
     phasesCompleted.push('0');
     store.save(state);
     options.onProgress?.('0', 'Pre-Flight Draft Complete.');

@@ -13,6 +13,8 @@ export const api = {
   worksheetsByProject: (projectId: string) => `${API_BASE_URL}/api/worksheets/${projectId}`,
   worksheetAnswer: (projectId: string, worksheetId: string) =>
     `${API_BASE_URL}/api/worksheets/${projectId}/${worksheetId}`,
+  worksheetAutofill: (projectId: string, worksheetId: string) =>
+    `${API_BASE_URL}/api/worksheets/${projectId}/${worksheetId}/autofill`,
 
   // Analysis
   analysis: `${API_BASE_URL}/api/analysis/jobs`,

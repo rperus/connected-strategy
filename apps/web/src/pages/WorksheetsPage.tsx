@@ -259,6 +259,65 @@ export function WorksheetsPage() {
     });
   }
 
+  // ── Zero-UI Autofill ────────────────────────────────────────────────────────
+  const [autofilling, setAutofilling] = useState<Record<string, boolean>>({});
+  const [hasAutoFilled, setHasAutoFilled] = useState<Record<string, boolean>>({});
+
+  const handleAutofill = useCallback(async (ws: WorksheetDefinition) => {
+    const wsAnswers = allAnswers[ws.id] ?? {};
+    setAutofilling(prev => ({ ...prev, [ws.id]: true }));
+    try {
+      const questions = ws.sections.flatMap(s => s.questions.map(q => q.text));
+      const res = await fetch(api.worksheetAutofill(projectId, ws.id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questions })
+      });
+      const data = await res.json();
+      
+      if (data.ok && data.data) {
+        const newAnswers: Record<string, unknown> = { ...wsAnswers };
+        ws.sections.forEach(s => {
+          s.questions.forEach(q => {
+            const agentAnswer = data.data[q.text];
+            if (agentAnswer && agentAnswer.value && !agentAnswer.value.includes('Mock answer')) {
+              // Only overwrite if it's empty
+              if (!newAnswers[q.id]) {
+                newAnswers[q.id] = agentAnswer.value;
+              }
+            }
+          });
+        });
+
+        setAllAnswers(prev => {
+          const next = { ...prev, [ws.id]: newAnswers };
+          lsSave(next);
+          return next;
+        });
+        
+        await putAnswerToApi(projectId, ws.id, newAnswers);
+        showToast('🌟 Autocompletado Zero-UI con IA completado');
+        setStorageMode('sqlite');
+      }
+    } catch (e) {
+      console.warn('Autofill failed:', e);
+    } finally {
+      setAutofilling(prev => ({ ...prev, [ws.id]: false }));
+    }
+  }, [projectId, allAnswers, showToast]);
+
+  useEffect(() => {
+    const isReady = storageMode !== 'loading';
+    const isEmpty = completionPct(selected, allAnswers[selected.id] ?? {}) === 0;
+    const isFilling = autofilling[selected.id];
+    const hasFilled = hasAutoFilled[selected.id];
+    
+    if (isReady && isEmpty && !isFilling && !hasFilled) {
+      setHasAutoFilled(prev => ({ ...prev, [selected.id]: true }));
+      handleAutofill(selected);
+    }
+  }, [selected, storageMode, allAnswers, autofilling, hasAutoFilled, handleAutofill]);
+
   // ── Explicit save: PUT to API + update localStorage ───────────────────────
   async function handleSave() {
     setSaving(true);
@@ -442,8 +501,10 @@ export function WorksheetsPage() {
                   <textarea
                     className="ws-textarea"
                     value={(answers[q.id] as string) ?? ''}
-                    placeholder="Tu respuesta..."
+                    placeholder={autofilling[selected.id] ? '✨ Analizando Wharton knowledge base...' : "Tu respuesta..."}
                     onChange={(e) => setAnswer(q.id, e.target.value)}
+                    disabled={autofilling[selected.id]}
+                    style={autofilling[selected.id] ? { opacity: 0.7, background: 'var(--cs-surface-hover)' } : {}}
                   />
                 )}
 
@@ -525,8 +586,14 @@ export function WorksheetsPage() {
             alignItems: 'center',
           }}
         >
-
-          <button className="btn btn-secondary" onClick={handleClear}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => handleAutofill(selected)}
+            disabled={autofilling[selected.id]}
+          >
+            {autofilling[selected.id] ? '✨ Autocompletando...' : '🌟 Autocompletar con IA'}
+          </button>
+          <button className="btn btn-secondary" onClick={handleClear} disabled={autofilling[selected.id]}>
             Limpiar
           </button>
           <div style={{ fontSize: 12, color: 'var(--cs-text-muted)', alignSelf: 'center' }}>

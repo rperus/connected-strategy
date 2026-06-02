@@ -8,6 +8,7 @@ import express from 'express';
 import type { Request, Response, Router } from 'express';
 import type { WorksheetAnswer } from '@cs/domain';
 import { upsertAnswer, getAnswer, listAnswers, deleteAnswer } from '../../db/repositories/worksheets.js';
+import { EventHub, ProjectStateStore, getGeminiProvider, registerWorksheetSynthesizer } from '@cs/agents';
 
 const router: Router = express.Router();
 
@@ -63,6 +64,55 @@ router.delete('/:projectId/:worksheetId', (req: Request, res: Response) => {
     return;
   }
   res.json({ ok: true, message: 'Deleted' });
+});
+
+/**
+ * POST /api/worksheets/:projectId/:worksheetId/autofill
+ * Zero-UI RAG Autocomplete for worksheets.
+ * Executes the WorksheetSynthesizer via EventHub.
+ */
+router.post('/:projectId/:worksheetId/autofill', async (req: Request, res: Response) => {
+  try {
+    const store = new ProjectStateStore(process.cwd());
+    const hub = new EventHub(store);
+    
+    // Run in-memory for fast synchronous execution
+    // (no await hub.init() means it won't connect to GCP Pub/Sub for this local request)
+
+    const ctx = {
+      log: (msg: string) => console.log(`[RAG-Autofill] ${msg}`),
+      llm: getGeminiProvider(),
+    };
+
+    // 1. Register the agent
+    registerWorksheetSynthesizer(hub, ctx);
+
+    const questions = req.body.questions || [];
+
+    // 2. Set up a listener for the result
+    let result: any = null;
+    hub.subscribe('WORKSHEET_SYNTHESIZER_COMPLETED', (event: any) => {
+      result = event.payload.data;
+    });
+
+    // 3. Publish the command to trigger the agent
+    await hub.publish({
+      domain: 'command',
+      type: 'RUN_WORKSHEET_SYNTHESIZER',
+      projectId: req.params.projectId,
+      payload: { worksheetId: req.params.worksheetId, questions },
+      timestamp: Date.now()
+    });
+
+    if (result) {
+      res.json({ ok: true, data: result });
+    } else {
+      res.status(500).json({ ok: false, error: 'Synthesizer failed to yield result' });
+    }
+  } catch (err: any) {
+    console.error('Autofill error:', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 export default router;

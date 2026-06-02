@@ -1,5 +1,9 @@
 # Project Changelog
 
+## [v2.9.1] — 2026-06-03
+### Fixed
+- **Build & Test Stability**: Corregidos errores de tipos y fallos en la suite de pruebas unitarias causados por el refactor asíncrono del ciclo de vida en la arquitectura EDA (`@cs/agents` y `@cs/server`).
+
 ## [v2.9.0] — 2026-06-02
 ### Added
 - **Arquitectura Dirigida por Eventos (EDA)**: Implementación de topología Pub/Sub en todo el Swarm V3. El `EventHub` fue creado actuando como un gestor centralizado del estado.

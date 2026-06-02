@@ -61,17 +61,21 @@ describe('Chief Strategist', () => {
       };
 
       let publishedResult: any;
-      const hub = {
-        subscribe: async (type: string, handler: any) => {
-          await handler({ projectId: 'p1', payload: { state } });
-        },
-        publish: async (event: any) => {
-          publishedResult = event.payload;
-        },
-        updateState: () => {}
-      } as any;
-
-      registerChiefStrategist(hub, ctx);
+      await new Promise<void>((resolve) => {
+        const hub = {
+          subscribe: (type: string, handler: any) => {
+            // Run handler without blocking subscribe, but await it
+            Promise.resolve().then(() => handler({ projectId: 'p1', payload: { state } }));
+          },
+          publish: async (event: any) => {
+            publishedResult = event.payload;
+            resolve();
+          },
+          updateState: () => {}
+        } as any;
+        registerChiefStrategist(hub, ctx);
+      });
+      
       expect(publishedResult.success).toBe(false);
       expect(publishedResult.error?.includes('validation failed') || publishedResult.error?.includes('failed')).toBe(true);
     });
@@ -115,17 +119,20 @@ describe('Chief Strategist', () => {
       };
 
       let publishedResult: any;
-      const hub = {
-        subscribe: async (type: string, handler: any) => {
-          await handler({ projectId: 'p1', payload: { state } });
-        },
-        publish: async (event: any) => {
-          publishedResult = event.payload;
-        },
-        updateState: () => {}
-      } as any;
+      await new Promise<void>((resolve) => {
+        const hub = {
+          subscribe: (type: string, handler: any) => {
+            Promise.resolve().then(() => handler({ projectId: 'p1', payload: { state } }));
+          },
+          publish: async (event: any) => {
+            publishedResult = event.payload;
+            resolve();
+          },
+          updateState: () => {}
+        } as any;
+        registerChiefStrategist(hub, ctx);
+      });
 
-      registerChiefStrategist(hub, ctx);
       expect(publishedResult.success).toBe(true);
       expect(publishedResult.data?.executiveSummary).toBe('Exec');
     });
