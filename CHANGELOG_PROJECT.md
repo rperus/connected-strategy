@@ -1,6 +1,9 @@
 # Project Changelog
 
 ## [v2.9.1] — 2026-06-03
+### Added
+- **Transactional Outbox**: Implementación del patrón *In-Process EDA* con *Transactional Outbox* para el `EventHub` usando SQLite (`data/events_outbox.sqlite`). Aisla la integración con GCP Pub/Sub tras la variable `USE_GCP_PUBSUB=true`, evitando problemas de doble escritura en local.
+
 ### Fixed
 - **Build & Test Stability**: Corregidos errores de tipos y fallos en la suite de pruebas unitarias causados por el refactor asíncrono del ciclo de vida en la arquitectura EDA (`@cs/agents` y `@cs/server`).
 

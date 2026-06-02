@@ -14,6 +14,8 @@ export interface HubEvent<T = any> {
 
 export type EventHandler<T = any> = (event: HubEvent<T>) => Promise<void> | void;
 
+import { OutboxStore } from './outbox-store.js';
+
 export class EventHub {
   private subscribers: Map<string, EventHandler[]> = new Map();
   private store: ProjectStateStore;
@@ -23,10 +25,16 @@ export class EventHub {
   private topic?: Topic;
   private subscription?: Subscription;
   private initialized = false;
+  private outbox = new OutboxStore();
+  private pollerInterval?: NodeJS.Timeout;
 
   constructor(store: ProjectStateStore) {
     this.store = store;
     this.pubsub = new PubSub({ projectId: 'connected-strategy-local' }); // Local/default config
+    
+    if (process.env.USE_GCP_PUBSUB !== 'true') {
+      this.startPoller();
+    }
   }
 
   /**
@@ -35,6 +43,12 @@ export class EventHub {
   async init(): Promise<void> {
     if (this.initialized) return;
     
+    if (process.env.USE_GCP_PUBSUB !== 'true') {
+      console.log('✅ EventHub connected to Local Transactional Outbox (In-Process EDA)');
+      this.initialized = true;
+      return;
+    }
+
     try {
       [this.topic] = await this.pubsub.topic(this.topicName).get({ autoCreate: true });
       [this.subscription] = await this.topic.subscription(this.subscriptionName).get({ autoCreate: true });
@@ -61,8 +75,43 @@ export class EventHub {
       this.initialized = true;
       console.log('✅ EventHub connected to GCP Pub/Sub');
     } catch (err) {
-      console.warn('⚠️ Could not connect to GCP Pub/Sub. Running EventHub in-memory fallback.', err);
+      console.warn('⚠️ Could not connect to GCP Pub/Sub. Running EventHub with Local Outbox.', err);
+      this.startPoller();
     }
+  }
+
+  private startPoller() {
+    if (this.pollerInterval) return;
+    this.pollerInterval = setInterval(async () => {
+      try {
+        const pending = this.outbox.getPendingEvents(20);
+        for (const record of pending) {
+          try {
+            const event: HubEvent = {
+              domain: record.domain as EventDomain,
+              type: record.type,
+              projectId: record.projectId,
+              payload: JSON.parse(record.payload),
+              timestamp: record.timestamp
+            };
+            const handlers = this.subscribers.get(event.type) || [];
+            
+            // Execute handlers
+            if (handlers.length > 0) {
+              const promises = handlers.map(handler => Promise.resolve(handler(event)));
+              await Promise.all(promises);
+            }
+            
+            this.outbox.markAsProcessed(record.id);
+          } catch (err) {
+            console.error(`[EventHub] Error processing outbox event ${record.id}:`, err);
+            this.outbox.markAsFailed(record.id);
+          }
+        }
+      } catch (err) {
+        console.error('[EventHub] Outbox poller error:', err);
+      }
+    }, 1000); // 1-second polling
   }
 
   /**
@@ -79,15 +128,13 @@ export class EventHub {
    * Publish an event to all subscribers.
    */
   async publish<T = any>(event: HubEvent<T>): Promise<void> {
-    if (this.initialized && this.topic) {
+    if (process.env.USE_GCP_PUBSUB === 'true' && this.initialized && this.topic) {
       // Publish to GCP Pub/Sub
       const dataBuffer = Buffer.from(JSON.stringify(event));
       await this.topic.publishMessage({ data: dataBuffer, attributes: { eventType: event.type } });
     } else {
-      // In-memory fallback
-      const handlers = this.subscribers.get(event.type) || [];
-      const promises = handlers.map(handler => handler(event));
-      await Promise.all(promises);
+      // Transactional Outbox Fallback
+      this.outbox.insertEvent(event);
     }
   }
 
