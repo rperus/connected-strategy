@@ -15,9 +15,10 @@ import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { resolvePort, getProjectRoot } from '@cs/runtime';
-import { getDb, closeDb } from './db/index.js';
+import { getDb, closeDb, getCacheDb, SQLiteCacheStore } from './db/index.js';
 import { startScheduler, stopScheduler } from './scheduler.js';
 import { initTelemetryDb, broadcastEvent } from './services/telemetry.js';
+import { getProvider } from '@cs/agents';
 
 // ─── Load .env before anything else ────────────────────────────────────────
 import dotenv from 'dotenv';
@@ -72,6 +73,10 @@ app.use(express.json({ limit: '5mb' }));
 
 // ─── Initialize SQLite on startup ───────────────────────────────
 const database = getDb();
+const cacheDb = getCacheDb();
+const cacheStore = new SQLiteCacheStore(cacheDb);
+getProvider(cacheStore); // Inicializar singleton del LLM con persistencia
+
 
 try {
   const row = database.prepare('SELECT value FROM settings WHERE key = ?').get('GEMINI_API_KEY') as any;

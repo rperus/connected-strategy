@@ -29,8 +29,8 @@ export type {
 // Legacy V2 endpoints removed
 
 // ─── LLM Provider (opt-in enrichment) ─────────────────────────────────────────
-export { createGeminiProvider, getGeminiProvider } from './llm-provider.js';
-export type { LLMProvider } from './llm-provider.js';
+export { createGeminiProvider, getGeminiProvider, getProvider, createOpenAICompatibleProvider } from './llm-provider.js';
+export type { LLMProvider, LLMCacheStore } from './llm-provider.js';
 
 // ─── Gemini Enrichment (opt-in narrative / proposal enhancement) ──────────────
 export { enrichAnalystNarrative, enrichProposals, synthesizePortfolioInsight } from './gemini-enrichment.js';

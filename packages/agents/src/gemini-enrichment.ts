@@ -10,6 +10,7 @@
 
 import { getGeminiProvider } from './llm-provider.js';
 import type { AnalystFinding, AnalystReport } from './types.js';
+import { z } from 'zod';
 
 interface EnrichedNarrative {
   executiveSummary: string;
@@ -58,11 +59,11 @@ ${findingsSummary}
 
 Write a brief but insightful strategic analysis in Spanish. Be concrete, not generic.`;
 
-  const schema = `{
-  "executiveSummary": "2-3 sentence executive summary of the strategic situation",
-  "keyInsight": "The single most important strategic insight from these findings",
-  "strategicContext": "How these findings fit within the broader Connected Strategy framework (loop phases, WTP/cost lens)"
-}`;
+  const schema = z.object({
+    executiveSummary: z.string(),
+    keyInsight: z.string(),
+    strategicContext: z.string()
+  });
 
   const result = await llm.generateStructured<EnrichedNarrative>(prompt, schema, { temperature: 0.4 });
 
@@ -118,16 +119,14 @@ ${findingsList}
 Generate concrete, actionable improvement proposals in Spanish for each finding.
 Each proposal must have a clear technical action that can be implemented in 1-4 weeks.`;
 
-  const schema = `[
-  {
-    "title": "Short action title (max 60 chars)",
-    "rationale": "Why this specific action, and what strategic metric it moves",
-    "changeType": "feature|architecture|process|data|ui|infra|docs",
-    "priority": "high|medium|low",
-    "quickWin": "What can be done in 1 day to validate this direction",
-    "estimatedEffort": "rough estimate: e.g. '1 semana', '2-3 semanas'"
-  }
-]`;
+  const schema = z.array(z.object({
+    title: z.string(),
+    rationale: z.string(),
+    changeType: z.string(),
+    priority: z.enum(['high', 'medium', 'low']),
+    quickWin: z.string().optional(),
+    estimatedEffort: z.string().optional()
+  }));
 
   const result = await llm.generateStructured<EnrichedProposal[]>(prompt, schema, { temperature: 0.35 });
 

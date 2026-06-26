@@ -1,46 +1,67 @@
+import { LRUCache } from 'lru-cache';
+import crypto from 'crypto';
+import type { z } from 'zod';
+
 /**
- * @cs/agents — Gemini LLM Provider
- *
- * Opt-in enrichment for agents. Agents are deterministic by default.
- * This provider wraps @google/generative-ai for structured responses.
- *
- * Usage in any agent:
- *   const llm = createGeminiProvider(); // reads GEMINI_API_KEY from env
- *   const enriched = await llm.generate('Analyze this code for risks', { temperature: 0.3 });
+ * @cs/agents — LLM Provider
+ * 
+ * Provides connectivity to Gemini and OpenAI-compatible endpoints with:
+ * - Aggressive caching (in-memory fallback, overridable with SQLite)
+ * - Graceful degradation, timeouts, and automatic retries (Tier 2 rule)
+ * - Strict Zod validation on structured output
  */
 
-interface LLMResponse {
+export interface LLMResponse {
   text: string;
   tokenCount?: number;
   model: string;
   finishReason: string;
 }
 
+export interface LLMCacheStore {
+  get(key: string): LLMResponse | undefined | Promise<LLMResponse | undefined>;
+  set(key: string, value: LLMResponse): void | Promise<void>;
+}
+
 export interface LLMProvider {
   readonly model: string;
   readonly available: boolean;
   generate(prompt: string, opts?: { temperature?: number; maxTokens?: number; useSearch?: boolean }): Promise<LLMResponse>;
-  generateStructured<T>(prompt: string, schema: string, opts?: { temperature?: number }): Promise<T | null>;
+  generateStructured<T>(prompt: string, schema: z.ZodType<T>, opts?: { temperature?: number }): Promise<T | null>;
 }
 
-/**
- * Creates a Gemini LLM provider.
- * Returns a provider that gracefully degrades if GEMINI_API_KEY is not set.
- */
-import { LRUCache } from 'lru-cache';
-import crypto from 'crypto';
-
-const llmCache = new LRUCache<string, LLMResponse>({
+const _lru = new LRUCache<string, LLMResponse>({
   max: 500, // Maximum number of prompts to cache
   ttl: 1000 * 60 * 60 * 24, // 24 hour TTL
 });
+
+const fallbackCache: LLMCacheStore = {
+  get: (key: string) => _lru.get(key),
+  set: (key: string, value: LLMResponse) => { _lru.set(key, value); }
+};
 
 function hashPrompt(prompt: string, opts?: { temperature?: number; maxTokens?: number }): string {
   const data = JSON.stringify({ prompt, opts });
   return crypto.createHash('sha256').update(data).digest('hex');
 }
 
-export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvider {
+/** Utility: fetch with retry and backoff */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, baseDelay = 1000): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      if (attempt === maxRetries) {
+        throw err;
+      }
+      console.warn(`[LLM] Error (attempt ${attempt}/${maxRetries}): ${err.message}. Retrying in ${baseDelay * attempt}ms...`);
+      await new Promise((r) => setTimeout(r, baseDelay * attempt));
+    }
+  }
+  throw new Error('Unreachable');
+}
+
+export function createGeminiProvider(modelName = 'gemini-2.5-flash', cacheStore: LLMCacheStore = fallbackCache): LLMProvider {
   const apiKey = process.env.GEMINI_API_KEY ?? '';
   const forceOffline = process.env._CS_FORCE_OFFLINE === '1';
   const available = apiKey.length > 0 && !forceOffline;
@@ -59,7 +80,7 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
       }
 
       const cacheKey = hashPrompt(prompt, opts);
-      const cached = llmCache.get(cacheKey);
+      const cached = await cacheStore.get(cacheKey);
       if (cached) {
         console.log('[LLM Cache] ⚡️ Cache hit for prompt hash:', cacheKey.substring(0, 8));
         return cached;
@@ -82,7 +103,18 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
       let tokenCount = 0;
 
       try {
-        const result = await model.generateContent(prompt);
+        const result = await withRetry(async () => {
+          // Manual timeout wrapper
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(new Error("Timeout")), 30000);
+          
+          try {
+            return await model.generateContent(prompt);
+          } finally {
+            clearTimeout(timeoutId);
+          }
+        }, 3, 2000);
+        
         const response = result.response;
         text = response.text();
         finishReason = response.candidates?.[0]?.finishReason ?? 'unknown';
@@ -99,23 +131,29 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
         tokenCount,
       };
 
-      if (text) {
-        llmCache.set(cacheKey, out);
+      if (text && finishReason !== 'error_circuit_breaker') {
+        await cacheStore.set(cacheKey, out);
       }
       return out;
     },
 
-    async generateStructured<T>(prompt: string, schema: string, opts?: { temperature?: number }): Promise<T | null> {
-      const fullPrompt = `${prompt}\n\nRespond ONLY with valid JSON matching this schema:\n${schema}\n\nJSON:`;
+    async generateStructured<T>(prompt: string, schema: z.ZodType<T>, opts?: { temperature?: number }): Promise<T | null> {
+      const fullPrompt = `${prompt}\n\nRespond ONLY with valid JSON.\n\nJSON:`;
       const response = await this.generate(fullPrompt, { temperature: opts?.temperature ?? 0.2, maxTokens: 4096 });
 
-      if (!response.text) return null;
+      if (!response.text || response.finishReason === 'error_circuit_breaker') return null;
 
       try {
-        // Extract JSON from response (handles markdown code blocks)
         const jsonMatch = response.text.match(/```(?:json)?\s*([\s\S]*?)```/) ?? [null, response.text];
-        return JSON.parse(jsonMatch[1]!.trim()) as T;
-      } catch {
+        const rawJson = JSON.parse(jsonMatch[1]!.trim());
+        const parsed = schema.safeParse(rawJson);
+        if (parsed.success) {
+          return parsed.data;
+        } else {
+          console.warn('[LLM] Zod validation failed:', parsed.error.message);
+          return null; // Graceful degradation
+        }
+      } catch (err) {
         console.warn('[LLM] Failed to parse structured response:', response.text.substring(0, 200));
         return null;
       }
@@ -123,10 +161,7 @@ export function createGeminiProvider(modelName = 'gemini-2.5-flash'): LLMProvide
   };
 }
 
-/**
- * Creates an OpenAI-compatible LLM provider (e.g., for Lambda AI with vLLM, Llama, Qwen).
- */
-export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1-70B-Instruct'): LLMProvider {
+export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1-70B-Instruct', cacheStore: LLMCacheStore = fallbackCache): LLMProvider {
   const apiKey = process.env.LAMBDA_AI_API_KEY || process.env.OPENAI_API_KEY || '';
   const endpoint = process.env.LAMBDA_AI_ENDPOINT || process.env.OPENAI_API_BASE || 'https://api.openai.com/v1';
   const forceOffline = process.env._CS_FORCE_OFFLINE === '1';
@@ -146,7 +181,7 @@ export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1
       }
 
       const cacheKey = hashPrompt(prompt, opts);
-      const cached = llmCache.get(cacheKey);
+      const cached = await cacheStore.get(cacheKey);
       if (cached) {
         console.log('[LLM Cache] ⚡️ Cache hit for OpenAI prompt hash:', cacheKey.substring(0, 8));
         return cached;
@@ -157,25 +192,34 @@ export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1
       let tokenCount = 0;
 
       try {
-        const response = await fetch(`${endpoint.replace(/\/$/, '')}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: modelName,
-            messages: [{ role: 'user', content: prompt }],
-            temperature: opts?.temperature ?? 0.4,
-            max_tokens: opts?.maxTokens ?? 2048,
-          }),
-        });
+        const data = await withRetry(async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(new Error("Timeout")), 30000);
+          
+          try {
+            const res = await fetch(`${endpoint.replace(/\/$/, '')}/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: opts?.temperature ?? 0.4,
+                max_tokens: opts?.maxTokens ?? 2048,
+              }),
+            });
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+            }
+            return await res.json() as any;
+          } finally {
+            clearTimeout(timeoutId);
+          }
+        }, 3, 2000);
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-        }
-
-        const data = await response.json() as any;
         text = data.choices?.[0]?.message?.content || '';
         finishReason = data.choices?.[0]?.finish_reason || 'stop';
         tokenCount = data.usage?.total_tokens || 0;
@@ -191,21 +235,28 @@ export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1
         tokenCount,
       };
 
-      if (text) {
-        llmCache.set(cacheKey, out);
+      if (text && finishReason !== 'error_circuit_breaker') {
+        await cacheStore.set(cacheKey, out);
       }
       return out;
     },
 
-    async generateStructured<T>(prompt: string, schema: string, opts?: { temperature?: number }): Promise<T | null> {
-      const fullPrompt = `${prompt}\n\nRespond ONLY with valid JSON matching this schema:\n${schema}\n\nJSON:`;
+    async generateStructured<T>(prompt: string, schema: z.ZodType<T>, opts?: { temperature?: number }): Promise<T | null> {
+      const fullPrompt = `${prompt}\n\nRespond ONLY with valid JSON.\n\nJSON:`;
       const response = await this.generate(fullPrompt, { temperature: opts?.temperature ?? 0.2, maxTokens: 4096 });
 
-      if (!response.text) return null;
+      if (!response.text || response.finishReason === 'error_circuit_breaker') return null;
 
       try {
         const jsonMatch = response.text.match(/```(?:json)?\s*([\s\S]*?)```/) ?? [null, response.text];
-        return JSON.parse(jsonMatch[1]!.trim()) as T;
+        const rawJson = JSON.parse(jsonMatch[1]!.trim());
+        const parsed = schema.safeParse(rawJson);
+        if (parsed.success) {
+          return parsed.data;
+        } else {
+          console.warn('[LLM] Zod validation failed:', parsed.error.message);
+          return null;
+        }
       } catch {
         console.warn('[LLM] Failed to parse structured response:', response.text.substring(0, 200));
         return null;
@@ -214,21 +265,18 @@ export function createOpenAICompatibleProvider(modelName = 'meta-llama/Llama-3.1
   };
 }
 
-/**
- * Singleton provider instance for the entire server process.
- * Reads CS_LLM_PROVIDER to determine whether to use Gemini or OpenAI/Lambda.
- */
 let _singleton: LLMProvider | null = null;
 let _singletonOfflineState: string | undefined = undefined;
 
-export function getProvider(): LLMProvider {
+export function getProvider(cacheStore?: LLMCacheStore): LLMProvider {
   const currentOffline = process.env._CS_FORCE_OFFLINE;
-  if (!_singleton || _singletonOfflineState !== currentOffline) {
+  // If a cache store is passed, we explicitly re-init or init the singleton with it.
+  if (!_singleton || _singletonOfflineState !== currentOffline || cacheStore) {
     const providerType = process.env.CS_LLM_PROVIDER || 'gemini';
     if (providerType === 'lambda' || providerType === 'openai') {
-      _singleton = createOpenAICompatibleProvider(process.env.CS_LLM_MODEL || 'meta-llama/Llama-3.1-70B-Instruct');
+      _singleton = createOpenAICompatibleProvider(process.env.CS_LLM_MODEL || 'meta-llama/Llama-3.1-70B-Instruct', cacheStore);
     } else {
-      _singleton = createGeminiProvider(process.env.CS_LLM_MODEL || 'gemini-2.5-flash');
+      _singleton = createGeminiProvider(process.env.CS_LLM_MODEL || 'gemini-2.5-flash', cacheStore);
     }
     _singletonOfflineState = currentOffline;
   }

@@ -13,6 +13,7 @@ import { getProjectRoot } from '@cs/runtime';
 // ─── Singleton ────────────────────────────────────────────────────────────────
 
 let db: Database.Database | null = null;
+let cacheDb: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (db) return db;
@@ -36,6 +37,44 @@ export function closeDb(): void {
   if (db) {
     db.close();
     db = null;
+  }
+  if (cacheDb) {
+    cacheDb.close();
+    cacheDb = null;
+  }
+}
+
+export function getCacheDb(): Database.Database {
+  if (cacheDb) return cacheDb;
+
+  const dbPath = resolve(getProjectRoot(), 'data', 'llm_cache.db');
+  cacheDb = new Database(dbPath);
+
+  cacheDb.pragma('journal_mode = WAL');
+  cacheDb.pragma('foreign_keys = ON');
+  cacheDb.pragma('busy_timeout = 5000');
+
+  cacheDb.exec(`
+    CREATE TABLE IF NOT EXISTS llm_cache (
+      hash TEXT PRIMARY KEY,
+      response TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+  `);
+
+  console.log(`[CS-DB] SQLite LLM Cache ready at ${dbPath}`);
+  return cacheDb;
+}
+
+export class SQLiteCacheStore {
+  constructor(private db: Database.Database) {}
+  get(key: string) {
+    const row = this.db.prepare('SELECT response FROM llm_cache WHERE hash = ?').get(key) as any;
+    if (row) return JSON.parse(row.response);
+    return undefined;
+  }
+  set(key: string, value: any) {
+    this.db.prepare('INSERT OR REPLACE INTO llm_cache (hash, response) VALUES (?, ?)').run(key, JSON.stringify(value));
   }
 }
 

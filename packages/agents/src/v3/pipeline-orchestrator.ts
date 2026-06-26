@@ -111,7 +111,7 @@ export async function runV3Pipeline(opts: RunV3Opts): Promise<void> {
           const injectedPrompt = fullContext ? `=== PROJECT CONTEXT ===\n${fullContext}\n=======================\n\n${prompt}` : prompt;
           return baseLlm.generate(injectedPrompt, opts);
         },
-        generateStructured: async (prompt: string, schema: string, opts?: any) => {
+        generateStructured: async (prompt: string, schema: any, opts?: any) => {
           const injectedPrompt = fullContext ? `=== PROJECT CONTEXT ===\n${fullContext}\n=======================\n\n${prompt}` : prompt;
           return baseLlm.generateStructured(injectedPrompt, schema, opts);
         }

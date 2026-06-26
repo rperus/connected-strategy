@@ -1,4 +1,30 @@
+---
+type: context
+---
 # Project Changelog
+
+## [v2.9.5] — 2026-06-26
+### Added
+- **Persistencia de Caché LLM**: Implementada base de datos SQLite específica para el caché (`llm_cache.db`), previniendo llamadas repetitivas costosas a APIs externas y compartiendo el caché entre procesos.
+- **Graceful Degradation en LLM**: Añadido lógica estricta de `withRetry` (3 reintentos) y `timeout` (30s) en `packages/agents/src/llm-provider.ts` para manejar fallos de APIs externas de forma segura.
+- **Validación Estricta (Zod)**: Todas las llamadas a `generateStructured` ahora requieren esquemas de validación rigurosos de `z.ZodType`, protegiendo la base de datos de JSON malformados (aplicado en `gemini-enrichment.ts` y `manifest-builder.ts`).
+- **Backup de Bases de Datos en Caliente**: Creado el script `scripts/backup-db.ts` utilizando la API nativa de Better-SQLite3 para realizar copias de seguridad consistentes en caliente (`npm run db:backup`).
+
+## [v2.9.4] — 2026-06-21
+### Added
+- **OKF Documentation Migration**: Migración masiva de la documentación de todo el repositorio al estándar Open Knowledge Format (OKF). Se inyectó automáticamente un bloque de metadatos YAML frontmatter al inicio de 120 archivos `.md` basándose en su ubicación jerárquica para habilitar ingestas determinísticas de contexto para los agentes.
+
+## [v2.9.3] — 2026-06-03
+### Changed
+- **Separación de Definiciones de Worksheets**: Extraídas las 15 definiciones de worksheets (WS01-WS15) del paquete `@cs/domain` en módulos individuales bajo la carpeta `worksheets/`, manteniendo `worksheets.ts` como entrypoint con retrocompatibilidad.
+- **Refactorización de WorksheetsPage**: Extraídos componentes (`ProjectSelector`, `StorageBadge`, `Toast`) y encapsulado el estado y efectos en el custom hook `useWorksheetState.ts` bajo la carpeta `apps/web/src/pages/worksheets/`.
+- **Refactorización de AgentOrchestratorPage**: Separada la interfaz en subcomponentes modulares (`AgentFilters`, `OrchestrationCanvas` para el SVG, y `AgentDetailsSidebar` para los metadatos de los agentes) bajo la carpeta `apps/web/src/pages/agents/`.
+
+## [v2.9.2] — 2026-06-02
+### Added
+- **PDF Extraction & Ingestion**: Se integró la biblioteca `pdf-parse` (fork moderno TS v2) en el paquete `@cs/agents` para extraer contenido directamente de documentos PDF.
+- **Noise Scrubbing / Limpieza Heurística**: Creado el módulo `pdfParser.ts` con heurísticas para limpiar cabeceras, pies de página redundantes, números de página y maquetaciones de PDF rotas, agrupando oraciones en párrafos limpios compatibles con RAG.
+- **Automatización de Ingesta**: Creado el script `clean-and-ingest-pdfs.ts` para automatizar la extracción de texto, la limpieza y la indexación en SQLite FTS5 de todos los PDFs en `data/knowledge/` (mapeando de forma inteligente `worksheets.pdf` a `WorkSheet_Todas.txt`).
 
 ## [v2.9.1] — 2026-06-03
 ### Added

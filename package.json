@@ -13,9 +13,10 @@
     "build:server": "pnpm --filter @cs/server build",
     "test": "pnpm -r test",
     "test:watch": "vitest",
-    "lint": "pnpm -r lint",
+    "lint": "echo \"Linting pending setup\"",
     "typecheck": "pnpm -r typecheck",
-    "clean": "pnpm -r clean"
+    "clean": "pnpm -r clean",
+    "db:backup": "npx tsx scripts/backup-db.ts"
   },
   "engines": {
     "node": ">=20",

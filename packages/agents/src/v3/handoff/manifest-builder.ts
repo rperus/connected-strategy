@@ -31,27 +31,10 @@ NO incluyas archivos que no existen sin marcarlos como files_to_create.
 NO inventes paths.
 Responde con JSON puro matching MoveManifestSchema.`;
 
-  const parsed = await ctx.llm.generateStructured(prompt, JSON.stringify({
-    type: 'object',
-    properties: {
-      moveId: { type: 'string' },
-      title: { type: 'string' },
-      wharton_basis: { type: 'array', items: { type: 'string' } },
-      frontier_impact: { type: 'object', properties: { wtp_delta: { type: 'number' }, cost_delta: { type: 'number' } } },
-      files_to_create: { type: 'array', items: { type: 'object', properties: { path: { type: 'string' }, purpose: { type: 'string' } } } },
-      files_to_edit: { type: 'array', items: { type: 'object', properties: { path: { type: 'string' }, lines: { type: 'string' }, change: { type: 'string' } } } },
-      files_to_delete: { type: 'array', items: { type: 'object', properties: { path: { type: 'string' }, reason: { type: 'string' } } } },
-      dependencies_to_add: { type: 'array', items: { type: 'string' } },
-      dependencies_to_remove: { type: 'array', items: { type: 'string' } },
-      estimated_loc: { type: 'number' },
-      estimated_hours: { type: 'number' },
-      references: { type: 'object', properties: { worksheets: { type: 'array', items: { type: 'string' } }, findings: { type: 'array', items: { type: 'string' } } } },
-    }
-  }));
+  const parsed = await ctx.llm.generateStructured(prompt, manifestSchema);
 
   if (parsed) {
-    const valid = manifestSchema.safeParse(parsed);
-    if (valid.success) return valid.data;
+    return parsed;
   }
 
   // fallback

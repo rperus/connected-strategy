@@ -1,40 +1,68 @@
+---
+type: context
+---
 # Current State
 
-> Date: 2026-06-01
-> Version: 2.8.2 "Structural Re-Architecture & Zero-UI"
+> Date: 2026-06-26
+> Version: 2.9.5 "Tier 2 Production Readiness"
 > Coordinator: Cerebro
-> Active Wave: Code Hygiene & Structural Refactor
+> Active Wave: Launch Readiness
 
-## Platform Status — v2.8.2
+## Platform Status — v2.9.5
 
 | Check | Result |
 |---|---|
 | Security | ✅ 0 High/Moderate CVEs, Command Injections mitigated |
 | Architecture | ✅ 0 Circular Dependencies (V3 Broken Cycles) |
 | Web Bundle | ✅ Code-split (240kB initial) + Skeletons |
-| Stability | ✅ Rate limits, Zod runtime checks, Health ping |
+| Stability | ✅ Rate limits, Zod runtime checks, Graceful Degradation |
+| Caching | ✅ LLM SQLite Cache, timeout 30s, Retry 3x |
 |---|---|
 | pnpm --filter @cs/domain typecheck | ✅ 0 errors |
 | pnpm --filter @cs/agents typecheck | ✅ 0 errors |
+| pnpm --filter @cs/server typecheck | ✅ 0 errors |
 | pnpm --filter @cs/web typecheck | ✅ 0 errors |
 | Worksheets | ✅ 15 worksheets (WS01-WS15) |
 | Agents | ✅ 3 active agents (Swarm V3 modular) |
 | Interactive Pages | ✅ 33 pages |
 | Swarm Engine | ✅ Mediator event-ready orquestación |
-| **RAG Pipeline** | ✅ **SQLite FTS5 — real knowledge base** |
+| **RAG Pipeline** | ✅ **SQLite FTS5 — PDF Ingestion & Cleaning** |
 | **Knowledge API** | ✅ **6 endpoints at /api/knowledge/*** |
 | **Lambda Scripts** | ✅ **Benchmark + Training Data generators** |
 | **Open Source Harness** | ✅ **OpenAI provider + Semantic Reviewer + Thinking tags** |
 
-## What Changed: v2.8.1 → v2.8.2
+## What Changed: v2.9.4 → v2.9.5
 
-### v2.8.2 — Structural Re-Architecture & Zero-UI
-- **Higiene de Código**: Remoción física de **21 archivos de agentes legados V2** en `packages/agents/src/agents/` que se encontraban totalmente huérfanos y en desuso tras la migración al Swarm V3.
-- **Acoplamiento Cero en Tipos**: Rompimos la circularidad estructural del Swarm V3 al mover las definiciones de salida (`RevenueModelArchitectOutput`, `TemporalTrend`, `TemporalAnalystOutput`) directamente a `state-types.ts`, desligando la base de datos de estado del directorio de agentes especialistas.
-- **Auditoría e Inteligencia de Red**: Generación de 3 reportes exhaustivos basados en grafos interactivos en `scratch/`:
-  - `fase2_findings.md` (Huérfanos y duplicidad lógica).
-  - `fase3_findings.md` (Fragilidad de red y propuestas de Lifecycle/Mediator).
-  - `fase4_findings.md` (Silos UI-to-AI y 3 flujos Zero-UI anticipativos).
+### v2.9.5 — Tier 2 Production Readiness
+- **Persistencia de Caché LLM**: Implementada base de datos SQLite específica para el caché (`llm_cache.db`), previniendo llamadas repetitivas costosas a APIs externas y compartiendo el caché entre procesos.
+- **Graceful Degradation en LLM**: Añadido lógica estricta de `withRetry` (3 reintentos) y `timeout` (30s) en `packages/agents/src/llm-provider.ts` para manejar fallos de APIs externas de forma segura.
+- **Validación Estricta (Zod)**: Todas las llamadas a `generateStructured` ahora requieren esquemas de validación rigurosos de `z.ZodType`, protegiendo la base de datos de JSON malformados.
+- **Backup de Bases de Datos en Caliente**: Creado el script `scripts/backup-db.ts` para realizar copias de seguridad consistentes sin apagar el servidor (`npm run db:backup`).
+
+## What Changed: v2.9.3 → v2.9.4
+
+### v2.9.4 — OKF Documentation Migration
+- **Migración de Documentación al estándar OKF**: Migrados recursivamente 120 archivos de documentación y configuración en formato Markdown (`.md`) al estándar Open Knowledge Format, inyectando un bloque de metadatos YAML frontmatter al inicio con la propiedad `type` asignada según la estructura de directorios del proyecto.
+
+## What Changed: v2.9.2 → v2.9.3
+
+### v2.9.3 — God Files Split & Modular Refactoring
+- **Separación de Definiciones de Worksheets**: Extraídas las 15 definiciones de worksheets (WS01-WS15) del paquete `@cs/domain` en módulos individuales bajo la carpeta `worksheets/`, manteniendo `worksheets.ts` como entrypoint con retrocompatibilidad.
+- **Refactorización de WorksheetsPage**: Extraídos componentes (`ProjectSelector`, `StorageBadge`, `Toast`) y encapsulado el estado y efectos en el custom hook `useWorksheetState.ts`.
+- **Refactorización de AgentOrchestratorPage**: Separada la interfaz en subcomponentes modulares (`AgentFilters`, `OrchestrationCanvas` para el SVG, y `AgentDetailsSidebar`), reduciendo drásticamente la complejidad y tamaño de los archivos UI.
+
+## What Changed: v2.9.1 → v2.9.2
+
+### v2.9.2 — PDF Extraction, Cleaning & RAG Ingestion
+- **PDF Extraction**: Integrada la dependencia `pdf-parse` en el paquete `@cs/agents` y configurado un flujo de lectura para archivos PDF.
+- **Limpieza de Basura (Noise Scrubbing)**: Creado `pdfParser.ts` con heurísticas para limpiar cabeceras/pies de página repetitivos, números de página, caracteres de maquetación y reconstruir párrafos uniendo líneas rotas.
+- **Script de Ingesta Automatizada**: Creado `scripts/clean-and-ingest-pdfs.ts` que escanea `data/knowledge/`, limpia los archivos `.pdf` y los guarda como archivos `.txt` limpios, indexándolos directamente en la base de datos SQLite FTS5 de RAG.
+
+## What Changed: v2.8.2 → v2.9.1
+
+### v2.9.1 — Transactional Outbox
+- **Transactional Outbox**: Implementación del patrón *In-Process EDA* con *Transactional Outbox* para el `EventHub` usando SQLite (`data/events_outbox.sqlite`).
+- **Build & Test Stability**: Corregidos errores de tipos y fallos en la suite de pruebas unitarias causados por el refactor asíncrono del ciclo de vida en la arquitectura EDA.
 
 ## What Changed: v2.8.0 → v2.8.1
 
