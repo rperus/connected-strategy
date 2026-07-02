@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 07 — Route + UI Wiring (Final Phase)
 
 **Goal:** Montar el endpoint `POST /api/pipeline/run-v3` que orquesta las 7 phases

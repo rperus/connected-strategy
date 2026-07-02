@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-03 Analysis Orchestrator And Agents
 
 ```

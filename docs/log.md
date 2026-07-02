@@ -1,0 +1,165 @@
+---
+type: changelog
+title: Documentation Update Log
+description: Chronological log of created, modified, and deleted concepts.
+timestamp: '2026-06-29T05:51:57Z'
+---
+
+# Directory Update Log
+## 2026-07-02
+* **Creation**: Creado concepto [2026-06-10_SUPER_AUDIT_PHASE1](/references/2026-06-10_SUPER_AUDIT_PHASE1.md).
+* **Auto-doc**: Sincronizados esquemas de base de datos y consultas SQL.
+* **Auto-doc**: Actualizado catálogo de endpoints de API.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+## 2026-06-30
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+## 2026-06-29
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.
+## 2026-06-27
+* **Deprecation**: Eliminado concepto obsoleto `00_master_execution_plan`.
+* **Deprecation**: Eliminado concepto obsoleto `01_parallel_task_sets`.
+* **Deprecation**: Eliminado concepto obsoleto `02_project_state_rhythm`.
+* **Deprecation**: Eliminado concepto obsoleto `03_antigravity_operating_model`.
+* **Deprecation**: Eliminado concepto obsoleto `AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY`.
+* **Deprecation**: Eliminado concepto obsoleto `PRODUCTION_READINESS_BACKLOG`.
+* **Deprecation**: Eliminado concepto obsoleto `AGENT_MANAGER_CEREBRO_WORKFLOW`.
+* **Deprecation**: Eliminado concepto obsoleto `OPERATOR_DEPLOY_CHECKLIST`.
+* **Deprecation**: Eliminado concepto obsoleto `PORT_REGISTRY_POLICY`.
+* **Deprecation**: Eliminado concepto obsoleto `2026-05-18-v3-revenue-architect`.

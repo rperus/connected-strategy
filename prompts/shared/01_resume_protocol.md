@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # Resume Protocol
 
 Antes de empezar cualquier set:

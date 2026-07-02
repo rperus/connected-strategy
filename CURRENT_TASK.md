@@ -1,10 +1,18 @@
+---
+type: context
+---
 # Current Task
 
-**Date:** 2026-06-02
+**Date:** 2026-06-21
 - **Status**: COMPLETADA
-- **Fecha**: 2026-06-02 (EDA & GCP Pub/Sub Integration)
+- **Fecha**: 2026-06-21 (OKF Documentation Migration)
 
-## Completado: Transición Total a EDA y Pub/Sub (v2.9.0)
+## Completado: Migración de Documentación al estándar OKF (v2.9.4)
+
+- **Estandarización de Contexto:** Migrados 120 archivos `.md` del proyecto inyectando un bloque de metadatos YAML frontmatter con el tipo lógico asignado según la carpeta correspondiente.
+- **Higiene:** Diseñado, ejecutado y posteriormente eliminado el script de migración temporal `scripts/scratch/migrate-okf.ts`.
+
+## Completado Anterior: Transición Total a EDA y Pub/Sub (v2.9.0)
 
 - **EventHub y Pub/Sub:**
   - Integrado `@google-cloud/pubsub` en el núcleo del sistema de eventos.
@@ -18,9 +26,10 @@
 
 1. **[x] Implementar ServerLifecycleManager**: Desacoplar `closeDb()` de Express/mantenimiento mediante hooks de apagado centralizados.
 2. **[x] Migrar runV3Pipeline a Arquitectura Dirigida por Eventos**: Integración SAGA + GCP Pub/Sub completada.
-3. **[ ] Conectar runWorksheetSynthesizer a la UI**: Implementar el autocompletado anticipativo Zero-UI en `WorksheetsPage.tsx` con RAG pre-flights.
-4. **[ ] Ingestar Knowledge Base**: Indexar los archivos Wharton disponibles llamando a `POST /api/knowledge/ingest`.
-5. **[ ] Producción y Escala**: Subir la rama a producción remota tras la remediación de la auditoría.
+3. **[x] Limpieza de Código e Higiene (God Files)**: Divididos `worksheets.ts`, `WorksheetsPage.tsx` y `AgentOrchestratorPage.tsx` en módulos y hooks independientes.
+4. **[ ] Conectar runWorksheetSynthesizer a la UI**: Implementar el autocompletado anticipativo Zero-UI en `WorksheetsPage.tsx` con RAG pre-flights.
+5. **[x] Ingestar Knowledge Base**: Indexar y limpiar automáticamente archivos PDF y texto de Wharton en `data/knowledge` con el nuevo `clean-and-ingest-pdfs.ts`.
+6. **[ ] Producción y Escala**: Subir la rama a producción remota tras la remediación de la auditoría.
 
 ## Próximos Pasos (Lambda)
 

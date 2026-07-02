@@ -1,3 +1,6 @@
+---
+type: documentation
+---
 # Connected Strategy — Training Data Generator
 
 > Genera datos de entrenamiento para fine-tunear un modelo experto en Connected Strategy usando QLoRA en Lambda AI.

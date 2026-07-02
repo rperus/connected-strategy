@@ -1,3 +1,6 @@
+---
+type: context
+---
 # 🏗️ Connected Strategy — Super Audit Report v2
 
 > **Date:** 2026-05-18

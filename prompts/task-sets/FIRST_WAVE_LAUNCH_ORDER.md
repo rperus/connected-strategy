@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # First Wave Launch Order
 
 ## Paso 1

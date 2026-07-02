@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 📈 Reporte de Estrategia Conectada (Business Audit)
 
 > **Fecha:** 2026-05-29

@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 Continue from the existing Connected_Strategy repo state; do not redesign the project from scratch.
 
 Use `agent-manager-cerebro` and `project-state-rhythm` if they are available in your environment.

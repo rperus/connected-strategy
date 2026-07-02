@@ -1,3 +1,6 @@
+---
+type: scratch
+---
 # Reporte de Fragilidad del Sistema y Objetos "Dios" (Fase 3)
 
 Este reporte analiza los cuellos de botella de la arquitectura y la centralidad de la red en la plataforma `Connected_Strategy`. 

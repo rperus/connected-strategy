@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 02 — Persistent Project Memory
 
 **Goal:** Reemplazar `cachedDeepResults` (RAM, vida = 1 proceso) con storage en disco

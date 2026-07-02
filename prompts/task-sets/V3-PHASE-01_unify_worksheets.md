@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 01 — Unify Worksheet Schema (Wharton 1-a-1)
 
 **Goal:** Reemplazar las definiciones inventadas de v2 con un schema canónico que mapea

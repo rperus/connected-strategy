@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 🧹 Auditoría 6: Higiene de Código (Node.js/React Stack)
 
 ## 1. Resumen Ejecutivo

@@ -1,3 +1,6 @@
+---
+type: scratch
+---
 # Checklist Auditoría User Settings — Connected Strategy
 
 ## Phase 0: Auto-detection

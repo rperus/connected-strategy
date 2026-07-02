@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 📊 Auditoría Customer Success — Connected Strategy
 
 **Fecha:** 2026-05-29

@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-00 Program Director And State Keeper
 
 Lee primero:

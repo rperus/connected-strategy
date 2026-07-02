@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-07 Desktop Shell, Icons And Shortcuts
 
 ```

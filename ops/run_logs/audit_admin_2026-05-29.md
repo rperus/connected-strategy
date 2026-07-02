@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 🏢 Auditoría Admin Panel — Connected Strategy
 
 **Fecha:** 2026-05-29T16:02:57-06:00

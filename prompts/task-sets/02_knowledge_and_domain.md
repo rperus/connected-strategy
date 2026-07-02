@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-02 Knowledge And Domain Engine
 
 ```

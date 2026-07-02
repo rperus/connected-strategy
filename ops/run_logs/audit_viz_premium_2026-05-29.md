@@ -1,3 +1,6 @@
+---
+type: log
+---
 ## 📊 Visualization Premium Audit — Connected Strategy
 
 ### 1. Resumen Ejecutivo

@@ -1,3 +1,6 @@
+---
+type: log
+---
 # ☁️ Auditoría 2B: Infraestructura Operativa — Reporte Final
 
 **Fecha:** 2026-05-29

@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # Codex Plan Or Execute Rule
 
 Usa esta regla cada vez que generes una mejora o una tarea derivada:

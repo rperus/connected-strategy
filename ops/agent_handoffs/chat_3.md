@@ -1,3 +1,6 @@
+---
+type: context
+---
 # Chat 3 Handoff — Wave 5 / Electron Dynamic URL
 
 ```

@@ -16,3 +16,10 @@ data/
 Thumbs.db
 .idea/
 .vscode/
+
+# Shared OKF GDrive memories (Windows Junctions)
+docs/memories/investigations/
+docs/memories/business_plans/
+docs/memories/competition/
+docs/memories/meetings/
+docs/memories/wharton/

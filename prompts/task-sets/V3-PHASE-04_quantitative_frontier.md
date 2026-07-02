@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 04 — Quantitative Frontier Engine
 
 **Goal:** Reemplazar el campo `frontierOpportunity: string` (texto libre que la LLM

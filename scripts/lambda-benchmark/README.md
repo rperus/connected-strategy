@@ -1,3 +1,6 @@
+---
+type: documentation
+---
 # Lambda Benchmark — Connected Strategy
 
 Benchmark the Connected Strategy V3 pipeline agents against open-source models

@@ -1,3 +1,6 @@
+---
+type: context
+---
 # Connected_Strategy Execution Pack
 
 Este workspace contiene el paquete de ejecucion para construir la plataforma `Connected_Strategy` con Antigravity y agent manager, manteniendo todo bajo `C:\dev\Connected_Strategy`.

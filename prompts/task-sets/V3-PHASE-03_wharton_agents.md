@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 03 — Wharton Agents (6) + Code Quality Swarm (7)
 
 **Goal:** Construir los 13 agentes especializados que producen los outputs estructurados

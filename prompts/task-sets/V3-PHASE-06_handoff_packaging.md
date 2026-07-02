@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 06 — Antigravity Handoff Packaging
 
 **Goal:** Por cada `topPriority` del sintetizador, generar 4 archivos estructurados en

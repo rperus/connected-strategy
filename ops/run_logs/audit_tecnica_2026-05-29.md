@@ -1,3 +1,6 @@
+---
+type: log
+---
 # ⚙️ REPORTE DE AUDITORÍA 3: TÉCNICA (Orquestador Técnico)
 
 > **Fecha:** 2026-05-29

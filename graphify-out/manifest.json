@@ -75,9 +75,9 @@
     "semantic_hash": "cd403ac8afaed93f60239b9cfa882e5f"
   },
   "C:\\dev\\Connected_Strategy\\apps\\server\\src\\index.ts": {
-    "mtime": 1780127583.6358476,
-    "ast_hash": "54cce2d17989dc5253535d5edae5af2f",
-    "semantic_hash": "54cce2d17989dc5253535d5edae5af2f"
+    "mtime": 1780361967.8565903,
+    "ast_hash": "24f942040a4be4672e6c0f73793f1642",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\apps\\server\\src\\middleware\\auth.ts": {
     "mtime": 1779610581.699857,
@@ -160,9 +160,9 @@
     "semantic_hash": "b2deeec2a61d05eb2615f309abd0ba74"
   },
   "C:\\dev\\Connected_Strategy\\apps\\server\\src\\modules\\worksheets\\routes.ts": {
-    "mtime": 1776897252.7518504,
-    "ast_hash": "76705647451e9a75688dc77789f23587",
-    "semantic_hash": "76705647451e9a75688dc77789f23587"
+    "mtime": 1780362359.680373,
+    "ast_hash": "be1760e99368108c64edd193f112bcc5",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\apps\\server\\src\\scheduler.ts": {
     "mtime": 1779258345.404246,
@@ -255,9 +255,9 @@
     "semantic_hash": "8b176bf967241287f5b41673a8eb95c4"
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\config.ts": {
-    "mtime": 1779490695.620042,
-    "ast_hash": "60078ce29fc6aef088448778da8cc808",
-    "semantic_hash": "60078ce29fc6aef088448778da8cc808"
+    "mtime": 1780362291.4821796,
+    "ast_hash": "28b9e4afecdcc3a7cf482b2558a9c1eb",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\config\\agents.ts": {
     "mtime": 1779255634.7624695,
@@ -300,9 +300,9 @@
     "semantic_hash": "5c3735e97df0f328d0599979eaa55f26"
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\AgentOrchestratorPage.tsx": {
-    "mtime": 1779255657.2674656,
-    "ast_hash": "6b397f978689b6e13b728f5344cc1f62",
-    "semantic_hash": "6b397f978689b6e13b728f5344cc1f62"
+    "mtime": 1780473180.4270675,
+    "ast_hash": "94f99cca7a5997af7b137e5f2d7545e4",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\ArchitecturePage.tsx": {
     "mtime": 1779256146.559692,
@@ -440,9 +440,9 @@
     "semantic_hash": "2fb60e0627eebb889a065c0c81545c3c"
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\WorksheetsPage.tsx": {
-    "mtime": 1780097201.9271176,
-    "ast_hash": "e52fdedb8fcb00e2b2433b01dbd4dbd9",
-    "semantic_hash": "e52fdedb8fcb00e2b2433b01dbd4dbd9"
+    "mtime": 1780473143.1456904,
+    "ast_hash": "2dfe786986b7be26b1a358c8800440dc",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\v3\\V3Dashboard.tsx": {
     "mtime": 1779610764.7512853,
@@ -480,9 +480,9 @@
     "semantic_hash": "e9f01af6906b8dce754250f81acb5d8a"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\package.json": {
-    "mtime": 1779209378.6593995,
-    "ast_hash": "21f6c39e99bfe3051ff5fa9ad5d6e7c2",
-    "semantic_hash": "21f6c39e99bfe3051ff5fa9ad5d6e7c2"
+    "mtime": 1780376315.1316547,
+    "ast_hash": "29b7e59dc3009c37547a9e40968d0dc2",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\agents\\batch-reporter.ts": {
     "mtime": 1779178146.813582,
@@ -495,9 +495,9 @@
     "semantic_hash": "554cb97a1d68e12cd9bce116825d105f"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\agents\\synthetic-consultant.ts": {
-    "mtime": 1780127604.7582397,
-    "ast_hash": "aa9efc6f9e6ce6318ccc0ce0f5984d46",
-    "semantic_hash": "aa9efc6f9e6ce6318ccc0ce0f5984d46"
+    "mtime": 1780362212.9641852,
+    "ast_hash": "117e796cd73150e8262ef3f7c17dc424",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\gemini-enrichment.ts": {
     "mtime": 1776899073.2140472,
@@ -505,9 +505,9 @@
     "semantic_hash": "b209423d0b69f09b5e2cddefdb2e8088"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\index.ts": {
-    "mtime": 1780127625.1566403,
-    "ast_hash": "47a61809619afd4725d384be7a9b4dc7",
-    "semantic_hash": "47a61809619afd4725d384be7a9b4dc7"
+    "mtime": 1780362353.7802863,
+    "ast_hash": "326fbd6656ea112d0b4f9a58801496fb",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\llm-provider.ts": {
     "mtime": 1780202954.6464603,
@@ -540,14 +540,14 @@
     "semantic_hash": "6e32f4537f1d02508ca578c39ba23de4"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\__tests__\\agents.test.ts": {
-    "mtime": 1779209341.0579424,
-    "ast_hash": "86ac83caaff23c15901ff9d890f5dd83",
-    "semantic_hash": "86ac83caaff23c15901ff9d890f5dd83"
+    "mtime": 1780361168.847429,
+    "ast_hash": "a95202b949ed614ada5569d3cccd806c",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\__tests__\\chief-strategist.test.ts": {
-    "mtime": 1779209341.0574286,
-    "ast_hash": "7ce7e34e3887aa5c07241e40cf1da77c",
-    "semantic_hash": "7ce7e34e3887aa5c07241e40cf1da77c"
+    "mtime": 1780362492.5847573,
+    "ast_hash": "080c6b8c1446efe72835eadc19bf9b35",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\__tests__\\handoff.test.ts": {
     "mtime": 1779209341.055911,
@@ -560,69 +560,69 @@
     "semantic_hash": "867641a131da30df41a927fee85e3563"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\activity-system-mapper.ts": {
-    "mtime": 1779153362.7390287,
-    "ast_hash": "d32b564108f031fb53dc658c626b8eb1",
-    "semantic_hash": "d32b564108f031fb53dc658c626b8eb1"
+    "mtime": 1780361017.6823788,
+    "ast_hash": "876c51cb8982fbed4af25e95cd2c5035",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\chief-strategist.ts": {
-    "mtime": 1779168729.6149256,
-    "ast_hash": "7e0db948d18c512cbde4243a5124baa9",
-    "semantic_hash": "7e0db948d18c512cbde4243a5124baa9"
+    "mtime": 1780362436.287633,
+    "ast_hash": "c68b51b9607abf04d1817283adad6154",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\code-cartographer.ts": {
-    "mtime": 1779153362.7395334,
-    "ast_hash": "f2e89d8e0dbafa3db31cf1bf44067161",
-    "semantic_hash": "f2e89d8e0dbafa3db31cf1bf44067161"
+    "mtime": 1780361017.6828825,
+    "ast_hash": "de3da3acb93a627cd702800339347813",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\competitor-intelligence.ts": {
-    "mtime": 1779153362.740039,
-    "ast_hash": "e7845234dd1a53adfad8abba7af0f57b",
-    "semantic_hash": "e7845234dd1a53adfad8abba7af0f57b"
+    "mtime": 1780360337.287756,
+    "ast_hash": "f917e6ac6d1ca2cd770ab4c133ff5bfd",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\connected-experience-matrix.ts": {
-    "mtime": 1779153362.740039,
-    "ast_hash": "7d63984b908d53eff910b72ea2155a09",
-    "semantic_hash": "7d63984b908d53eff910b72ea2155a09"
+    "mtime": 1780361017.683905,
+    "ast_hash": "6d02be9cd277e3c1d5dc32ba937401b1",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\customer-journey-mapper.ts": {
-    "mtime": 1779153362.7410493,
-    "ast_hash": "751d601e306f19401d7acf375862a404",
-    "semantic_hash": "751d601e306f19401d7acf375862a404"
+    "mtime": 1780361017.683905,
+    "ast_hash": "3ac7007031e0d8ed2ba243a691c486c9",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\deeper-needs-laddering.ts": {
-    "mtime": 1779153362.741554,
-    "ast_hash": "7ef79fdfc18aa0566b37e8a60dd02b16",
-    "semantic_hash": "7ef79fdfc18aa0566b37e8a60dd02b16"
+    "mtime": 1780361017.683905,
+    "ast_hash": "df7c7794fcf98be33375b40f06cafd6c",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\industry-structure-analyst.ts": {
-    "mtime": 1779153362.742203,
-    "ast_hash": "a1d5d935be042d936705f1eb8dc2eb42",
-    "semantic_hash": "a1d5d935be042d936705f1eb8dc2eb42"
+    "mtime": 1780361017.683905,
+    "ast_hash": "44f9664850ef9b825d7a44e61465428d",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\info-flow-analyzer.ts": {
-    "mtime": 1779153362.742716,
-    "ast_hash": "39c6c584566d682570e2fc900ae4a385",
-    "semantic_hash": "39c6c584566d682570e2fc900ae4a385"
+    "mtime": 1780361017.6854086,
+    "ast_hash": "24c0dda6207b01439daefb3a2b19a4a5",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\revenue-model-architect.ts": {
-    "mtime": 1780285444.1331866,
-    "ast_hash": "1b55abf5e3ee279939004cdb5c96d51b",
-    "semantic_hash": "1b55abf5e3ee279939004cdb5c96d51b"
+    "mtime": 1780361017.685949,
+    "ast_hash": "4026926fa08959f575989023cc8ad3ba",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\api-design-critic.ts": {
-    "mtime": 1779159183.19819,
-    "ast_hash": "db11f6f550066dd62705270975896527",
-    "semantic_hash": "db11f6f550066dd62705270975896527"
+    "mtime": 1780361017.6869648,
+    "ast_hash": "52eecfe84ee3bdc7064484409ac02c42",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\db-architect.ts": {
-    "mtime": 1779159183.19819,
-    "ast_hash": "e85f8b9e8ac2debb4c553cbb92d6af63",
-    "semantic_hash": "e85f8b9e8ac2debb4c553cbb92d6af63"
+    "mtime": 1780361017.6879704,
+    "ast_hash": "ca1aca92245192c58d404d6cc0297863",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\frontend-perf.ts": {
-    "mtime": 1779159183.1997037,
-    "ast_hash": "6ad07b61ffb45383c68fe30e82b74718",
-    "semantic_hash": "6ad07b61ffb45383c68fe30e82b74718"
+    "mtime": 1780361017.6879704,
+    "ast_hash": "5bd23856393b1dfc4008653006c1c7c3",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\index.ts": {
     "mtime": 1779153362.7457342,
@@ -630,19 +630,19 @@
     "semantic_hash": "c10ead35fdebc48b616b74b0a57399c9"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\ml-readiness.ts": {
-    "mtime": 1779159183.1997037,
-    "ast_hash": "7633fb6d0cb6ccefaa45b73207758bc1",
-    "semantic_hash": "7633fb6d0cb6ccefaa45b73207758bc1"
+    "mtime": 1780361017.6889708,
+    "ast_hash": "bb9aaababac80cbb5c5076ddfe1b73ef",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\observability.ts": {
-    "mtime": 1779159183.2007186,
-    "ast_hash": "b095de2b16f8085464321b80a6f82d7c",
-    "semantic_hash": "b095de2b16f8085464321b80a6f82d7c"
+    "mtime": 1780361017.6894748,
+    "ast_hash": "83c667d7b2fae99e837ac84b785165ad",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\performance-engineer.ts": {
-    "mtime": 1779159183.2012217,
-    "ast_hash": "9dbb8e7588c6fe8f3ac2cff817d03b5d",
-    "semantic_hash": "9dbb8e7588c6fe8f3ac2cff817d03b5d"
+    "mtime": 1780361017.6894748,
+    "ast_hash": "558c328145b0802cebd0c19ea16d2542",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\schema.ts": {
     "mtime": 1779153362.746774,
@@ -650,24 +650,24 @@
     "semantic_hash": "c712daa163c848202b41c8056bd48557"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\swarm\\security-auditor.ts": {
-    "mtime": 1779159183.2018776,
-    "ast_hash": "2254371c6b5ccc1bf18e21329953adf4",
-    "semantic_hash": "2254371c6b5ccc1bf18e21329953adf4"
+    "mtime": 1780361017.6894748,
+    "ast_hash": "c64efe3369ba81d960ea74f67e22229e",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\tech-stack-mapper.ts": {
-    "mtime": 1779153362.742716,
-    "ast_hash": "9b900a16ed3cea51e5f8f229dd134109",
-    "semantic_hash": "9b900a16ed3cea51e5f8f229dd134109"
+    "mtime": 1780361017.685949,
+    "ast_hash": "66d592247e09558a4ab308cedf2be5a8",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\temporal-analyst.ts": {
-    "mtime": 1780285449.5207293,
-    "ast_hash": "2af758c89f71526d467c8bb4b0da0e22",
-    "semantic_hash": "2af758c89f71526d467c8bb4b0da0e22"
+    "mtime": 1780361147.0952535,
+    "ast_hash": "b2ac00af6c88769360ae90ba623430cd",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\agents\\wtp-cost-driver-scorer.ts": {
-    "mtime": 1779153362.7437205,
-    "ast_hash": "6dccb1dbcf98e4948880817a5fdbb0d1",
-    "semantic_hash": "6dccb1dbcf98e4948880817a5fdbb0d1"
+    "mtime": 1780361017.6869648,
+    "ast_hash": "c8103d7ee29614fce4d9118c06d5413c",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\cleanup.ts": {
     "mtime": 1777927748.4726405,
@@ -755,9 +755,9 @@
     "semantic_hash": "e87ee7e87ba1301eadc7d65ee3da1188"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\pipeline-orchestrator.ts": {
-    "mtime": 1780097977.076986,
-    "ast_hash": "56fcd298b239400f7be4acdcbfddba7b",
-    "semantic_hash": "56fcd298b239400f7be4acdcbfddba7b"
+    "mtime": 1780362232.3267212,
+    "ast_hash": "99dea7d35a97e89a6132bd75fe08c701",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\shared-findings.ts": {
     "mtime": 1779159039.8088574,
@@ -800,17 +800,17 @@
     "semantic_hash": "35e50d197c4a9d741ee3e9740254ed54"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\test-data\\p1\\state.json": {
-    "mtime": 1780285471.23105,
-    "ast_hash": "284166a0807091d3eeba063617cd1234",
-    "semantic_hash": "284166a0807091d3eeba063617cd1234"
+    "mtime": 1780473210.528716,
+    "ast_hash": "3a039509314f7be49186b55bcc6d0d2d",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\test-data\\p3\\state.json": {
-    "mtime": 1780285471.23817,
+    "mtime": 1780473210.5361109,
     "ast_hash": "8a4d06900c7607cfa9297f78ee385dd7",
     "semantic_hash": "8a4d06900c7607cfa9297f78ee385dd7"
   },
   "C:\\dev\\Connected_Strategy\\packages\\agents\\test-data\\p4\\llm-cache\\hash123.json": {
-    "mtime": 1780285471.239792,
+    "mtime": 1780473210.5376737,
     "ast_hash": "2b6db8f72aa1ca0aa7724c650483bb84",
     "semantic_hash": "2b6db8f72aa1ca0aa7724c650483bb84"
   },
@@ -870,9 +870,9 @@
     "semantic_hash": "5985d9a5b829ee50430c2c9d1a05e55f"
   },
   "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets.ts": {
-    "mtime": 1777247725.6495674,
-    "ast_hash": "748c8a0a056bc1c4bebd7de49570adcb",
-    "semantic_hash": "748c8a0a056bc1c4bebd7de49570adcb"
+    "mtime": 1780473100.3597631,
+    "ast_hash": "02abd078f1ddd8c54cddda11a1aa9ef0",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\domain\\tsconfig.json": {
     "mtime": 1776893459.2319615,
@@ -895,9 +895,9 @@
     "semantic_hash": "3aa7a7e7190ebe5841bc4a692b04dc76"
   },
   "C:\\dev\\Connected_Strategy\\packages\\knowledge\\src\\sources.ts": {
-    "mtime": 1779152438.2240348,
-    "ast_hash": "8cecd9ecaf454ad9aded77f2148877b5",
-    "semantic_hash": "8cecd9ecaf454ad9aded77f2148877b5"
+    "mtime": 1780372073.149089,
+    "ast_hash": "e28df565303224f170e12482b2bd6361",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\packages\\knowledge\\src\\types.ts": {
     "mtime": 1779152116.3711886,
@@ -1110,24 +1110,24 @@
     "semantic_hash": "11e4a417946fc2a7d1625e8aa205186a"
   },
   "C:\\dev\\Connected_Strategy\\AGENTS.md": {
-    "mtime": 1777231419.3290787,
-    "ast_hash": "b7bd008021596eba26b2055259b05fd9",
-    "semantic_hash": "b7bd008021596eba26b2055259b05fd9"
+    "mtime": 1780759052.8800771,
+    "ast_hash": "55658c99bb59bc42e23e35463f3bce9f",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\CHANGELOG_PROJECT.md": {
-    "mtime": 1780285489.0298095,
-    "ast_hash": "e12614b872381b6df399ccb4a933d6b0",
-    "semantic_hash": "e12614b872381b6df399ccb4a933d6b0"
+    "mtime": 1780473265.716183,
+    "ast_hash": "2c4bd10df908aa319790888c88d22d0f",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\CURRENT_STATE.md": {
-    "mtime": 1780285495.4241295,
-    "ast_hash": "ed0c6d2cd7a682ae627b0eeb1a87fa2d",
-    "semantic_hash": "ed0c6d2cd7a682ae627b0eeb1a87fa2d"
+    "mtime": 1780473248.517496,
+    "ast_hash": "ba3b32907052fc22ff83bfbfca9d5585",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\CURRENT_TASK.md": {
-    "mtime": 1780285509.1777935,
-    "ast_hash": "a6b98d525fb9f7b0cc6ab97d71daeeea",
-    "semantic_hash": "a6b98d525fb9f7b0cc6ab97d71daeeea"
+    "mtime": 1780473257.6324337,
+    "ast_hash": "c9e0667bad18a78d5083b6bc6e77fb82",
+    "semantic_hash": ""
   },
   "C:\\dev\\Connected_Strategy\\GEMINI.md": {
     "mtime": 1777874108.8598664,
@@ -1599,11 +1599,6 @@
     "ast_hash": "d3dc18a0e981947982937b525f9c1ed4",
     "semantic_hash": "d3dc18a0e981947982937b525f9c1ed4"
   },
-  "C:\\dev\\Connected_Strategy\\scratch\\update_graph.py": {
-    "mtime": 1780285719.0826826,
-    "ast_hash": "8ab09d7d19720b949bf0c0284f8a52a6",
-    "semantic_hash": "8ab09d7d19720b949bf0c0284f8a52a6"
-  },
   "C:\\dev\\Connected_Strategy\\scratch\\fase2_findings.md": {
     "mtime": 1780285199.686671,
     "ast_hash": "39bfe3db23a71887b112d92697642059",
@@ -1618,5 +1613,145 @@
     "mtime": 1780285268.1005597,
     "ast_hash": "e87c137f5403f2f65756408d4675e28c",
     "semantic_hash": "e87c137f5403f2f65756408d4675e28c"
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\server\\src\\services\\lifecycle.ts": {
+    "mtime": 1780361960.1828454,
+    "ast_hash": "3e4fce3b9210de53bc82da1dd3dacecc",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\agents\\components\\AgentDetailsSidebar.tsx": {
+    "mtime": 1780473168.4810448,
+    "ast_hash": "aec8b0efa144ac61ea825752e171a7fe",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\agents\\components\\AgentFilters.tsx": {
+    "mtime": 1780473158.5279977,
+    "ast_hash": "ca94fff36904cc4e242f7b37a5b860e1",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\agents\\components\\OrchestrationCanvas.tsx": {
+    "mtime": 1780473163.6334586,
+    "ast_hash": "420cc15cb496d02c3a775bf396a6bf81",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\worksheets\\components\\ProjectSelector.tsx": {
+    "mtime": 1780473127.148791,
+    "ast_hash": "b282406591d79b2cb423e94594394d9f",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\worksheets\\components\\StorageBadge.tsx": {
+    "mtime": 1780473129.38357,
+    "ast_hash": "c32c3205a55c2a24bde66de208d059f7",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\worksheets\\components\\Toast.tsx": {
+    "mtime": 1780473131.6656942,
+    "ast_hash": "f67d4d7996e37bf392fa30193025f325",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\apps\\web\\src\\pages\\worksheets\\hooks\\useWorksheetState.ts": {
+    "mtime": 1780473136.9487357,
+    "ast_hash": "be806421f4c25981828bae9dfe832e19",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\rag\\pdfParser.ts": {
+    "mtime": 1780376380.5972755,
+    "ast_hash": "a90beebe0db2dc600752d41f6213f2fd",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\hub\\event-hub.ts": {
+    "mtime": 1780365714.252556,
+    "ast_hash": "bb9dd44fc0a41c81cd58647f0ac1734e",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\agents\\src\\v3\\hub\\outbox-store.ts": {
+    "mtime": 1780365691.021321,
+    "ast_hash": "4ecbf1378a3b30fa0eb38d5ac0973339",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws01.ts": {
+    "mtime": 1780473100.3528998,
+    "ast_hash": "75fc87e9229695d0d2f9af7842c152f1",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws02.ts": {
+    "mtime": 1780473100.3535228,
+    "ast_hash": "10f6dc37b8b76c7bf89242efcc32cd72",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws03.ts": {
+    "mtime": 1780473100.3540437,
+    "ast_hash": "dd1776effb75183efd24e658b75a3645",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws04.ts": {
+    "mtime": 1780473100.3545554,
+    "ast_hash": "8055a3a14eb0f65a4b0674ac716c1bce",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws05.ts": {
+    "mtime": 1780473100.3550777,
+    "ast_hash": "16da36282f85ce746a161f34af666b88",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws06.ts": {
+    "mtime": 1780473100.3555915,
+    "ast_hash": "6b3db7cb0353d3d3b76062f5d45fd402",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws07.ts": {
+    "mtime": 1780473100.356116,
+    "ast_hash": "df39b1dbf1e6391664df01381e40292c",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws08.ts": {
+    "mtime": 1780473100.3566406,
+    "ast_hash": "9c0803a8dcb652c6bff0529406b4ebf6",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws09.ts": {
+    "mtime": 1780473100.3566406,
+    "ast_hash": "acbc6532816e0f97c700a5783a1c7d6e",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws10.ts": {
+    "mtime": 1780473100.3571627,
+    "ast_hash": "c1eb7e3c3664343cce37215f8b74545f",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws11.ts": {
+    "mtime": 1780473100.3576822,
+    "ast_hash": "fb3aa9419cfb8f5f45ae7aeaf426b44b",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws12.ts": {
+    "mtime": 1780473100.3582027,
+    "ast_hash": "9c8aa8d1a070954462251b321d8ea123",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws13.ts": {
+    "mtime": 1780473100.3582027,
+    "ast_hash": "4c473927ea2290a7e404dcf8f84b5096",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws14.ts": {
+    "mtime": 1780473100.3587217,
+    "ast_hash": "0e165517e849f4c4f9390c2bcba84704",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\packages\\domain\\src\\worksheets\\ws15.ts": {
+    "mtime": 1780473100.359243,
+    "ast_hash": "ecac8a2a8ac326979872e0e27765bda2",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\scratch\\refactor-agents.ts": {
+    "mtime": 1780361006.504774,
+    "ast_hash": "d13cb4a92cd783a57fee0cec5f1e7b1a",
+    "semantic_hash": ""
+  },
+  "C:\\dev\\Connected_Strategy\\scripts\\clean-and-ingest-pdfs.ts": {
+    "mtime": 1780376325.852994,
+    "ast_hash": "69d5d8bab3dce6830e81f56e714d5169",
+    "semantic_hash": ""
   }
 }

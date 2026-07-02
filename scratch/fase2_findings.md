@@ -1,3 +1,6 @@
+---
+type: scratch
+---
 # Reporte de Deuda Técnica Quirúrgica (Fase 2)
 
 ## 1. Archivos Huérfanos Refinados (67 encontrados)

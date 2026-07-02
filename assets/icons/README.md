@@ -1,3 +1,6 @@
+---
+type: documentation
+---
 # Connected Strategy — Icon Assets
 
 ## Files

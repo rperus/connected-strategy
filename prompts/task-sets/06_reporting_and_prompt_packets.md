@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-06 Reporting And Prompt Packets
 
 ```

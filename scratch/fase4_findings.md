@@ -1,3 +1,6 @@
+---
+type: scratch
+---
 # Reporte de Visión Holística y Zero-UI (Fase 4)
 
 Este reporte evalúa la integración entre el cerebro estratégico (los Agentes de IA en `packages/agents/src/v3/`) y los terminales de interacción del usuario (las Páginas Web React en `apps/web/src/pages/`), bajo los marcos de **Connected Strategy (Sense-Transmit-React)** y **Anticipatory Design (Zero-UI)**.

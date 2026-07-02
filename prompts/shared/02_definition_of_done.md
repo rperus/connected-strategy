@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # Definition Of Done
 
 Un set solo esta terminado cuando cumple todo esto:

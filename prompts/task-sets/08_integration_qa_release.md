@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-08 Integration, QA And Release Local
 
 Lee primero:

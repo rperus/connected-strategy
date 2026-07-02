@@ -1,3 +1,6 @@
+---
+type: log
+---
 # ⚙️ Auditoría User Settings — Connected Strategy
 
 **Fecha:** 2026-05-29

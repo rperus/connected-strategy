@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-05 Runtime Collision Launcher
 
 ```

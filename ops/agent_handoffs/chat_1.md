@@ -1,3 +1,6 @@
+---
+type: context
+---
 SLOT: Chat 1
 ESTADO: listo
 TASK_ID: SET-08-W5-C1

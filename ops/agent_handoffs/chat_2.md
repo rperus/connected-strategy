@@ -1,3 +1,6 @@
+---
+type: context
+---
 SLOT: Chat 2
 ESTADO: complete
 TASK_ID: Wave-5-Chat-2

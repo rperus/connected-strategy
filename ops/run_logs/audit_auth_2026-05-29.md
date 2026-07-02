@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 🔐 Auditoría Auth & Identity — Connected Strategy
 
 **Fecha:** 2026-05-29T15:59:31-06:00

@@ -10,7 +10,7 @@
 
 import type { KnowledgeSource } from './types.js';
 
-const KNOWLEDGE_ROOT = process.env.CS_KNOWLEDGE_DIR || 'D:\\GoogleDrive-SKLatam\\Mi unidad\\Plataforma_Master\\01_KB_Strategy_Wharton';
+const KNOWLEDGE_ROOT = process.env.CS_KNOWLEDGE_DIR || 'C:\\dev\\Connected_Strategy\\data\\knowledge';
 const WORKSPACE_ROOT = process.env.CS_WORKSPACE_ROOT || 'C:\\dev';
 
 // ─── Wharton Source Catalog ───────────────────────────────────────────────────

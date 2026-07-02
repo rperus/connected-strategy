@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>OKF Knowledge Graph — Connected_Strategy</title>
+<style>body{margin:0;background:#0f172a;font-family:Inter,system-ui,sans-serif;color:#e2e8f0;overflow:hidden}
+.tooltip{position:absolute;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 12px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s}
+.legend{position:fixed;top:16px;right:16px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px;font-size:12px}
+.legend div{margin:4px 0;display:flex;align-items:center;gap:6px}
+.legend span{display:inline-block;width:10px;height:10px;border-radius:50%}
+h1{position:fixed;top:16px;left:16px;font-size:18px;font-weight:600;margin:0;opacity:.8}</style>
+<script src="https://d3js.org/d3.v7.min.js"></script></head><body>
+<h1>📊 Connected_Strategy — OKF Knowledge Graph</h1>
+<div class="tooltip" id="tooltip"></div>
+<div class="legend" id="legend"></div>
+<script>
+const nodes=[{"id": "index.md", "title": "index", "type": "unknown"}, {"id": "playbooks/2026-05-18-v3-revenue-architect.md", "title": "2026-05-18-v3-revenue-architect", "type": "unknown"}, {"id": "playbooks/AGENT_MANAGER_CEREBRO_WORKFLOW.md", "title": "AGENT_MANAGER_CEREBRO_WORKFLOW", "type": "unknown"}, {"id": "playbooks/index.md", "title": "index", "type": "unknown"}, {"id": "playbooks/OPERATOR_DEPLOY_CHECKLIST.md", "title": "OPERATOR_DEPLOY_CHECKLIST", "type": "unknown"}, {"id": "playbooks/PORT_REGISTRY_POLICY.md", "title": "PORT_REGISTRY_POLICY", "type": "unknown"}, {"id": "references/01_parallel_task_sets.md", "title": "01_parallel_task_sets", "type": "unknown"}, {"id": "references/02_project_state_rhythm.md", "title": "02_project_state_rhythm", "type": "unknown"}, {"id": "references/2026-06-10_SUPER_AUDIT_PHASE1.md", "title": "2026-06-10_SUPER_AUDIT_PHASE1", "type": "unknown"}, {"id": "references/api_endpoints.md", "title": "api_endpoints", "type": "unknown"}, {"id": "references/index.md", "title": "index", "type": "unknown"}, {"id": "state/index.md", "title": "index", "type": "unknown"}, {"id": "state/PRODUCTION_READINESS_BACKLOG.md", "title": "PRODUCTION_READINESS_BACKLOG", "type": "unknown"}, {"id": "tables/00_master_execution_plan.md", "title": "00_master_execution_plan", "type": "unknown"}, {"id": "tables/03_antigravity_operating_model.md", "title": "03_antigravity_operating_model", "type": "unknown"}, {"id": "tables/AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY.md", "title": "AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY", "type": "unknown"}, {"id": "tables/index.md", "title": "index", "type": "unknown"}];
+const links=[{"source": "index.md", "target": "playbooks/index.md"}, {"source": "index.md", "target": "references/index.md"}, {"source": "index.md", "target": "state/index.md"}, {"source": "index.md", "target": "tables/index.md"}, {"source": "playbooks/index.md", "target": "playbooks/2026-05-18-v3-revenue-architect.md"}, {"source": "playbooks/index.md", "target": "playbooks/AGENT_MANAGER_CEREBRO_WORKFLOW.md"}, {"source": "playbooks/index.md", "target": "playbooks/OPERATOR_DEPLOY_CHECKLIST.md"}, {"source": "playbooks/index.md", "target": "playbooks/PORT_REGISTRY_POLICY.md"}, {"source": "references/index.md", "target": "references/02_project_state_rhythm.md"}, {"source": "references/index.md", "target": "references/01_parallel_task_sets.md"}, {"source": "references/index.md", "target": "references/api_endpoints.md"}, {"source": "references/index.md", "target": "references/2026-06-10_SUPER_AUDIT_PHASE1.md"}, {"source": "state/index.md", "target": "state/PRODUCTION_READINESS_BACKLOG.md"}, {"source": "tables/index.md", "target": "tables/03_antigravity_operating_model.md"}, {"source": "tables/index.md", "target": "tables/AUDITORIA_2026-04-29_PROMPTS_ANTIGRAVITY.md"}, {"source": "tables/index.md", "target": "tables/00_master_execution_plan.md"}];
+const colors={"index": "#6366f1", "changelog": "#8b5cf6", "table": "#06b6d4", "reference": "#10b981", "documentation": "#f59e0b", "plan": "#ef4444", "status": "#ec4899", "runbook": "#14b8a6", "playbook": "#f97316", "report": "#64748b", "context": "#a855f7", "observation": "#22d3ee", "metric": "#eab308", "api": "#3b82f6", "unknown": "#94a3b8"};
+const types=[...new Set(nodes.map(n=>n.type))];
+const legend=document.getElementById('legend');
+types.forEach(t=>{const d=document.createElement('div');d.innerHTML=`<span style="background:${colors[t]||'#94a3b8'}"></span>${t} (${nodes.filter(n=>n.type===t).length})`;legend.appendChild(d)});
+const w=window.innerWidth,h=window.innerHeight;
+const svg=d3.select('body').append('svg').attr('width',w).attr('height',h);
+const g=svg.append('g');
+svg.call(d3.zoom().on('zoom',e=>g.attr('transform',e.transform)));
+const sim=d3.forceSimulation(nodes).force('link',d3.forceLink(links).id(d=>d.id).distance(80))
+.force('charge',d3.forceManyBody().strength(-200)).force('center',d3.forceCenter(w/2,h/2));
+const link=g.append('g').selectAll('line').data(links).join('line').attr('stroke','#334155').attr('stroke-width',1);
+const node=g.append('g').selectAll('circle').data(nodes).join('circle').attr('r',d=>d.type==='index'?8:5)
+.attr('fill',d=>colors[d.type]||'#94a3b8').attr('stroke','#1e293b').attr('stroke-width',1.5)
+.call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+.on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null}));
+const tt=document.getElementById('tooltip');
+node.on('mouseover',(e,d)=>{tt.style.opacity=1;tt.innerHTML=`<b>${d.title}</b><br>Type: ${d.type}<br>Path: ${d.id}`;tt.style.left=(e.pageX+12)+'px';tt.style.top=(e.pageY-12)+'px'})
+.on('mouseout',()=>{tt.style.opacity=0});
+sim.on('tick',()=>{link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+node.attr('cx',d=>d.x).attr('cy',d=>d.y)});
+</script></body></html>

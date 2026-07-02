@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-01 Workspace Bootstrap
 
 Lee primero:

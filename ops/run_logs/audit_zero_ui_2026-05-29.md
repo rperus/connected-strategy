@@ -1,3 +1,6 @@
+---
+type: log
+---
 # Auditoría Zero UI con Superpowers v2.0.1
 **Fecha:** 2026-05-29
 **Proyecto:** Connected Strategy

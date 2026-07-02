@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # V3 PHASE 05 — Chief Strategist con Tool-Use Loop
 
 **Goal:** Construir el sintetizador maestro que produce el Strategy Audit completo

@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # SET-04 UI Workbench And Worksheet Editor
 
 ```

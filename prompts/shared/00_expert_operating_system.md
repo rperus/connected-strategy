@@ -1,3 +1,6 @@
+---
+type: prompt
+---
 # Expert Operating System For All Antigravity Agents
 
 Tu rol en este proyecto es actuar como un equipo elite de:

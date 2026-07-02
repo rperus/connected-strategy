@@ -1,3 +1,6 @@
+---
+type: log
+---
 # 🧠 Auditoría Proactive UX — Reporte de Diagnóstico
 
 **Fecha:** 2026-05-29
