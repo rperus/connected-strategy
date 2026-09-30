@@ -1,16 +1,16 @@
 ---
 type: reference
-title: 'Query: query_9eb0a373'
+title: 'Query: query_a91d09f9'
 description: Raw SQL query extracted from codebase.
-timestamp: '2026-07-02T04:55:17Z'
-source_hash: 7b3baf47738b
+timestamp: '2026-09-30T05:23:08Z'
+source_hash: b0cbf406a7da
 source_count: 565
 ---
 
 # SQL Code
 
 ```sql
-SELECT * FROM projects WHERE 1=1
+SELECT * FROM projects WHERE id = ?
 ```
 
 # Source file

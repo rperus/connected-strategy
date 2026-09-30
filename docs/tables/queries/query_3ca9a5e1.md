@@ -1,16 +1,16 @@
 ---
 type: reference
-title: 'Query: query_c26740f8'
+title: 'Query: query_3ca9a5e1'
 description: Raw SQL query extracted from codebase.
-timestamp: '2026-07-02T04:55:17Z'
-source_hash: 7b3baf47738b
+timestamp: '2026-09-30T05:23:08Z'
+source_hash: b0cbf406a7da
 source_count: 565
 ---
 
 # SQL Code
 
 ```sql
-SELECT event, COUNT(*) as count FROM telemetry_events GROUP BY event ORDER BY count DESC
+SELECT COUNT(*) as c FROM telemetry_events
 ```
 
 # Source file

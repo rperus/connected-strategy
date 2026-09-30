@@ -1,16 +1,16 @@
 ---
 type: reference
-title: 'Query: query_c6f244eb'
+title: 'Query: query_3bab9e20'
 description: Raw SQL query extracted from codebase.
-timestamp: '2026-07-02T04:55:17Z'
-source_hash: 7b3baf47738b
+timestamp: '2026-09-30T05:23:08Z'
+source_hash: b0cbf406a7da
 source_count: 565
 ---
 
 # SQL Code
 
 ```sql
-SELECT COUNT(*) as c FROM telemetry_events
+SELECT COUNT(*) as c FROM telemetry_events WHERE created_at >= datetime('now', '-7 days')
 ```
 
 # Source file

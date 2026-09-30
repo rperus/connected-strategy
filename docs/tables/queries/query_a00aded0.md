@@ -1,16 +1,16 @@
 ---
 type: reference
-title: 'Query: query_622a7195'
+title: 'Query: query_a00aded0'
 description: Raw SQL query extracted from codebase.
-timestamp: '2026-07-02T04:55:17Z'
-source_hash: 7b3baf47738b
+timestamp: '2026-09-30T05:23:08Z'
+source_hash: b0cbf406a7da
 source_count: 565
 ---
 
 # SQL Code
 
 ```sql
-SELECT * FROM worksheet_answers ORDER BY project_id, worksheet_id LIMIT ? OFFSET ?
+SELECT * FROM worksheet_answers WHERE project_id = ? ORDER BY worksheet_id
 ```
 
 # Source file

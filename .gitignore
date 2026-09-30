@@ -23,3 +23,7 @@ docs/memories/business_plans/
 docs/memories/competition/
 docs/memories/meetings/
 docs/memories/wharton/
+
+# Archivos con llaves: no versionar
+.env.backup
+rotated_secrets.json

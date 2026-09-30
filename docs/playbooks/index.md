@@ -2,7 +2,7 @@
 type: index
 title: Index of Playbooks
 description: Navigation index for the Playbooks directory.
-timestamp: '2026-07-02T04:55:17Z'
+timestamp: '2026-07-02T04:55:46Z'
 ---
 
 # plan
