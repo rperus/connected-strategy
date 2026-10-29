@@ -3,6 +3,10 @@ type: context
 ---
 # Project Changelog
 
+## [Unreleased] — 2026-10-29
+### Added
+- **Proveedor Claude primero**: `createAnthropicProvider` (API Messages por fetch, sin dependencia nueva) y `createClaudeFirstProvider` en `packages/agents/src/llm-provider.ts`. Se activa con `CS_LLM_PROVIDER=claude-first` o automaticamente si existe `ANTHROPIC_API_KEY` y `CS_LLM_PROVIDER` no esta definido. Modelo por defecto `claude-sonnet-5-5` (`CS_CLAUDE_MODEL`). Cae a Gemini ante falta de llave, credito agotado, 401/403/404/429/5xx o timeout (enfriamiento 30 min / 60 s); `useSearch` va directo a Gemini; `generateStructured` conserva la validacion Zod (invalido -> Gemini). No envia temperature/top_p/top_k ni thinking; `output_config.effort=low`, `max_tokens>=2048`. Tests: `packages/agents/src/__tests__/llm-provider-claude.test.ts`. El copiloto (`apps/server/src/modules/copilot/routes.ts`) sigue en Gemini.
+
 ## [v2.9.5] — 2026-06-26
 ### Added
 - **Persistencia de Caché LLM**: Implementada base de datos SQLite específica para el caché (`llm_cache.db`), previniendo llamadas repetitivas costosas a APIs externas y compartiendo el caché entre procesos.
