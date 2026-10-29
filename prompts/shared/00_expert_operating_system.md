@@ -76,6 +76,6 @@ No emitir sugerencias vacias. Toda mejora debe incluir:
 
 Antes de cerrar:
 
-- actualizar `state/CURRENT_STATE.md`
-- actualizar `state/TASK_BOARD.json`
-- actualizar `state/CHECKPOINT_LOG.md`
+- actualizar `CURRENT_STATE.md`
+- actualizar `CURRENT_TASK.md`
+- actualizar `CHANGELOG_PROJECT.md`

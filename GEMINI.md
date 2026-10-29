@@ -20,7 +20,7 @@ Read `CURRENT_STATE.md` and `PROJECT_MANIFEST.yaml` for current status.
 - `apps/server/` — Express API backend
 - `apps/web/` — React frontend
 - `prompts/task-sets/` — structured task prompts
-- `state/` — project state, plans, checkpoints
+- `docs/state/` — project state and backlog (canonical state files live at the repo root: `CURRENT_STATE.md`, `CURRENT_TASK.md`)
 - `data/` — generated analysis outputs
 
 ## OKF Documentation (Infrastructure Knowledge)

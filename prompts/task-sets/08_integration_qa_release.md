@@ -8,10 +8,10 @@ Lee primero:
 - `prompts/shared/00_expert_operating_system.md`
 - `prompts/shared/01_resume_protocol.md`
 - `prompts/shared/02_definition_of_done.md`
-- `docs/00_master_execution_plan.md`
-- `docs/01_parallel_task_sets.md`
-- `state/CURRENT_STATE.md`
-- `state/TASK_BOARD.json`
+- `docs/tables/00_master_execution_plan.md`
+- `docs/references/01_parallel_task_sets.md`
+- `CURRENT_STATE.md`
+- `CURRENT_TASK.md`
 - los checkpoints finales de `SET-02` a `SET-07`
 
 ## Objetivo

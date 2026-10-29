@@ -52,7 +52,7 @@ Lee estos documentos en este orden:
 | `packages/` | Paquetes compartidos (domain, agents) |
 | `prompts/` | Prompts por set de tareas |
 | `config/` | Configuración de puertos y runtime |
-| `docs/operations/` | Documentación operativa |
+| `docs/references/` | Referencias operativas (ritmo de estado, sets paralelos) |
 | `docs/tables/` | Esquemas de tablas extraídos del código (OKF) |
 | `docs/tables/queries/` | Queries SQL extraídas del código (OKF) |
 | `docs/references/api_endpoints.md` | Catálogo completo de API endpoints (17 KB, OKF) |

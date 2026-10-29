@@ -5,21 +5,20 @@ type: prompt
 
 Antes de empezar cualquier set:
 
-1. Leer `state/RESUME_INSTRUCTIONS.md`
-2. Leer `state/CURRENT_STATE.md`
-3. Leer `state/TASK_BOARD.json`
-4. Leer la ultima entrada de `state/CHECKPOINT_LOG.md`
-5. Leer este prompt compartido y el prompt especifico del set
+1. Leer `CURRENT_STATE.md`
+2. Leer `CURRENT_TASK.md`
+3. Leer la ultima entrada de `CHANGELOG_PROJECT.md`
+4. Leer este prompt compartido y el prompt especifico del set
 
 ## Cuando retomes una sesion
 
 - No rehagas trabajo sin revisar el estado primero.
-- No adivines que falta. Usa `CURRENT_STATE.md` y `TASK_BOARD.json`.
+- No adivines que falta. Usa `CURRENT_STATE.md` y `CURRENT_TASK.md`.
 - Si algo no coincide, registra la discrepancia y resuelvela antes de seguir.
 
 ## Antes de pausar o cerrar
 
-Escribe un checkpoint con:
+Deja en `CURRENT_TASK.md` un checkpoint con:
 
 - timestamp
 - set
